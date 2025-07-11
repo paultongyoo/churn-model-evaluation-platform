@@ -29,7 +29,7 @@ module "rds_postgres" {
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
     mlflow_db_identifier = "${var.project_id}-postgres"
-    mlflow_db_name = "${var.project_id}_db"
+    mlflow_db_name = var.mlflow_db_username
     mlflow_db_username = var.mlflow_db_username
     mlflow_db_password = var.mlflow_db_password
 }
