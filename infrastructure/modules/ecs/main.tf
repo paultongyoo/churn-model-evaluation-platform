@@ -23,7 +23,7 @@ resource "aws_security_group_rule" "allow_my_ip_to_mlflow" {
 }
 
 resource "aws_iam_role" "mlflow_task_exec_role" {
-  name = "mlflow-task-exec-role"
+  name = "${var.project_id}-mlflow-task-exec-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -88,7 +88,7 @@ resource "aws_ecs_cluster" "mlflow_cluster" {
 }
 
 resource "aws_ecs_service" "mlflow" {
-  name            = "mlflow-service"
+  name            = "${var.project_id}-mlflow-service"
   cluster         = aws_ecs_cluster.mlflow_cluster.id
   task_definition = aws_ecs_task_definition.mlflow.arn
   desired_count   = 1
@@ -96,7 +96,7 @@ resource "aws_ecs_service" "mlflow" {
 
   network_configuration {
     subnets          = var.subnet_ids
-    assign_public_ip = false
+    assign_public_ip = true
     security_groups  = [aws_security_group.mlflow_ecs.id]
   }
 }
