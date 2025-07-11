@@ -1,13 +1,6 @@
-variable "aws_region" {
-    description = "The AWS region to deploy resources in"
-    type        = string
-    default     = "us-east-2"
-}
-
 variable "project_id" {
     description = "The project ID for the infrastructure"
     type        = string
-    default     = "mlops-churn-pipeline"
 }
 
 variable "vpc_id" {
@@ -20,8 +13,24 @@ variable "subnet_ids" {
   description = "List of subnet IDs in different AZs"
 }
 
+variable "mlflow_container_image" {
+    description = "The Docker image for the MLflow container"
+    type        = string
+    default     = "ghcr.io/mlflow/mlflow:v3.1.1"
+}
+
 variable "mlflow_db_username" {
   description = "RDS database username"
+  type        = string
+}
+
+variable "mlflow_db_endpoint" {
+  description = "RDS database endpoint"
+  type        = string
+}
+
+variable "mlflow_db_name" {
+  description = "Name of the RDS database"
   type        = string
 }
 
@@ -32,7 +41,9 @@ variable "mlflow_db_password" {
 
 variable "my_ip" {
   description = "Your public IP in CIDR notation (e.g. '203.0.113.5/32')"
-  default     = "64.98.212.216/32" # Remove this before I make my REPO public!!
 }
 
-
+variable "rds_sg_id" {
+  description = "Security group ID for the RDS instance"
+  type        = string
+}
