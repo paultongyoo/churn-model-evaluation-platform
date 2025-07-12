@@ -1,5 +1,6 @@
 .terraform/
 *.tfvars
+ecr_image_tag.txt
 .env
 .env.bak
 mlflow.db
