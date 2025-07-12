@@ -1,6 +1,13 @@
 resource "aws_security_group" "mlflow_ecs" {
   name   = "${var.project_id}_mlflow_ecs_sg"
   vpc_id = var.vpc_id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_security_group_rule" "ecs_to_rds" {
