@@ -94,7 +94,7 @@ resource "aws_ecs_task_definition" "mlflow" {
       }
       command = [
         "mlflow", "server",
-        "--backend-store-uri", "postgresql://${var.mlflow_db_username}:${var.mlflow_db_password}@${var.mlflow_db_endpoint}/${var.mlflow_db_name}",
+        "--backend-store-uri", "postgresql://${var.db_username}:${var.db_password}@${var.mlflow_db_endpoint}/${var.db_name}",
         "--default-artifact-root", "s3://${var.project_id}/mlflow/",
         "--host", "0.0.0.0",
         "--port", "5000"
@@ -144,7 +144,7 @@ resource "null_resource" "get_mlflow_tracking_uri" {
       MLFLOW_TRACKING_URI="http://$PUBLIC_IP:5000"
       ENV_FILE="../.env"
       MAX_RETRIES=20
-      SLEEP_SECONDS=5
+      SLEEP_SECONDS=15
 
       # Wait for task
       echo "Waiting for ECS task..."

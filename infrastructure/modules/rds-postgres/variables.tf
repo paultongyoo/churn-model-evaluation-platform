@@ -13,22 +13,22 @@ variable "subnet_ids" {
   description = "List of subnet IDs in different AZs"
 }
 
-variable "mlflow_db_identifier" {
+variable "db_identifier" {
   description = "Identifier for the RDS instance"
   type        = string
 }
 
-variable "mlflow_db_name" {
+variable "db_name" {
   description = "Name of the RDS database"
   type        = string
 }
 
-variable "mlflow_db_username" {
+variable "db_username" {
   description = "RDS database username"
   type        = string
 }
 
-variable "mlflow_db_password" {
+variable "db_password" {
   description = "RDS database password"
   sensitive   = true
 }

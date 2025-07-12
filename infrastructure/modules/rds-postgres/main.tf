@@ -21,14 +21,14 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_instance" "postgres" {
-  identifier         = var.mlflow_db_identifier
+  identifier         = var.db_identifier
   engine             = "postgres"
   engine_version     = "15.10"
   instance_class     = "db.t3.micro"
   allocated_storage  = 20
-  db_name            = var.mlflow_db_name
-  username           = var.mlflow_db_username
-  password           = var.mlflow_db_password
+  db_name            = var.db_name
+  username           = var.db_username
+  password           = var.db_password
   db_subnet_group_name = aws_db_subnet_group.default.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot = true

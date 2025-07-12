@@ -34,10 +34,10 @@ module "rds_postgres" {
     project_id = var.project_id
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
-    mlflow_db_identifier = "${var.project_id}-postgres"
-    mlflow_db_name = var.mlflow_db_name
-    mlflow_db_username = var.mlflow_db_username
-    mlflow_db_password = var.mlflow_db_password
+    db_identifier = "${var.project_id}-postgres"
+    db_name = var.db_name
+    db_username = var.db_username
+    db_password = var.db_password
 }
 
 module "ecr" {
@@ -53,10 +53,10 @@ module "ecs_stack" {
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
     mlflow_image_uri = module.ecr.image_uri
-    mlflow_db_username = var.mlflow_db_username
-    mlflow_db_password = var.mlflow_db_password
+    db_username = var.db_username
+    db_password = var.db_password
     mlflow_db_endpoint = module.rds_postgres.endpoint
-    mlflow_db_name = module.rds_postgres.db_name
+    db_name = module.rds_postgres.db_name
     my_ip = var.my_ip
     rds_sg_id = module.rds_postgres.sg_id
 }
