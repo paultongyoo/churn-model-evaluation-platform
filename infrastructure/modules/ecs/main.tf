@@ -49,6 +49,16 @@ resource "aws_iam_role_policy_attachment" "mlflow_s3_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "mlflow_logs_access" {
+  role       = aws_iam_role.mlflow_task_exec_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
+resource "aws_cloudwatch_log_group" "mlflow_logs" {
+  name              = "/ecs/${var.project_id}-mlflow"
+  retention_in_days = 7 
+}
+
 resource "aws_ecs_task_definition" "mlflow" {
   family                   = "mlflow"
   network_mode             = "awsvpc"
@@ -69,6 +79,14 @@ resource "aws_ecs_task_definition" "mlflow" {
           protocol      = "tcp"
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project_id}-mlflow",
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
       environment = [
         {
           name  = "BACKEND_STORE_URI"

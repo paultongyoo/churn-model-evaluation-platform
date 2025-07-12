@@ -37,6 +37,7 @@ module "rds_postgres" {
 module "ecs_stack" {
     source = "./modules/ecs"
     project_id = var.project_id
+    aws_region = var.aws_region
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
     mlflow_db_username = var.mlflow_db_username
