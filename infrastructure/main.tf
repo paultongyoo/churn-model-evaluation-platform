@@ -6,6 +6,12 @@ terraform {
         region  = "us-east-2"
         encrypt = true
     }
+    required_providers {
+        local = {
+            source  = "hashicorp/local"
+            version = "~> 2.0"
+        }
+    }
 }
 
 provider "aws" {

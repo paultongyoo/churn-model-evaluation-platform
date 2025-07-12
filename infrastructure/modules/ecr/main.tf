@@ -26,9 +26,14 @@ resource "null_resource" "build_and_push_mlflow_image" {
             echo "Pushing image to ECR with tag $IMAGE_TAG..."
             docker push ${aws_ecr_repository.mlflow.repository_url}:$IMAGE_TAG
 
-            echo "$IMAGE_TAG" > ./ecr_image_tag.txt
+            echo "$IMAGE_TAG" > ${path.module}/ecr_image_tag.txt
         EOT
     }
 
     depends_on = [aws_ecr_repository.mlflow]
+}
+
+data "local_file" "image_tag" {
+  filename = "${path.module}/ecr_image_tag.txt"
+  depends_on = [null_resource.build_and_push_mlflow_image]
 }
