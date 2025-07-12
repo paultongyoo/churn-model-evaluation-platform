@@ -127,24 +127,11 @@ resource "null_resource" "get_mlflow_tracking_uri" {
     command = <<EOT
       set -e
 
-      echo "Fetching ECS task ID..."
       CLUSTER_NAME="${var.project_id}-mlflow-cluster"
       SERVICE_NAME="${var.project_id}-mlflow-service"
-      TASK_ID=$(aws ecs list-tasks --cluster $CLUSTER_NAME --service-name $SERVICE_NAME --query 'taskArns[0]' --output text)
-
-      echo "Getting ENI ID from task..."
-      ENI_ID=$(aws ecs describe-tasks --cluster $CLUSTER_NAME --tasks $TASK_ID \
-        --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
-
-      echo "Getting Public IP from ENI..."
-      PUBLIC_IP=$(aws ec2 describe-network-interfaces --network-interface-ids $ENI_ID \
-        --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-
-      echo "Writing MLFLOW_TRACKING_URI to .env..."
-      MLFLOW_TRACKING_URI="http://$PUBLIC_IP:5000"
       ENV_FILE="../.env"
       MAX_RETRIES=20
-      SLEEP_SECONDS=15
+      SLEEP_SECONDS=5
 
       # Wait for task
       echo "Waiting for ECS task..."
@@ -189,11 +176,12 @@ resource "null_resource" "get_mlflow_tracking_uri" {
       done
 
       if [ -z "$PUBLIC_IP" ] || [ "$PUBLIC_IP" = "None" ]; then
-        echo "Timed out waiting for public IP."
+        echo "Timed out waiting for public IP.  Rerun apply once public IP is available."
         exit 1
       fi
 
-      # Write to .env safely
+      echo "Writing MLFLOW_TRACKING_URI to .env..."
+      MLFLOW_TRACKING_URI="http://$PUBLIC_IP:5000"
 
       # Replace the line if it exists, otherwise append it
       if grep -q "^MLFLOW_TRACKING_URI=" "$ENV_FILE"; then
