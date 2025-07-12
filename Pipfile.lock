@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "adced0941ed6977876922e2b7fbc7a74c4396cb01f24c933a7659d5711145c18"
+            "sha256": "e5c0152ebe1f6b8632695b3948a262e17afb3919975a0727a0e7d0116094fa9a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -195,6 +195,14 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==3.1.1"
+        },
+        "colorlog": {
+            "hashes": [
+                "sha256:5906e71acd67cb07a71e779c47c4bcb45fb8c2993eebe9e5adcd6a6f1b283eff",
+                "sha256:bfba54a1b93b94f54e1f4fe48395725a3d92fd2a4af702f6bd70946bdc0c6ac2"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==6.9.0"
         },
         "contourpy": {
             "hashes": [
@@ -884,6 +892,15 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==0.56b0"
+        },
+        "optuna": {
+            "hashes": [
+                "sha256:a9029f6a92a1d6c8494a94e45abd8057823b535c2570819072dbcdc06f1c1da4",
+                "sha256:fad8d9c5d5af993ae1280d6ce140aecc031c514a44c3b639d8c8658a8b7920ea"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8'",
+            "version": "==4.4.0"
         },
         "packaging": {
             "hashes": [

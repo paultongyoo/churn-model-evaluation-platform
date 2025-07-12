@@ -12,6 +12,7 @@ xgboost = "*"
 boto3 = "*"
 shap = "*"
 numpy = "==2.2"
+optuna = "*"
 
 [dev-packages]
 ipykernel = "*"
