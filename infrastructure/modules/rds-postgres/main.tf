@@ -26,7 +26,7 @@ resource "aws_db_instance" "postgres" {
   engine_version     = "15.10"
   instance_class     = "db.t3.micro"
   allocated_storage  = 20
-  db_name               = var.mlflow_db_name
+  db_name            = var.mlflow_db_name
   username           = var.mlflow_db_username
   password           = var.mlflow_db_password
   db_subnet_group_name = aws_db_subnet_group.default.name

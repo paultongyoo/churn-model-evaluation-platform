@@ -87,20 +87,10 @@ resource "aws_ecs_task_definition" "mlflow" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
-      environment = [
-        {
-          name  = "BACKEND_STORE_URI"
-          value = "postgresql://${var.mlflow_db_username}:${var.mlflow_db_password}@${var.mlflow_db_endpoint}:5432/${var.mlflow_db_name}"
-        },
-        {
-          name  = "ARTIFACT_ROOT"
-          value = "s3://${var.project_id}/mlflow/"
-        }
-      ]
       command = [
         "mlflow", "server",
-        "--backend-store-uri", "$BACKEND_STORE_URI",
-        "--default-artifact-root", "$ARTIFACT_ROOT",
+        "--backend-store-uri", "postgresql://${var.mlflow_db_username}:${var.mlflow_db_password}@${var.mlflow_db_endpoint}/${var.mlflow_db_name}",
+        "--default-artifact-root", "s3://${var.project_id}/mlflow/",
         "--host", "0.0.0.0",
         "--port", "5000"
       ]
