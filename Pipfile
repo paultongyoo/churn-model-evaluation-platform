@@ -10,6 +10,8 @@ seaborn = "*"
 mlflow = "*"
 xgboost = "*"
 boto3 = "*"
+shap = "*"
+numpy = "==2.2"
 
 [dev-packages]
 ipykernel = "*"
