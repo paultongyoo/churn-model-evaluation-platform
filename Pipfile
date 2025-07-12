@@ -13,6 +13,7 @@ boto3 = "*"
 shap = "*"
 numpy = "==2.2"
 optuna = "*"
+dotenv = "*"
 
 [dev-packages]
 ipykernel = "*"

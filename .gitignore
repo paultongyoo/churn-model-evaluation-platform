@@ -1,2 +1,5 @@
 .terraform/
 *.tfvars
+.env
+mlflow.db
+mlruns/
