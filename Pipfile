@@ -7,6 +7,8 @@ name = "pypi"
 pandas = "*"
 matplotlib = "*"
 seaborn = "*"
+mlflow = "*"
+xgboost = "*"
 
 [dev-packages]
 ipykernel = "*"
