@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2a0182d4a7fca0e27ac1052d1953f711394b821cc10e78c6ef5789b3e3f13e4d"
+            "sha256": "9ef730c3448dbe644770e5a8c85122bea7bef0211ca3c2b8ff24783cbb3b5a6a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -48,6 +48,23 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==1.9.0"
+        },
+        "boto3": {
+            "hashes": [
+                "sha256:6c955729a1d70181bc8368e02a7d3f350884290def63815ebca8408ee6d47571",
+                "sha256:f8e9534b429121aa5c5b7c685c6a94dd33edf14f87926e9a182d5b50220ba284"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9'",
+            "version": "==1.39.4"
+        },
+        "botocore": {
+            "hashes": [
+                "sha256:c41e167ce01cfd1973c3fa9856ef5244a51ddf9c82cb131120d8617913b6812a",
+                "sha256:e662ac35c681f7942a93f2ec7b4cde8f8b56dd399da47a79fa3e370338521a56"
+            ],
+            "markers": "python_version >= '3.9'",
+            "version": "==1.39.4"
         },
         "cachetools": {
             "hashes": [
@@ -484,6 +501,14 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==3.1.6"
+        },
+        "jmespath": {
+            "hashes": [
+                "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980",
+                "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe"
+            ],
+            "markers": "python_version >= '3.7'",
+            "version": "==1.0.1"
         },
         "joblib": {
             "hashes": [
@@ -1272,6 +1297,14 @@
             ],
             "markers": "python_version >= '3.6' and python_version < '4'",
             "version": "==4.9.1"
+        },
+        "s3transfer": {
+            "hashes": [
+                "sha256:0148ef34d6dd964d0d8cf4311b2b21c474693e57c2e069ec708ce043d2b527be",
+                "sha256:f5e6db74eb7776a37208001113ea7aa97695368242b364d73e91c981ac522177"
+            ],
+            "markers": "python_version >= '3.9'",
+            "version": "==0.13.0"
         },
         "scikit-learn": {
             "hashes": [

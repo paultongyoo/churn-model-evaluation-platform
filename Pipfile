@@ -9,6 +9,7 @@ matplotlib = "*"
 seaborn = "*"
 mlflow = "*"
 xgboost = "*"
+boto3 = "*"
 
 [dev-packages]
 ipykernel = "*"
