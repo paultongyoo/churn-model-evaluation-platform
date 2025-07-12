@@ -37,7 +37,6 @@ variable "mlflow_db_password" {
 
 variable "my_ip" {
   description = "Your public IP in CIDR notation (e.g. '203.0.113.5/32')"
-  default     = "64.98.212.216/32" # Remove this before I make my REPO public!!
 }
 
 
