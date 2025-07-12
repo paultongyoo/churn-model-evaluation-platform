@@ -34,12 +34,19 @@ module "rds_postgres" {
     mlflow_db_password = var.mlflow_db_password
 }
 
+module "ecr" {
+    source = "./modules/ecr"
+    project_id = var.project_id
+    aws_region = var.aws_region
+}
+
 module "ecs_stack" {
     source = "./modules/ecs"
     project_id = var.project_id
     aws_region = var.aws_region
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
+    mlflow_image_uri = module.ecr.image_uri
     mlflow_db_username = var.mlflow_db_username
     mlflow_db_password = var.mlflow_db_password
     mlflow_db_endpoint = module.rds_postgres.endpoint

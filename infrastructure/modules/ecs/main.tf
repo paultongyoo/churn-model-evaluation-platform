@@ -54,6 +54,11 @@ resource "aws_iam_role_policy_attachment" "mlflow_logs_access" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "mlflow_ecr_access" {
+  role       = aws_iam_role.mlflow_task_exec_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
 resource "aws_cloudwatch_log_group" "mlflow_logs" {
   name              = "/ecs/${var.project_id}-mlflow"
   retention_in_days = 7 
@@ -71,7 +76,7 @@ resource "aws_ecs_task_definition" "mlflow" {
   container_definitions = jsonencode([
     {
       name      = "mlflow"
-      image     = var.mlflow_container_image
+      image     = var.mlflow_image_uri
       essential = true
       portMappings = [
         {
@@ -108,6 +113,7 @@ resource "aws_ecs_service" "mlflow" {
   task_definition = aws_ecs_task_definition.mlflow.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  force_new_deployment = true
 
   network_configuration {
     subnets          = var.subnet_ids

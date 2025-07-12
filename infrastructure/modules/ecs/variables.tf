@@ -18,10 +18,9 @@ variable "subnet_ids" {
   description = "List of subnet IDs in different AZs"
 }
 
-variable "mlflow_container_image" {
+variable "mlflow_image_uri" {
     description = "The Docker image for the MLflow container"
     type        = string
-    default     = "ghcr.io/mlflow/mlflow:v3.1.1"
 }
 
 variable "mlflow_db_username" {
