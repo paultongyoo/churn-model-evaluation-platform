@@ -5,3 +5,4 @@ ecr_image_tag.txt
 .env.bak
 mlflow.db
 mlruns/
+shap_summary_plot_*.png
