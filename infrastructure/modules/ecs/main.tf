@@ -50,9 +50,33 @@ resource "aws_iam_role" "mlflow_task_exec_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "mlflow_s3_access" {
+resource "aws_iam_policy" "mlflow_s3_limited_access" {
+  name = "${var.project_id}-mlflow-s3-access"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid: "AllowReadWriteToMlflowPrefix",
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        Resource = [
+          "arn:aws:s3:::${var.project_id}/mlflow/*",
+          "arn:aws:s3:::${var.project_id}"  # Required for ListBucket
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "mlflow_s3_policy_attachment" {
   role       = aws_iam_role.mlflow_task_exec_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  policy_arn = aws_iam_policy.mlflow_s3_limited_access.arn
 }
 
 resource "aws_iam_policy" "mlflow_logs_write" {
