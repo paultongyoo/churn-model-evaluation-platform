@@ -28,13 +28,8 @@ variable "db_username" {
   type        = string
 }
 
-variable "mlflow_db_endpoint" {
+variable "db_endpoint" {
   description = "RDS database endpoint"
-  type        = string
-}
-
-variable "db_name" {
-  description = "Name of the RDS database"
   type        = string
 }
 

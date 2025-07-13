@@ -18,11 +18,6 @@ variable "db_identifier" {
   type        = string
 }
 
-variable "db_name" {
-  description = "Name of the RDS database"
-  type        = string
-}
-
 variable "db_username" {
   description = "RDS database username"
   type        = string
@@ -31,4 +26,8 @@ variable "db_username" {
 variable "db_password" {
   description = "RDS database password"
   sensitive   = true
+}
+
+variable "my_ip" {
+  description = "Your public IP in CIDR notation (e.g. '203.0.113.5/32')"
 }

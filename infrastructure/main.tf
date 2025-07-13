@@ -29,9 +29,9 @@ module "rds_postgres" {
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
     db_identifier = "${var.project_id}-postgres"
-    db_name = var.db_name
     db_username = var.db_username
     db_password = var.db_password
+    my_ip = var.my_ip
 }
 
 module "ecr" {
@@ -49,8 +49,7 @@ module "ecs_stack" {
     mlflow_image_uri = module.ecr.image_uri
     db_username = var.db_username
     db_password = var.db_password
-    mlflow_db_endpoint = module.rds_postgres.endpoint
-    db_name = module.rds_postgres.db_name
+    db_endpoint = module.rds_postgres.endpoint
     my_ip = var.my_ip
     rds_sg_id = module.rds_postgres.sg_id
 }

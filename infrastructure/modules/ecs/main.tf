@@ -4,8 +4,8 @@ locals {
     account_id = data.aws_caller_identity.current_identity.account_id
 }
 
-resource "aws_security_group" "mlflow_ecs" {
-  name   = "${var.project_id}_mlflow_ecs_sg"
+resource "aws_security_group" "ecs_sg" {
+  name   = "${var.project_id}_ecs_sg"
   vpc_id = var.vpc_id
 
   egress {
@@ -22,7 +22,7 @@ resource "aws_security_group_rule" "ecs_to_rds" {
   to_port                  = 5432
   protocol                 = "tcp"
   security_group_id        = var.rds_sg_id
-  source_security_group_id = aws_security_group.mlflow_ecs.id
+  source_security_group_id = aws_security_group.ecs_sg.id
 }
 
 resource "aws_security_group_rule" "allow_my_ip_to_mlflow" {
@@ -30,7 +30,7 @@ resource "aws_security_group_rule" "allow_my_ip_to_mlflow" {
   from_port         = 5000
   to_port           = 5000
   protocol          = "tcp"
-  security_group_id = aws_security_group.mlflow_ecs.id
+  security_group_id = aws_security_group.ecs_sg.id
   cidr_blocks       = [var.my_ip]
   description       = "Allow MLflow access from my IP only"
 }
@@ -112,6 +112,10 @@ resource "aws_cloudwatch_log_group" "mlflow_logs" {
   retention_in_days = 7
 }
 
+resource "aws_ecs_cluster" "mlops_cluster" {
+  name = "${var.project_id}-mlops-cluster"
+}
+
 resource "aws_ecs_task_definition" "mlflow" {
   family                   = "mlflow"
   network_mode             = "awsvpc"
@@ -142,7 +146,7 @@ resource "aws_ecs_task_definition" "mlflow" {
       }
       command = [
         "mlflow", "server",
-        "--backend-store-uri", "postgresql://${var.db_username}:${var.db_password}@${var.mlflow_db_endpoint}/${var.db_name}",
+        "--backend-store-uri", "postgresql://${var.db_username}:${var.db_password}@${var.db_endpoint}/mlflow_db",
         "--default-artifact-root", "s3://${var.project_id}/mlflow/",
         "--host", "0.0.0.0",
         "--port", "5000"
@@ -151,13 +155,9 @@ resource "aws_ecs_task_definition" "mlflow" {
   ])
 }
 
-resource "aws_ecs_cluster" "mlflow_cluster" {
-  name = "${var.project_id}-mlflow-cluster"
-}
-
 resource "aws_ecs_service" "mlflow" {
   name            = "${var.project_id}-mlflow-service"
-  cluster         = aws_ecs_cluster.mlflow_cluster.id
+  cluster         = aws_ecs_cluster.mlops_cluster.id
   task_definition = aws_ecs_task_definition.mlflow.arn
   desired_count   = 1
   launch_type     = "FARGATE"
@@ -166,7 +166,7 @@ resource "aws_ecs_service" "mlflow" {
   network_configuration {
     subnets          = var.subnet_ids
     assign_public_ip = true
-    security_groups  = [aws_security_group.mlflow_ecs.id]
+    security_groups  = [aws_security_group.ecs_sg.id]
   }
 }
 
@@ -175,7 +175,7 @@ resource "null_resource" "get_mlflow_tracking_uri" {
     command = <<EOT
       set -e
 
-      CLUSTER_NAME="${var.project_id}-mlflow-cluster"
+      CLUSTER_NAME="${var.project_id}-mlops-cluster"
       SERVICE_NAME="${var.project_id}-mlflow-service"
       ENV_FILE="../.env"
       MAX_RETRIES=20
@@ -243,4 +243,187 @@ resource "null_resource" "get_mlflow_tracking_uri" {
   }
 
   depends_on = [aws_ecs_service.mlflow]
+}
+
+resource "aws_iam_role" "prefect_task_exec_role" {
+  name = "${var.project_id}-prefect-task-exec-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_ecs_task_definition" "prefect_server" {
+  family                   = "prefect-server"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = aws_iam_role.prefect_task_exec_role.arn
+  task_role_arn            = aws_iam_role.prefect_task_exec_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "prefect-server"
+      image     = "prefecthq/prefect:3.4.8-python3.9"
+      essential = true
+      environment = [
+        {
+          name  = "PREFECT_API_DATABASE_CONNECTION_URL"
+          value = "postgresql+asyncpg://${var.db_username}:${var.db_password}@${var.db_endpoint}/prefect_db"
+        },
+        {
+          name  = "PREFECT_UI_ENABLED"
+          value = "true"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project_id}-prefect",
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+      portMappings = [{
+        containerPort = 4200
+      }]
+      command   = ["prefect", "server", "start", "--host", "0.0.0.0"]
+    }
+  ])
+}
+
+resource "aws_iam_policy" "prefect_logs_write" {
+  name = "${var.project_id}-prefect-logs-write"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-prefect:log-stream:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "prefect_logs_write_attachment" {
+  role       = aws_iam_role.prefect_task_exec_role.name
+  policy_arn = aws_iam_policy.prefect_logs_write.arn
+}
+
+resource "aws_cloudwatch_log_group" "prefect_logs" {
+  name              = "/ecs/${var.project_id}-prefect"
+  retention_in_days = 7
+}
+
+resource "aws_ecs_service" "prefect" {
+  name            = "${var.project_id}-prefect-service"
+  cluster         = aws_ecs_cluster.mlops_cluster.id
+  task_definition = aws_ecs_task_definition.prefect_server.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  force_new_deployment = true
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_sg.id]
+  }
+}
+
+resource "aws_security_group_rule" "allow_my_ip_to_prefect" {
+  type              = "ingress"
+  from_port         = 4200
+  to_port           = 4200
+  protocol          = "tcp"
+  security_group_id = aws_security_group.ecs_sg.id
+  cidr_blocks       = [var.my_ip]
+  description       = "Allow Prefect access from my IP only"
+}
+
+resource "null_resource" "get_prefect_server_uri" {
+  provisioner "local-exec" {
+    command = <<EOT
+      set -e
+
+      CLUSTER_NAME="${var.project_id}-mlops-cluster"
+      SERVICE_NAME="${var.project_id}-prefect-service"
+      ENV_FILE="../.env"
+      MAX_RETRIES=20
+      SLEEP_SECONDS=5
+
+      # Wait for task
+      echo "Waiting for ECS task..."
+      i=1
+      while [ "$i" -le "$MAX_RETRIES" ]; do
+        TASK_ARN=$(aws ecs list-tasks --cluster "$CLUSTER_NAME" --service-name "$SERVICE_NAME" --desired-status RUNNING --query 'taskArns[0]' --output text)
+        if [ "$TASK_ARN" != "None" ] && [ -n "$TASK_ARN" ]; then
+          echo "Task found: $TASK_ARN"
+          break
+        fi
+        echo "Retry $i/$MAX_RETRIES: No running task yet..."
+        sleep "$SLEEP_SECONDS"
+        i=$((i + 1))
+      done
+
+      if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
+        echo "Timed out waiting for ECS task."
+        exit 1
+      fi
+
+      # Wait for ENI and public IP
+      echo "Waiting for ENI and Public IP..."
+      i=1
+      while [ "$i" -le "$MAX_RETRIES" ]; do
+        ENI_ID=$(aws ecs describe-tasks --cluster "$CLUSTER_NAME" --tasks "$TASK_ARN" \
+          --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
+
+        if [ -n "$ENI_ID" ] && [ "$ENI_ID" != "None" ]; then
+          PUBLIC_IP=$(aws ec2 describe-network-interfaces \
+            --network-interface-ids "$ENI_ID" \
+            --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
+
+          if [ -n "$PUBLIC_IP" ] && [ "$PUBLIC_IP" != "None" ]; then
+            echo "Public IP: $PUBLIC_IP"
+            break
+          fi
+        fi
+
+        echo "Retry $i/$MAX_RETRIES: Waiting for ENI/Public IP..."
+        sleep "$SLEEP_SECONDS"
+        i=$((i + 1))
+      done
+
+      if [ -z "$PUBLIC_IP" ] || [ "$PUBLIC_IP" = "None" ]; then
+        echo "Timed out waiting for public IP.  Rerun apply once public IP is available."
+        exit 1
+      fi
+
+      echo "Writing PREFECT_SERVER_URI to .env..."
+      PREFECT_SERVER_URI="http://$PUBLIC_IP:4200"
+
+      # Replace the line if it exists, otherwise append it
+      if grep -q "^PREFECT_SERVER_URI=" "$ENV_FILE"; then
+          sed -i.bak "s|^PREFECT_SERVER_URI=.*|PREFECT_SERVER_URI=$PREFECT_SERVER_URI|" "$ENV_FILE"
+      else
+          echo "PREFECT_SERVER_URI=$PREFECT_SERVER_URI" >> "$ENV_FILE"
+      fi
+
+      echo "PREFECT_SERVER_URI set to $PREFECT_SERVER_URI in $ENV_FILE"
+    EOT
+  }
+
+  depends_on = [aws_ecs_service.prefect]
 }

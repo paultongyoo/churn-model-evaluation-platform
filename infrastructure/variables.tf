@@ -20,11 +20,6 @@ variable "subnet_ids" {
   description = "List of subnet IDs in different AZs"
 }
 
-variable "db_name" {
-  description = "RDS database name.  Must be alphanumeric characters only."
-  type        = string
-}
-
 variable "db_username" {
   description = "RDS database username"
   type        = string
