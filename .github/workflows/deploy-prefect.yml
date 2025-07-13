@@ -1,0 +1,60 @@
+name: Build and Deploy Prefect Flow to ECR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'code/flows/**'  # Only trigger when flow code changes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-2
+      ECR_REPO_NAME: mlops-churn-prefect
+      IMAGE_TAG: latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin \
+          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
+
+      - name: Build Docker image
+        run: |
+          docker build -t $ECR_REPO_NAME:$IMAGE_TAG ./code/flows
+
+      - name: Tag image for ECR
+        run: |
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
+          docker tag $ECR_REPO_NAME:$IMAGE_TAG $IMAGE_URI
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - name: Push image to ECR
+        run: |
+          docker push $IMAGE_URI
+
+      - name: Set PREFECT_API_URL
+        run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> $GITHUB_ENV
+
+      - name: Install Prefect and Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install prefect
+
+      - name: Deploy flow to Prefect server
+        run: |
+          cd code/flows
+          prefect deploy --name hello-world --entrypoint hello_world.py:hello_world --image $IMAGE_URI
