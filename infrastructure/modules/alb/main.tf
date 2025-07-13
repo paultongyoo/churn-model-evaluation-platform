@@ -8,8 +8,11 @@ resource "aws_security_group" "alb_sg" {
     from_port   = 4200
     to_port     = 4200
     protocol    = "tcp"
-    cidr_blocks = ["${var.my_ip}/32"]
-    description = "Allow Prefect UI from my IP"
+    #cidr_blocks = ["${var.my_ip}/32"]
+
+    # Not for Production! Gives GitHub Actions access to deploy Prefect flows
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allows public access to Prefect UI"
   }
 
   ingress {
