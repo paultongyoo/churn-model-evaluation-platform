@@ -89,7 +89,8 @@ repos:
         pass_filenames: false
         always_run: true
         args: [
-          "code/tests/"
+          "code/flows/tests/",
+          "code/integration-tests/"
         ]
         additional_dependencies:
         - pytest
