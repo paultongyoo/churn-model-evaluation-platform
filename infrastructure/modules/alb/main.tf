@@ -52,7 +52,7 @@ resource "aws_lb_target_group" "mlflow" {
 }
 
 resource "aws_lb_target_group" "prefect" {
-  name        = "${var.project_id}-prefect-tg"
+  name        = "${var.project_id}-prefect"
   port        = 4200
   protocol    = "HTTP"
   vpc_id      = var.vpc_id

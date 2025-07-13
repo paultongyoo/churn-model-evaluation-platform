@@ -175,7 +175,7 @@ resource "aws_ecs_service" "mlflow" {
   }
 }
 
-resource "aws_iam_role" "prefect_task_exec_role" {
+resource "aws_iam_role" "prefect_server_task_exec_role" {
   name = "${var.project_id}-prefect-task-exec-role"
 
   assume_role_policy = jsonencode({
@@ -196,8 +196,8 @@ resource "aws_ecs_task_definition" "prefect_server" {
   network_mode             = "awsvpc"
   cpu                      = "512"
   memory                   = "1024"
-  execution_role_arn       = aws_iam_role.prefect_task_exec_role.arn
-  task_role_arn            = aws_iam_role.prefect_task_exec_role.arn
+  execution_role_arn       = aws_iam_role.prefect_server_task_exec_role.arn
+  task_role_arn            = aws_iam_role.prefect_server_task_exec_role.arn
 
   container_definitions = jsonencode([
     {
@@ -253,7 +253,7 @@ resource "aws_iam_policy" "prefect_logs_write" {
 }
 
 resource "aws_iam_role_policy_attachment" "prefect_logs_write_attachment" {
-  role       = aws_iam_role.prefect_task_exec_role.name
+  role       = aws_iam_role.prefect_server_task_exec_role.name
   policy_arn = aws_iam_policy.prefect_logs_write.arn
 }
 
