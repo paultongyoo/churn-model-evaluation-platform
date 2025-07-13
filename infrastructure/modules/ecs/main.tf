@@ -1,3 +1,9 @@
+data "aws_caller_identity" "current_identity" {}
+
+locals {
+    account_id = data.aws_caller_identity.current_identity.account_id
+}
+
 resource "aws_security_group" "mlflow_ecs" {
   name   = "${var.project_id}_mlflow_ecs_sg"
   vpc_id = var.vpc_id
@@ -49,9 +55,27 @@ resource "aws_iam_role_policy_attachment" "mlflow_s3_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
-resource "aws_iam_role_policy_attachment" "mlflow_logs_access" {
+resource "aws_iam_policy" "mlflow_logs_write" {
+  name = "${var.project_id}-mlflow-logs-write"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-mlflow:log-stream:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "mlflow_logs_write_attachment" {
   role       = aws_iam_role.mlflow_task_exec_role.name
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+  policy_arn = aws_iam_policy.mlflow_logs_write.arn
 }
 
 resource "aws_iam_role_policy_attachment" "mlflow_ecr_access" {
