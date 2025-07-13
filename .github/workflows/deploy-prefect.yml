@@ -57,4 +57,4 @@ jobs:
       - name: Deploy flow to Prefect server
         run: |
           cd code/flows
-          prefect deploy --name hello-world --entrypoint hello_world.py:hello_world --image $IMAGE_URI
+          prefect deploy --name --image $IMAGE_URI hello-world hello_world.py:hello_world
