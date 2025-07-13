@@ -38,11 +38,27 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "my_ip" {
-  description = "Your public IP in CIDR notation (e.g. '203.0.113.5/32')"
-}
-
 variable "rds_sg_id" {
   description = "Security group ID for the RDS instance"
+  type        = string
+}
+
+variable "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  type        = string
+}
+
+variable "prefect_target_group_arn" {
+  description = "ARN of the Prefect target group"
+  type        = string
+}
+
+variable "mlflow_target_group_arn" {
+  description = "ARN of the MLflow target group"
+  type        = string
+}
+
+variable "alb_sg_id" {
+  description = "Security group ID for the Application Load Balancer"
   type        = string
 }

@@ -25,14 +25,13 @@ resource "aws_security_group_rule" "ecs_to_rds" {
   source_security_group_id = aws_security_group.ecs_sg.id
 }
 
-resource "aws_security_group_rule" "allow_my_ip_to_mlflow" {
-  type              = "ingress"
-  from_port         = 5000
-  to_port           = 5000
-  protocol          = "tcp"
-  security_group_id = aws_security_group.ecs_sg.id
-  cidr_blocks       = [var.my_ip]
-  description       = "Allow MLflow access from my IP only"
+resource "aws_security_group_rule" "allow_alb_to_mlflow" {
+  type                     = "ingress"
+  from_port                = 5000
+  to_port                  = 5000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_sg.id
+  source_security_group_id = var.alb_sg_id
 }
 
 resource "aws_iam_role" "mlflow_task_exec_role" {
@@ -168,81 +167,12 @@ resource "aws_ecs_service" "mlflow" {
     assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
-}
 
-resource "null_resource" "get_mlflow_tracking_uri" {
-  provisioner "local-exec" {
-    command = <<EOT
-      set -e
-
-      CLUSTER_NAME="${var.project_id}-mlops-cluster"
-      SERVICE_NAME="${var.project_id}-mlflow-service"
-      ENV_FILE="../.env"
-      MAX_RETRIES=20
-      SLEEP_SECONDS=5
-
-      # Wait for task
-      echo "Waiting for ECS task..."
-      i=1
-      while [ "$i" -le "$MAX_RETRIES" ]; do
-        TASK_ARN=$(aws ecs list-tasks --cluster "$CLUSTER_NAME" --service-name "$SERVICE_NAME" --desired-status RUNNING --query 'taskArns[0]' --output text)
-        if [ "$TASK_ARN" != "None" ] && [ -n "$TASK_ARN" ]; then
-          echo "Task found: $TASK_ARN"
-          break
-        fi
-        echo "Retry $i/$MAX_RETRIES: No running task yet..."
-        sleep "$SLEEP_SECONDS"
-        i=$((i + 1))
-      done
-
-      if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
-        echo "Timed out waiting for ECS task."
-        exit 1
-      fi
-
-      # Wait for ENI and public IP
-      echo "Waiting for ENI and Public IP..."
-      i=1
-      while [ "$i" -le "$MAX_RETRIES" ]; do
-        ENI_ID=$(aws ecs describe-tasks --cluster "$CLUSTER_NAME" --tasks "$TASK_ARN" \
-          --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
-
-        if [ -n "$ENI_ID" ] && [ "$ENI_ID" != "None" ]; then
-          PUBLIC_IP=$(aws ec2 describe-network-interfaces \
-            --network-interface-ids "$ENI_ID" \
-            --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-
-          if [ -n "$PUBLIC_IP" ] && [ "$PUBLIC_IP" != "None" ]; then
-            echo "Public IP: $PUBLIC_IP"
-            break
-          fi
-        fi
-
-        echo "Retry $i/$MAX_RETRIES: Waiting for ENI/Public IP..."
-        sleep "$SLEEP_SECONDS"
-        i=$((i + 1))
-      done
-
-      if [ -z "$PUBLIC_IP" ] || [ "$PUBLIC_IP" = "None" ]; then
-        echo "Timed out waiting for public IP.  Rerun apply once public IP is available."
-        exit 1
-      fi
-
-      echo "Writing MLFLOW_TRACKING_URI to .env..."
-      MLFLOW_TRACKING_URI="http://$PUBLIC_IP:5000"
-
-      # Replace the line if it exists, otherwise append it
-      if grep -q "^MLFLOW_TRACKING_URI=" "$ENV_FILE"; then
-          sed -i.bak "s|^MLFLOW_TRACKING_URI=.*|MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI|" "$ENV_FILE"
-      else
-          echo "MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI" >> "$ENV_FILE"
-      fi
-
-      echo "MLFLOW_TRACKING_URI set to $MLFLOW_TRACKING_URI in $ENV_FILE"
-    EOT
+  load_balancer {
+    target_group_arn = var.mlflow_target_group_arn
+    container_name   = "mlflow"
+    container_port   = 5000
   }
-
-  depends_on = [aws_ecs_service.mlflow]
 }
 
 resource "aws_iam_role" "prefect_task_exec_role" {
@@ -282,6 +212,10 @@ resource "aws_ecs_task_definition" "prefect_server" {
         {
           name  = "PREFECT_UI_ENABLED"
           value = "true"
+        },
+        {
+          name  = "PREFECT_API_URL"
+          value = "http://${var.alb_dns_name}:4200/api"
         }
       ]
       logConfiguration = {
@@ -341,89 +275,19 @@ resource "aws_ecs_service" "prefect" {
     assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
-}
 
-resource "aws_security_group_rule" "allow_my_ip_to_prefect" {
-  type              = "ingress"
-  from_port         = 4200
-  to_port           = 4200
-  protocol          = "tcp"
-  security_group_id = aws_security_group.ecs_sg.id
-  cidr_blocks       = [var.my_ip]
-  description       = "Allow Prefect access from my IP only"
-}
-
-resource "null_resource" "get_prefect_server_uri" {
-  provisioner "local-exec" {
-    command = <<EOT
-      set -e
-
-      CLUSTER_NAME="${var.project_id}-mlops-cluster"
-      SERVICE_NAME="${var.project_id}-prefect-service"
-      ENV_FILE="../.env"
-      MAX_RETRIES=20
-      SLEEP_SECONDS=5
-
-      # Wait for task
-      echo "Waiting for ECS task..."
-      i=1
-      while [ "$i" -le "$MAX_RETRIES" ]; do
-        TASK_ARN=$(aws ecs list-tasks --cluster "$CLUSTER_NAME" --service-name "$SERVICE_NAME" --desired-status RUNNING --query 'taskArns[0]' --output text)
-        if [ "$TASK_ARN" != "None" ] && [ -n "$TASK_ARN" ]; then
-          echo "Task found: $TASK_ARN"
-          break
-        fi
-        echo "Retry $i/$MAX_RETRIES: No running task yet..."
-        sleep "$SLEEP_SECONDS"
-        i=$((i + 1))
-      done
-
-      if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
-        echo "Timed out waiting for ECS task."
-        exit 1
-      fi
-
-      # Wait for ENI and public IP
-      echo "Waiting for ENI and Public IP..."
-      i=1
-      while [ "$i" -le "$MAX_RETRIES" ]; do
-        ENI_ID=$(aws ecs describe-tasks --cluster "$CLUSTER_NAME" --tasks "$TASK_ARN" \
-          --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
-
-        if [ -n "$ENI_ID" ] && [ "$ENI_ID" != "None" ]; then
-          PUBLIC_IP=$(aws ec2 describe-network-interfaces \
-            --network-interface-ids "$ENI_ID" \
-            --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-
-          if [ -n "$PUBLIC_IP" ] && [ "$PUBLIC_IP" != "None" ]; then
-            echo "Public IP: $PUBLIC_IP"
-            break
-          fi
-        fi
-
-        echo "Retry $i/$MAX_RETRIES: Waiting for ENI/Public IP..."
-        sleep "$SLEEP_SECONDS"
-        i=$((i + 1))
-      done
-
-      if [ -z "$PUBLIC_IP" ] || [ "$PUBLIC_IP" = "None" ]; then
-        echo "Timed out waiting for public IP.  Rerun apply once public IP is available."
-        exit 1
-      fi
-
-      echo "Writing PREFECT_SERVER_URI to .env..."
-      PREFECT_SERVER_URI="http://$PUBLIC_IP:4200"
-
-      # Replace the line if it exists, otherwise append it
-      if grep -q "^PREFECT_SERVER_URI=" "$ENV_FILE"; then
-          sed -i.bak "s|^PREFECT_SERVER_URI=.*|PREFECT_SERVER_URI=$PREFECT_SERVER_URI|" "$ENV_FILE"
-      else
-          echo "PREFECT_SERVER_URI=$PREFECT_SERVER_URI" >> "$ENV_FILE"
-      fi
-
-      echo "PREFECT_SERVER_URI set to $PREFECT_SERVER_URI in $ENV_FILE"
-    EOT
+  load_balancer {
+    target_group_arn = var.prefect_target_group_arn
+    container_name   = "prefect-server"
+    container_port   = 4200
   }
+}
 
-  depends_on = [aws_ecs_service.prefect]
+resource "aws_security_group_rule" "allow_alb_to_prefect" {
+  type                     = "ingress"
+  from_port                = 4200
+  to_port                  = 4200
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_sg.id
+  source_security_group_id = var.alb_sg_id
 }

@@ -50,6 +50,18 @@ module "ecs_stack" {
     db_username = var.db_username
     db_password = var.db_password
     db_endpoint = module.rds_postgres.endpoint
-    my_ip = var.my_ip
+    #my_ip = var.my_ip
     rds_sg_id = module.rds_postgres.sg_id
+    alb_dns_name = module.alb.alb_dns_name
+    alb_sg_id = module.alb.alb_sg_id
+    prefect_target_group_arn = module.alb.prefect_target_group_arn
+    mlflow_target_group_arn = module.alb.mlflow_target_group_arn
+}
+
+module "alb" {
+  source     = "./modules/alb"
+  project_id = var.project_id
+  vpc_id     = var.vpc_id
+  subnet_ids = var.subnet_ids
+  my_ip = var.my_ip
 }
