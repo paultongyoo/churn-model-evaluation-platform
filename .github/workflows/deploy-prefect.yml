@@ -52,6 +52,8 @@ jobs:
         working-directory: ./code/flows
         run: python update_prefect_yaml.py "$IMAGE_URI"
 
+      # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
+      # Not recommended for production environments!
       - name: Deploy to Prefect Server
         working-directory: ./code/flows
         run: prefect deploy --name default
