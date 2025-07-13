@@ -12,7 +12,7 @@ jobs:
 
     env:
       AWS_REGION: us-east-2
-      ECR_REPO_NAME: mlops-churn-prefect
+      ECR_REPO_NAME: mlops-churn-pipeline-prefect
       IMAGE_TAG: latest
 
     steps:

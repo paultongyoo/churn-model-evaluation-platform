@@ -1,3 +1,9 @@
+resource "aws_ecr_repository" "prefect" {
+  name                 = "${var.project_id}-prefect"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+}
+
 resource "aws_ecr_repository" "mlflow" {
   name                 = "${var.project_id}-mlflow"
   image_tag_mutability = "MUTABLE"
