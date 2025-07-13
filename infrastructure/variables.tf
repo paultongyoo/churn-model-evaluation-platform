@@ -38,5 +38,3 @@ variable "db_password" {
 variable "my_ip" {
   description = "Your public IP in CIDR notation (e.g. '203.0.113.5/32')"
 }
-
-

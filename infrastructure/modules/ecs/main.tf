@@ -109,7 +109,7 @@ resource "aws_iam_role_policy_attachment" "mlflow_ecr_access" {
 
 resource "aws_cloudwatch_log_group" "mlflow_logs" {
   name              = "/ecs/${var.project_id}-mlflow"
-  retention_in_days = 7 
+  retention_in_days = 7
 }
 
 resource "aws_ecs_task_definition" "mlflow" {
@@ -242,5 +242,5 @@ resource "null_resource" "get_mlflow_tracking_uri" {
     EOT
   }
 
-  depends_on = [aws_ecs_service.mlflow] 
+  depends_on = [aws_ecs_service.mlflow]
 }

@@ -32,4 +32,3 @@ variable "db_password" {
   description = "RDS database password"
   sensitive   = true
 }
-

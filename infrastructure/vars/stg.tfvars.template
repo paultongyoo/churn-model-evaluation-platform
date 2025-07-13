@@ -4,7 +4,7 @@ db_username=<Postgres DB Username>
 db_password=<Postgres DB Password>
 db_name=<Postgres DB Name>
 subnet_ids = [  # Must contain at least two PUBLIC subnets from DIFFERENT AZs
-  "subnet-1234", 
+  "subnet-1234",
   "subnet-5678",
 ]
 my_ip=<Your IP Address>
