@@ -20,7 +20,7 @@ pull:
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
 - name: default
-  entrypoint: hello_world.py:hello_world
+  entrypoint: churn_prediction_pipeline.py:churn_prediction_pipeline
   work_pool:
     name: mlops-churn-pipeline-pool
   infrastructure:
