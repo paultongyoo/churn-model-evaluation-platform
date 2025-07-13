@@ -34,6 +34,8 @@ resource "aws_security_group_rule" "allow_alb_to_mlflow" {
   source_security_group_id = var.alb_sg_id
 }
 
+######### MLflow ECS Task and Service #########
+
 resource "aws_iam_role" "mlflow_task_exec_role" {
   name = "${var.project_id}-mlflow-task-exec-role"
 
@@ -175,6 +177,9 @@ resource "aws_ecs_service" "mlflow" {
   }
 }
 
+
+######### Prefect Server ECS Task and Service #########
+
 resource "aws_iam_role" "prefect_server_task_exec_role" {
   name = "${var.project_id}-prefect-task-exec-role"
 
@@ -290,4 +295,95 @@ resource "aws_security_group_rule" "allow_alb_to_prefect" {
   protocol                 = "tcp"
   security_group_id        = aws_security_group.ecs_sg.id
   source_security_group_id = var.alb_sg_id
+}
+
+######### Prefect Worker ECS Task and Service #########
+
+resource "aws_iam_role" "prefect_worker_task_exec_role" {
+  name = "${var.project_id}-prefect-worker-task-exec-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_ecs_task_definition" "prefect_worker" {
+  family                   = "mlops-prefect-worker"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+  network_mode             = "awsvpc"
+  execution_role_arn       = aws_iam_role.prefect_worker_task_exec_role.arn
+  task_role_arn            = aws_iam_role.prefect_worker_task_exec_role.arn
+
+  container_definitions = jsonencode([{
+    name      = "prefect-worker",
+    image     = "prefecthq/prefect:3.4.8-python3.9",  # Will be replaced with Prefect flow image by CI/CD
+    essential = true,
+    command   = ["prefect", "worker", "start", "--pool", "${var.project_id}-pool"],
+    environment = [
+      {
+        name  = "PREFECT_API_URL",
+        value = "http://${var.alb_dns_name}:4200/api"
+      }
+    ],
+    logConfiguration = {
+      logDriver = "awslogs",
+      options = {
+        awslogs-group         = "/ecs/${var.project_id}-prefect-worker",
+        awslogs-region        = var.aws_region,
+        awslogs-stream-prefix = "ecs"
+      }
+    }
+  }])
+}
+
+resource "aws_ecs_service" "prefect_worker" {
+  name            = "${var.project_id}-prefect-worker-service"
+  cluster         = aws_ecs_cluster.mlops_cluster.id
+  task_definition = aws_ecs_task_definition.prefect_worker.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  force_new_deployment = true
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_sg.id]
+  }
+}
+
+resource "aws_iam_policy" "prefect_worker_logs_write" {
+  name = "${var.project_id}-prefect-worker-logs-write"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-prefect-worker:log-stream:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "prefect_worker_logs_write_attachment" {
+  role       = aws_iam_role.prefect_worker_task_exec_role.name
+  policy_arn = aws_iam_policy.prefect_worker_logs_write.arn
+}
+
+resource "aws_cloudwatch_log_group" "prefect_worker_logs" {
+  name              = "/ecs/${var.project_id}-prefect-worker"
+  retention_in_days = 7
 }
