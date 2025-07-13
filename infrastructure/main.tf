@@ -18,12 +18,6 @@ provider "aws" {
     region = var.aws_region
 }
 
-data "aws_caller_identity" "current_identity" {}
-
-locals {
-    account_id = data.aws_caller_identity.current_identity.account_id
-}
-
 module "s3_bucket" {
     source = "./modules/s3"
     bucket_name = "${var.project_id}"
