@@ -10,9 +10,12 @@ resource "aws_security_group" "alb_sg" {
     protocol    = "tcp"
     #cidr_blocks = ["${var.my_ip}/32"]
 
-    # Not for Production! Gives GitHub Actions access to deploy Prefect flows
+    # Gives GitHub Actions access to deploy Prefect flows
+    # Not recommended for production environments!
+    # Production approach would be to inject GitHub Actions IPs from the official list
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Allows public access to Prefect UI"
+
+    description = "Allows public access (incl GitHub Actions) to Prefect UI/API"
   }
 
   ingress {
