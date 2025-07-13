@@ -3,7 +3,7 @@
 from prefect import flow
 
 
-@flow
+@flow(log_prints=True)
 def hello_world():
     """
     A simple flow that prints "Hello, World!".
