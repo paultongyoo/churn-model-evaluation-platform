@@ -50,7 +50,7 @@ jobs:
 
       - name: Inject ECR image URI into prefect.yaml
         working-directory: ./code/flows
-        run: python -c update_prefect_yaml.py $IMAGE_URI
+        run: python update_prefect_yaml.py "$IMAGE_URI"
 
       - name: Deploy to Prefect Server
         working-directory: ./code/flows
