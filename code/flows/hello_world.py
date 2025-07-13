@@ -6,6 +6,6 @@ from prefect import flow
 @flow
 def hello_world():
     """
-    A simple flow that prints "Hello, World!".
+    A simple Prefect flow that prints "Hello, World!".
     """
     print("Hello, World!")

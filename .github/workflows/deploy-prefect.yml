@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'code/flows/**'  # Only trigger when flow code changes
+      - 'code/flows/**'
 
 jobs:
   deploy:
@@ -27,34 +27,47 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Log in to Amazon ECR
-        id: login-ecr
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin \
+          aws ecr get-login-password --region $AWS_REGION \
+          | docker login --username AWS --password-stdin \
           ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
 
-      - name: Build Docker image
-        run: |
-          docker build -t $ECR_REPO_NAME:$IMAGE_TAG ./code/flows
-
-      - name: Tag image for ECR
+      - name: Build and push Docker image
+        working-directory: ./code/flows
         run: |
           IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
-          docker tag $ECR_REPO_NAME:$IMAGE_TAG $IMAGE_URI
-          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-
-      - name: Push image to ECR
-        run: |
+          docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
       - name: Set PREFECT_API_URL
         run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> $GITHUB_ENV
 
-      - name: Install Prefect and Dependencies
+      - name: Install Prefect
         run: |
           pip install --upgrade pip
-          pip install prefect
+          pip install prefect pyyaml
 
-      - name: Deploy flow to Prefect server
+      - name: Inject ECR image URI into prefect.yaml
+        working-directory: ./code/flows
         run: |
-          cd code/flows
-          prefect deploy --name default --override image=$IMAGE_URI
+          python -c "
+            import yaml
+
+            with open('prefect.yaml') as f:
+                config = yaml.safe_load(f)
+
+            for deployment in config.get('deployments', []):
+                deployment['infrastructure'] = {
+                    'type': 'docker-container',
+                    'image': '${{ env.IMAGE_URI }}',
+                    'stream_output': True
+                }
+
+            with open('prefect.yaml', 'w') as f:
+                yaml.dump(config, f, sort_keys=False)
+            "
+
+      - name: Deploy to Prefect Server
+        working-directory: ./code/flows
+        run: prefect deploy --name default
