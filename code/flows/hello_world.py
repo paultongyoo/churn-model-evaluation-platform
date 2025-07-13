@@ -9,3 +9,8 @@ def hello_world():
     A simple flow that prints "Hello, World!".
     """
     print("Hello, World!")
+
+
+# If this script is run directly, execute the hello_world flow
+if __name__ == "__main__":
+    hello_world()
