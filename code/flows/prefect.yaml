@@ -1,0 +1,29 @@
+# Welcome to your prefect.yaml file! You can use this file for storing and managing
+# configuration for deploying your flows. We recommend committing this file to source
+# control along with your flow code.
+
+# Generic metadata about this project
+name: flows
+prefect-version: 3.4.8
+
+# build section allows you to manage and build docker images
+build: null
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push: null
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+- prefect.deployments.steps.set_working_directory:
+    directory: /home/pt7481/mlops-churn-pipeline/code/flows
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+- name: default
+  entrypoint: hello_world.py:hello_world
+  work_pool:
+    name: mlops-churn-pipeline-pool
+  infrastructure:
+    type: docker-container
+    stream_output: true
+    # image URI will be injected by the deployment process
