@@ -6,3 +6,4 @@ ecr_image_tag.txt
 mlflow.db
 mlruns/
 shap_summary_plot_*.png
+__pycache__/
