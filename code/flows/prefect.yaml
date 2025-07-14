@@ -13,7 +13,9 @@ build: null
 push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
-pull: null
+pull:
+- prefect.deployments.steps.set_working_directory:
+    directory: /opt/prefect/flows
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
