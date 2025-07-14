@@ -24,7 +24,4 @@ deployments:
   work_pool:
     name: mlops-churn-pipeline-pool
   infrastructure:
-    type: docker-container
-    stream_output: true
-    working_dir: /opt/prefect/flows
     # image URI will be injected by the deployment process

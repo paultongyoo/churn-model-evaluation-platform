@@ -18,6 +18,7 @@ for deployment in config.get("deployments", []):
         "type": "docker-container",
         "image": image_uri,
         "stream_output": True,
+        "working_dir": "/opt/prefect/flows",
     }
 
 with open("prefect.yaml", "w", encoding="utf-8") as f:
