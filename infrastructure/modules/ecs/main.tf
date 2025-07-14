@@ -318,58 +318,22 @@ resource "aws_ecs_task_definition" "prefect_worker" {
     name      = "prefect-worker",
     image     = "prefecthq/prefect:3.4.8-python3.9",
     essential = true,
-command = [
-  "/bin/sh",
-  "-c",
-  <<-EOT
-    set -e
-    pip install prefect-aws
+    command = [
+      "/bin/bash",
+      "-c",
+      <<-EOF
+      apt-get update && apt-get install -y jq;
+      pip install prefect-aws;
 
-    cat <<EOF > base-job-template.json
-{
-  "variables": {
-    "type": "object",
-    "properties": {
-      "execution_role_arn": {
-        "anyOf": [
-          { "type": "string" },
-          { "type": "null" }
-        ],
-        "title": "Execution Role ARN",
-        "default": "${aws_iam_role.prefect_worker_task_exec_role.arn}",
-        "description": "An execution role to use for the task. This controls the permissions of the task when it is launching. If this value is not null, it will override the value in the task definition. An execution role must be provided to capture logs from the container."
-      },
-      "task_role_arn": {
-        "anyOf": [
-          { "type": "string" },
-          { "type": "null" }
-        ],
-        "title": "Task Role ARN",
-        "default": "${aws_iam_role.prefect_worker_task_exec_role.arn}",
-        "description": "A role to attach to the task run. This controls the permissions of the task while it is running."
-      }
-    },
-    "description": "Variables for templating an ECS job."
-  },
-  "job_configuration": {
-    "task_definition": {
-      "executionRoleArn": "{{ execution_role_arn }}"
-    },
-    "task_run_request": {
-      "overrides": {
-        "taskRoleArn": "{{ task_role_arn }}"
-      }
-    },
-    "execution_role_arn": "{{ execution_role_arn }}"
-  }
-}
-EOF
+      prefect work-pool get-default-base-job-template --type ecs > template.json;
 
-    prefect work-pool create --type ecs --overwrite ${var.project_id}-pool --base-job-template base-job-template.json
+      jq --arg role_arn "${aws_iam_role.prefect_worker_task_exec_role.arn}" --arg cluster "${var.project_id}-cluster" '.variables.properties.task_role_arn.default = $role_arn | .variables.properties.execution_role_arn.default = $role_arn | .variables.properties.cluster.default = $cluster' template.json > tmp.json && mv tmp.json template.json;
 
-    prefect worker start --pool ${var.project_id}-pool
-  EOT
-],
+      prefect work-pool delete ${var.project_id}-pool;
+      prefect work-pool create --type ecs ${var.project_id}-pool --base-job-template=template.json;
+      prefect worker start --pool ${var.project_id}-pool --type ecs;
+      EOF
+    ]
     environment = [
       {
         name  = "PREFECT_API_URL",
