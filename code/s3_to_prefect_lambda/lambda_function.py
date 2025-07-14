@@ -31,17 +31,18 @@ def lambda_handler(event, context):
         bucket = s3["bucket"]["name"]
         key = s3["object"]["key"]
 
-        payload = {"bucket": bucket, "key": key}
+        payload = {"parameters": {"bucket": bucket, "key": key}}
         deployment_id = get_deployment_id()
 
-        print("TODO: Trigger Prefect flow with:")
-        print("Payload: ", payload)
-        print("Deployment ID: ", deployment_id)
+        print(f"Triggering Prefect flow for bucket: {bucket}, key: {key}")
+        print(f"Using deployment ID: {deployment_id}")
 
-        # prefect_url = os.environ["PREFECT_TRIGGER_URL"]
-        # response = http.request("POST", prefect_url, body=json.dumps(payload),
-        # headers={"Content-Type": "application/json"})
-        # print("Prefect response:", response.status)
+        prefect_trigger_url = (
+            f"{prefect_api_url}/deployments/{deployment_id}/create_flow_run"
+        )
+        response = requests.post(prefect_trigger_url, json=payload, timeout=60)
+
+        print("Prefect response:", response.status_code, response.text)
 
     return {"statusCode": 200}
 
