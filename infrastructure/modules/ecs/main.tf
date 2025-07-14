@@ -399,7 +399,8 @@ resource "aws_iam_policy" "prefect_worker_additional_permissions" {
           "ecs:DescribeTasks",
           "ecs:RunTask",
           "ecs:StopTask",
-          "ecs:TagResource"
+          "ecs:TagResource",
+          "iam:PassRole",
         ],
         Resource = "*"
       }
