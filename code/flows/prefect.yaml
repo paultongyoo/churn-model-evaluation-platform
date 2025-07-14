@@ -7,7 +7,7 @@ build:
     requires: prefect-docker>=0.3.1
     image_name:  # Set by GitHub Actions
     tag:  # Set by GitHub Actions
-    dockerfile: auto
+    dockerfile: "Dockerfile"
 
 push:
 - prefect_docker.deployments.steps.push_docker_image:
