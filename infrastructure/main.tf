@@ -32,6 +32,7 @@ module "rds_postgres" {
     db_username = var.db_username
     db_password = var.db_password
     my_ip = var.my_ip
+    ecs_sg_id = module.ecs_stack.ecs_sg_id
 }
 
 module "ecr" {
