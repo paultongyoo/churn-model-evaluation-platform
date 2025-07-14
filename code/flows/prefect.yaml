@@ -25,5 +25,5 @@ deployments:
   work_pool:
     name: mlops-churn-pipeline-pool
     job_variables:
-      cluster: mlops-churn-pipeline-cluster
+      #cluster: mlops-churn-pipeline-cluster
       image: '{{ build_image.image }}'

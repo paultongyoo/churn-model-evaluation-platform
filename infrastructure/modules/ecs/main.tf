@@ -318,11 +318,58 @@ resource "aws_ecs_task_definition" "prefect_worker" {
     name      = "prefect-worker",
     image     = "prefecthq/prefect:3.4.8-python3.9",
     essential = true,
-    command   = [
-        "/bin/sh",
-        "-c",
-        "pip install prefect-aws && prefect worker start --pool ${var.project_id}-pool --type ecs"
-    ],
+command = [
+  "/bin/sh",
+  "-c",
+  <<-EOT
+    set -e
+    pip install prefect-aws
+
+    cat <<EOF > base-job-template.json
+{
+  "variables": {
+    "type": "object",
+    "properties": {
+      "execution_role_arn": {
+        "anyOf": [
+          { "type": "string" },
+          { "type": "null" }
+        ],
+        "title": "Execution Role ARN",
+        "default": "${aws_iam_role.prefect_worker_task_exec_role.arn}",
+        "description": "An execution role to use for the task. This controls the permissions of the task when it is launching. If this value is not null, it will override the value in the task definition. An execution role must be provided to capture logs from the container."
+      },
+      "task_role_arn": {
+        "anyOf": [
+          { "type": "string" },
+          { "type": "null" }
+        ],
+        "title": "Task Role ARN",
+        "default": "${aws_iam_role.prefect_worker_task_exec_role.arn}",
+        "description": "A role to attach to the task run. This controls the permissions of the task while it is running."
+      }
+    },
+    "description": "Variables for templating an ECS job."
+  },
+  "job_configuration": {
+    "task_definition": {
+      "executionRoleArn": "{{ execution_role_arn }}"
+    },
+    "task_run_request": {
+      "overrides": {
+        "taskRoleArn": "{{ task_role_arn }}"
+      }
+    },
+    "execution_role_arn": "{{ execution_role_arn }}"
+  }
+}
+EOF
+
+    prefect work-pool create --type ecs --overwrite ${var.project_id}-pool --base-job-template base-job-template.json
+
+    prefect worker start --pool ${var.project_id}-pool
+  EOT
+],
     environment = [
       {
         name  = "PREFECT_API_URL",
