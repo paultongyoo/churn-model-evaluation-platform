@@ -23,3 +23,8 @@ def churn_prediction_pipeline():
     # preprocessed_data = preprocess_data(data)
     # model = train_model(preprocessed_data)
     # evaluate_model(model, preprocessed_data)
+
+
+if __name__ == "__main__":
+    # This allows the flow to be run directly for testing purposes
+    churn_prediction_pipeline()
