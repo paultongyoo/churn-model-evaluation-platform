@@ -47,7 +47,7 @@ module "ecs_stack" {
     aws_region = var.aws_region
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
-    mlflow_image_uri = module.ecr.image_uri
+    mlflow_image_uri = module.ecr.mlflow_image_uri
     db_username = var.db_username
     db_password = var.db_password
     db_endpoint = module.rds_postgres.endpoint
@@ -65,4 +65,12 @@ module "alb" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
   my_ip = var.my_ip
+}
+
+module "s3_to_prefect_lambda" {
+    source = "./modules/s3-to-prefect-lambda"
+    project_id = var.project_id
+    bucket_arn = module.s3_bucket.bucket_arn
+    bucket_id = module.s3_bucket.bucket_id
+    s3_to_prefect_lambda_image_uri = module.ecr.s3_to_prefect_lambda_image_uri
 }
