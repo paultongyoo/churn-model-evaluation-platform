@@ -51,14 +51,6 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Set PREFECT_API_URL
-        run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> $GITHUB_ENV
-
-      # - name: Install Prefect
-      #   run: |
-      #     pip install --upgrade pip
-      #     pip install prefect pyyaml
-
       - name: Inject IMAGE_NAME and IMAGE_TAG into prefect.yaml
         working-directory: ./code/flows
         run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG"
@@ -66,6 +58,14 @@ jobs:
       - name: Show updated prefect.yaml
         working-directory: ./code/flows
         run: cat prefect.yaml
+
+      - name: Install Prefect
+        run: |
+          pip install --upgrade pip
+          pip install prefect pyyaml
+
+      - name: Set PREFECT_API_URL
+        run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> $GITHUB_ENV
 
       # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
       # to ECS Prefect Server.  Not recommended for production environments!
