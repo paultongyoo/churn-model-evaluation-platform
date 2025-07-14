@@ -4,7 +4,7 @@ import sys
 
 import yaml
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
     print("Usage: python update_prefect_yaml.py <IMAGE_NAME> <IMAGE_TAG>")
     sys.exit(1)
 
