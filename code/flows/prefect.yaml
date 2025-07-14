@@ -1,27 +1,28 @@
-# Welcome to your prefect.yaml file! You can use this file for storing and managing
-# configuration for deploying your flows. We recommend committing this file to source
-# control along with your flow code.
-
-# Generic metadata about this project
 name: flows
 prefect-version: 3.4.8
 
-# build section allows you to manage and build docker images
-build: null
+build:
+- prefect_docker.deployments.steps.build_docker_image:
+    id: build_image
+    requires: prefect-docker>=0.3.1
+    image_name:  # Set by GitHub Actions
+    tag:  # Set by GitHub Actions
+    dockerfile: auto
 
-# push section allows you to manage if and how this project is uploaded to remote locations
-push: null
+push:
+- prefect_docker.deployments.steps.push_docker_image:
+    requires: prefect-docker>=0.3.1
+    image_name: '{{ build_image.image_name }}'
+    tag: '{{ build_image.tag }}'
 
-# pull section allows you to provide instructions for cloning this project in remote locations
 pull:
 - prefect.deployments.steps.set_working_directory:
     directory: /opt/prefect/flows
 
-# the deployments section allows you to provide configuration for deploying flows
 deployments:
 - name: default
   entrypoint: churn_prediction_pipeline.py:churn_prediction_pipeline
   work_pool:
     name: mlops-churn-pipeline-pool
-  infrastructure:
-    # image URI will be injected by the deployment process
+    image: '{{ build_image.image }}'
+  schedules: []

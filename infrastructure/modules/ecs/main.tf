@@ -318,7 +318,11 @@ resource "aws_ecs_task_definition" "prefect_worker" {
     name      = "prefect-worker",
     image     = "prefecthq/prefect:3.4.8-python3.9",  # Will be replaced with Prefect flow image by CI/CD
     essential = true,
-    command   = ["prefect", "worker", "start", "--pool", "${var.project_id}-pool"],
+    command   = [
+        "/bin/sh",
+        "-c",
+        "pip install prefect-aws && prefect worker start --pool ${var.project_id}-pool --type ecs"
+    ],
     environment = [
       {
         name  = "PREFECT_API_URL",

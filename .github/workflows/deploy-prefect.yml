@@ -25,39 +25,50 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Log in to Amazon ECR
-        run: |
-          aws ecr get-login-password --region $AWS_REGION \
-          | docker login --username AWS --password-stdin \
-          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build and push Docker image
-        working-directory: ./code/flows
+      # - name: Log in to Amazon ECR
+      #   run: |
+      #     aws ecr get-login-password --region $AWS_REGION \
+      #     | docker login --username AWS --password-stdin \
+      #     ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
+
+      # - name: Build and push Docker image
+      #   working-directory: ./code/flows
+      #   run: |
+      #     IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+      #     IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
+      #     docker build -t $IMAGE_URI .
+      #     docker push $IMAGE_URI
+      #     echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - name: Set IMAGE_NAME and IMAGE TAG
         run: |
           IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
-          docker build -t $IMAGE_URI .
-          docker push $IMAGE_URI
-          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+          IMAGE_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Set PREFECT_API_URL
         run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> $GITHUB_ENV
 
-      - name: Install Prefect
-        run: |
-          pip install --upgrade pip
-          pip install prefect pyyaml
+      # - name: Install Prefect
+      #   run: |
+      #     pip install --upgrade pip
+      #     pip install prefect pyyaml
 
-      - name: Inject ECR image URI into prefect.yaml
+      - name: Inject IMAGE_NAME and IMAGE_TAG into prefect.yaml
         working-directory: ./code/flows
-        run: python update_prefect_yaml.py "$IMAGE_URI"
+        run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG"
 
       - name: Show updated prefect.yaml
         working-directory: ./code/flows
         run: cat prefect.yaml
 
       # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
-      # Not recommended for production environments!
+      # to ECS Prefect Server.  Not recommended for production environments!
       - name: Deploy to Prefect Server
         working-directory: ./code/flows
-        run: prefect deploy --name default
+        run: prefect --no-prompt deploy --all
