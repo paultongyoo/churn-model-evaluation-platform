@@ -56,6 +56,7 @@ resource "aws_ecr_repository" "s3_to_prefect_lambda" {
 resource "null_resource" "build_and_push_s3_to_prefect_lambda_image" {
     triggers = {
         docker_file = md5(file("../code/s3_to_prefect_lambda/Dockerfile"))
+        force_rebuild = timestamp()  # <- this forces rebuild every apply
     }
 
     provisioner "local-exec" {

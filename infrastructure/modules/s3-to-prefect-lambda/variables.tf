@@ -18,3 +18,8 @@ variable "s3_to_prefect_lambda_image_uri" {
     description = "The URI of the S3 to Prefect Lambda image in ECR"
     type        = string
 }
+
+variable "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  type        = string
+}

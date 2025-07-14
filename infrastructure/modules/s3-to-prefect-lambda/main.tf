@@ -25,6 +25,12 @@ resource "aws_lambda_function" "prefect_trigger" {
     timeout       = 60
     package_type    = "Image"
     image_uri       = var.s3_to_prefect_lambda_image_uri
+
+  environment {
+    variables = {
+      PREFECT_API_URL = "http://${var.alb_dns_name}:4200/api"
+    }
+  }
 }
 
 resource "aws_lambda_permission" "allow_s3" {
