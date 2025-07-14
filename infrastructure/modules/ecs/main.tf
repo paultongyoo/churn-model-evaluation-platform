@@ -105,7 +105,7 @@ resource "aws_cloudwatch_log_group" "mlflow_logs" {
 }
 
 resource "aws_ecs_cluster" "mlops_cluster" {
-  name = "${var.project_id}-mlops-cluster"
+  name = "${var.project_id}-cluster"
 }
 
 resource "aws_ecs_task_definition" "mlflow" {
