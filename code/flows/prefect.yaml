@@ -13,9 +13,7 @@ build: null
 push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
-pull:
-- prefect.deployments.steps.set_working_directory:
-    directory: /home/pt7481/mlops-churn-pipeline/code/flows
+pull: null
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
