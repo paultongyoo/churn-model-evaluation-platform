@@ -316,7 +316,7 @@ resource "aws_ecs_task_definition" "prefect_worker" {
 
   container_definitions = jsonencode([{
     name      = "prefect-worker",
-    image     = "prefecthq/prefect:3.4.8-python3.9",  # Will be replaced with Prefect flow image by CI/CD
+    image     = "prefecthq/prefect:3.4.8-python3.9",
     essential = true,
     command   = [
         "/bin/sh",
