@@ -21,8 +21,8 @@ resource "null_resource" "build_and_push_mlflow_image" {
         command = <<EOT
             set -e
 
-            echo "Generating SHA tag..."
-            IMAGE_TAG=$(git rev-parse --short HEAD)
+            echo "Generating Image tag..."
+            IMAGE_TAG=$(date -u +"%Y%m%dT%H%M%SZ")
 
             echo "Logging in to ECR..."
             aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.mlflow.repository_url}
@@ -56,15 +56,15 @@ resource "aws_ecr_repository" "s3_to_prefect_lambda" {
 resource "null_resource" "build_and_push_s3_to_prefect_lambda_image" {
     triggers = {
         docker_file = md5(file("../code/s3_to_prefect_lambda/Dockerfile"))
-        force_rebuild = timestamp()  # <- this forces rebuild every apply
+        #force_rebuild = timestamp()  # <- this forces rebuild every apply
     }
 
     provisioner "local-exec" {
         command = <<EOT
             set -e
 
-            echo "Generating SHA tag..."
-            IMAGE_TAG=$(git rev-parse --short HEAD)
+            echo "Generating Image tag..."
+            IMAGE_TAG=$(date -u +"%Y%m%dT%H%M%SZ")
 
             echo "Logging in to ECR..."
             aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.s3_to_prefect_lambda.repository_url}
