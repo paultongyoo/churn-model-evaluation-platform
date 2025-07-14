@@ -13,7 +13,6 @@ jobs:
     env:
       AWS_REGION: us-east-2
       ECR_REPO_NAME: mlops-churn-pipeline-prefect
-      IMAGE_TAG: latest
 
     steps:
       - name: Checkout code
@@ -35,6 +34,7 @@ jobs:
       - name: Build and push Docker image
         working-directory: ./code/flows
         run: |
+          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
           IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
@@ -51,6 +51,10 @@ jobs:
       - name: Inject ECR image URI into prefect.yaml
         working-directory: ./code/flows
         run: python update_prefect_yaml.py "$IMAGE_URI"
+
+      - name: Show updated prefect.yaml
+        working-directory: ./code/flows
+        run: cat prefect.yaml
 
       # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
       # Not recommended for production environments!

@@ -17,7 +17,7 @@ def churn_prediction_pipeline(bucket: str, key: str):
     It includes tasks for data ingestion, preprocessing, model training,
     evaluation, and potentially retraining the model based on performance.
     """
-    print("Starting the Churn Prediction Pipeline....")
+    print("Starting the Churn Prediction Pipeline...")
     print(f"Processing data from bucket: {bucket}, key: {key}")
 
     # Here you would call other tasks to perform the steps of the pipeline
