@@ -26,4 +26,5 @@ deployments:
     name: mlops-churn-pipeline-pool
     image: '{{ build_image.image }}'
   infrastructure:
-    cluster: "mlops-churn-pipeline-mlops-cluster"
+    type: ecs
+    cluster: mlops-churn-pipeline-mlops-cluster
