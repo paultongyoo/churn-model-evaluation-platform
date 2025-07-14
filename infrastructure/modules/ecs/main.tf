@@ -396,6 +396,7 @@ resource "aws_iam_policy" "prefect_worker_additional_permissions" {
           "ec2:DescribeVpcs",
           "ecs:DescribeTaskDefinition",
           "ec2:DescribeSubnets",
+          "ecs:DescribeTasks",
           "ecs:RunTask",
           "ecs:StopTask",
           "ecs:TagResource"
