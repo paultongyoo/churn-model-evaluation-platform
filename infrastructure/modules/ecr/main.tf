@@ -69,7 +69,7 @@ resource "null_resource" "build_and_push_s3_to_prefect_lambda_image" {
             aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.s3_to_prefect_lambda.repository_url}
 
             echo "Building Docker image with tag $IMAGE_TAG..."
-            docker build -t ${aws_ecr_repository.s3_to_prefect_lambda.repository_url}:$IMAGE_TAG ../code/s3_to_prefect_lambda/
+            DOCKER_BUILDKIT=0 docker build -t ${aws_ecr_repository.s3_to_prefect_lambda.repository_url}:$IMAGE_TAG ../code/s3_to_prefect_lambda/
 
             echo "Pushing image to ECR with tag $IMAGE_TAG..."
             docker push ${aws_ecr_repository.s3_to_prefect_lambda.repository_url}:$IMAGE_TAG
