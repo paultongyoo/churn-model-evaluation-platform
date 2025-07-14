@@ -24,6 +24,6 @@ deployments:
   entrypoint: churn_prediction_pipeline.py:churn_prediction_pipeline
   work_pool:
     name: mlops-churn-pipeline-pool
-    image: '{{ build_image.image }}'
     job_variables:
       cluster: mlops-churn-pipeline-cluster
+      image: '{{ build_image.image }}'
