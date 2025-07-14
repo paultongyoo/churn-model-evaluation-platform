@@ -51,14 +51,13 @@ def get_deployment_id():
     Retrieve the deployment ID for a given flow and deployment name.
     """
     response = requests.get(
-        f"{prefect_api_url}/deployments",
-        params={"flow_name": FLOW_NAME, "name": DEPLOYMENT_NAME},
+        f"{prefect_api_url}/deployments/name/{FLOW_NAME}/{DEPLOYMENT_NAME}",
         timeout=60,
     )
 
     response.raise_for_status()
-    deployments = response.json()
-    if deployments:
-        return deployments[0]["id"]
+    deployment = response.json()
+    if deployment:
+        return deployment["id"]
 
     raise ValueError("Deployment not found")
