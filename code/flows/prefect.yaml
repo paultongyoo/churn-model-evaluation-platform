@@ -13,9 +13,7 @@ build: null
 push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
-pull:
-- prefect.deployments.steps.set_working_directory:
-    directory: /opt/prefect/flows
+pull: null
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
@@ -26,4 +24,5 @@ deployments:
   infrastructure:
     type: docker-container
     stream_output: true
+    working_dir: /opt/prefect/flows
     # image URI will be injected by the deployment process
