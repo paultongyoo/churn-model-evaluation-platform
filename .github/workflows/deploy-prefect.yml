@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'code/flows/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
