@@ -31,10 +31,14 @@ jobs:
           | docker login --username AWS --password-stdin \
           ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
 
+      - name: Set timestamp-based image tag
+        id: set-tag
+        run: |
+          echo "IMAGE_TAG=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         working-directory: ./code/flows
         run: |
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
           IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
@@ -46,18 +50,19 @@ jobs:
       - name: Install Prefect
         run: |
           pip install --upgrade pip
-          pip install prefect pyyaml
+          pip install prefect
 
-      - name: Inject ECR image URI into prefect.yaml
+      - name: Build deployment with image + infra config
         working-directory: ./code/flows
-        run: python update_prefect_yaml.py "$IMAGE_URI"
+        run: |
+          prefect deployment build \
+            churn_prediction_pipeline.py:churn_prediction_pipeline \
+            --name default \
+            --pool mlops-churn-pipeline-pool \
+            --infra-type docker-container \
+            --infra-config "{\"image\": \"${IMAGE_URI}\", \"working_dir\": \"/opt/prefect/flows\", \"stream_output\": true}" \
+            --output deployment.yaml
 
-      - name: Show updated prefect.yaml
+      - name: Apply deployment to Prefect
         working-directory: ./code/flows
-        run: cat prefect.yaml
-
-      # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
-      # Not recommended for production environments!
-      - name: Deploy to Prefect Server
-        working-directory: ./code/flows
-        run: prefect deploy --name default
+        run: prefect deployment apply deployment.yaml
