@@ -23,11 +23,17 @@ repos:
           - scikit-learn      # Needed for sklearn-based notebooks
           - optuna            # Needed for Optuna-based notebooks
         # Disable specific pylint warning/error codes:
-        args: ["--disable=C0103,C0114,C0116,C0303,C0413,W0511,W0104"]
+        args: ["--disable=C0103,C0114,C0116,C0303,C0413,R0913,R0914,R0917,W0511,W0104"]
         # Explanation of common disabled codes:
         # - C0103: variable name doesn't conform to snake_case
+        # - C0114: missing module docstring
+        # - C0116: missing function docstring
         # - C0303: trailing whitespace
         # - C0413: imports not at top of file
+        # - R0913: too many arguments in function/method
+        # - R0914: too many local variables in function/method
+        # - R0917: too many positional arguments
+        # - W0104: statement seems to have no effect (e.g., pass)
         # - W0511: TODO/FIXME comments
 
       # Hook to run flake8 on Jupyter notebooks via nbQA
