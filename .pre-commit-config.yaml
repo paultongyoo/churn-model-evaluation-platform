@@ -67,6 +67,7 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
+        args: ["--profile=black", "--force-single-line-imports"]
   - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
