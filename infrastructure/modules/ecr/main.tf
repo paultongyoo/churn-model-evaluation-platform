@@ -22,7 +22,7 @@ resource "null_resource" "build_and_push_mlflow_image" {
             set -e
 
             echo "Generating Image tag..."
-            IMAGE_TAG=$(date -u +"%Y%m%dT%H%M%SZ")
+            IMAGE_TAG=$(git rev-parse --short HEAD)
 
             echo "Logging in to ECR..."
             aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.mlflow.repository_url}
@@ -64,7 +64,7 @@ resource "null_resource" "build_and_push_s3_to_prefect_lambda_image" {
             set -e
 
             echo "Generating Image tag..."
-            IMAGE_TAG=$(date -u +"%Y%m%dT%H%M%SZ")
+            IMAGE_TAG=$(git rev-parse --short HEAD)
 
             echo "Logging in to ECR..."
             aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.s3_to_prefect_lambda.repository_url}
