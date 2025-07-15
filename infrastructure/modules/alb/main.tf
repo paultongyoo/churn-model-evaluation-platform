@@ -88,6 +88,7 @@ resource "null_resource" "write_service_urls_to_env" {
       set -e
 
       ENV_FILE="../.env"
+      WORKFLOW_FILE="../.github/workflows/deploy-prefect.yml"
       MAX_RETRIES=20
       SLEEP_SECONDS=5
       PROJECT_ID="${var.project_id}"
@@ -116,23 +117,36 @@ resource "null_resource" "write_service_urls_to_env" {
       MLFLOW_TRACKING_URI="http://$DNS_NAME:5000"
       PREFECT_API_URL="http://$DNS_NAME:4200/api"
 
-      # Update or append MLFLOW_TRACKING_URI
+      # --- Update .env file ---
       if grep -q "^MLFLOW_TRACKING_URI=" "$ENV_FILE"; then
         sed -i.bak "s|^MLFLOW_TRACKING_URI=.*|MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI|" "$ENV_FILE"
       else
         echo "MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI" >> "$ENV_FILE"
       fi
 
-      # Update or append PREFECT_API_URL
       if grep -q "^PREFECT_API_URL=" "$ENV_FILE"; then
         sed -i.bak "s|^PREFECT_API_URL=.*|PREFECT_API_URL=$PREFECT_API_URL|" "$ENV_FILE"
       else
         echo "PREFECT_API_URL=$PREFECT_API_URL" >> "$ENV_FILE"
       fi
 
-      echo "✅ .env file updated:"
-      echo "  MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI"
-      echo "  PREFECT_API_URL=$PREFECT_API_URL"
+      ## --- Update deploy-prefect.yml env block ---
+      if grep -q "MLFLOW_TRACKING_URI:" "$WORKFLOW_FILE"; then
+        sed -i.bak "s|MLFLOW_TRACKING_URI:.*|MLFLOW_TRACKING_URI: $MLFLOW_TRACKING_URI|" "$WORKFLOW_FILE"
+      else
+        echo "WARNING: MLFLOW_TRACKING_URI not found in $WORKFLOW_FILE"
+      fi
+
+      if grep -q "PREFECT_API_URL:" "$WORKFLOW_FILE"; then
+        sed -i.bak "s|PREFECT_API_URL:.*|PREFECT_API_URL: $PREFECT_API_URL|" "$WORKFLOW_FILE"
+      else
+        echo "WARNING: PREFECT_API_URL not found in $WORKFLOW_FILE"
+      fi
+
+      echo "✅ Files updated:"
+      echo "  .env -> MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI"
+      echo "  .env -> PREFECT_API_URL=$PREFECT_API_URL"
+      echo "  deploy-prefect.yml updated if env keys were found"
     EOT
     interpreter = ["/bin/bash", "-c"]
   }

@@ -14,6 +14,8 @@ jobs:
     env:
       AWS_REGION: us-east-2
       ECR_REPO_NAME: mlops-churn-pipeline-prefect
+      PREFECT_API_URL: http://mlops-churn-pipeline-alb-826438446.us-east-2.elb.amazonaws.com:4200/api
+      MLFLOW_TRACKING_URI: http://mlops-churn-pipeline-alb-826438446.us-east-2.elb.amazonaws.com:5000
 
     steps:
       - name: Checkout code
@@ -50,8 +52,8 @@ jobs:
           pip install --upgrade pip
           pip install prefect pyyaml
 
-      - name: Set PREFECT_API_URL
-        run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> $GITHUB_ENV
+      # - name: Set PREFECT_API_URL
+      #   run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> $GITHUB_ENV
 
       # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
       # to ECS Prefect Server.  Not recommended for production environments!
