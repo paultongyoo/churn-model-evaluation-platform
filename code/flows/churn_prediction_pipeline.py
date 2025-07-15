@@ -43,9 +43,15 @@ def fetch_model(model_name: str, alias: str):
     logger = get_run_logger()
     logger.info("Fetching model '%s' with alias '%s'", model_name, alias)
 
-    model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}@{alias}")
-    logger.info("Model '%s' fetched successfully: %s", model_name, model)
-    return model
+    try:
+        model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}@{alias}")
+        logger.info("Model '%s' fetched successfully: %s", model_name, model)
+        return model
+    except Exception as e:
+        err_msg = f"""Failed to fetch model '{model_name}' with alias '{alias} -
+        Does it exist in the MLFlow registry?': {e}"""
+        logger.error(err_msg)
+        raise RuntimeError(err_msg) from e
 
 
 @task
@@ -135,6 +141,8 @@ def churn_prediction_pipeline(bucket: str, key: str):
     It includes tasks for data ingestion, preprocessing, model training,
     evaluation, and potentially retraining the model based on performance.
     """
+    latest_s3_key = key  # Initialize with the original key for exception handling
+
     try:
         logger = get_run_logger()
         logger.info("Starting the Churn Prediction Pipeline...")
@@ -175,8 +183,7 @@ def churn_prediction_pipeline(bucket: str, key: str):
     except Exception as e:
         err_msg = f"An unexpected error occurred in the churn prediction pipeline: {e}"
         logger.error(err_msg)
-        if latest_s3_key:
-            move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
+        move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
         return
 
 
