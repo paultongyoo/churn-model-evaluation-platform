@@ -44,7 +44,7 @@ jobs:
 
       - name: Inject IMAGE_NAME, IMAGE_TAG, MLFLOW_TRACKING_URI into prefect.yaml
         working-directory: ./code/flows
-        run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG" "MLFLOW_TRACKING_URI"
+        run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG" "$MLFLOW_TRACKING_URI"
 
       - name: Show updated prefect.yaml
         working-directory: ./code/flows
