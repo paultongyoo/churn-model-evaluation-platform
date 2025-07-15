@@ -30,9 +30,7 @@ if "build" in config:
 if "deployments" in config:
     for deployment in config["deployments"]:
         if isinstance(deployment, dict) and "work_pool" in deployment:
-            if isinstance(deployment["work_pool"], str):
-                deployment["work_pool"] = {"name": deployment["work_pool"]}
-            elif isinstance(deployment["work_pool"], dict):
+            if isinstance(deployment["work_pool"], dict):
                 deployment["work_pool"]["name"] = work_pool_name
 
 with open("prefect.yaml", "w", encoding="utf-8") as f:
