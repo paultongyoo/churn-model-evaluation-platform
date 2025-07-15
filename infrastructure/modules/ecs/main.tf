@@ -446,7 +446,10 @@ resource "aws_iam_policy" "prefect_worker_s3_access" {
       {
         Effect = "Allow",
         Action = [
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:CopyObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
         ],
         Resource = "${var.bucket_arn}/*"
       }
