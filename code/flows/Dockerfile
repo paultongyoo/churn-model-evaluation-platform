@@ -9,7 +9,7 @@ WORKDIR /opt/prefect/flows
 
 COPY [ "Pipfile", "Pipfile.lock", "./" ]
 
-RUN pipenv install --system --deploy
+RUN pipenv install --system --deploy --verbose
 
 # Copy your flow code into the container
 COPY . /opt/prefect/flows
