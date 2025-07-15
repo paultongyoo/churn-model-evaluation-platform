@@ -5,9 +5,9 @@ build:
 - prefect_docker.deployments.steps.build_docker_image:
     id: build_image
     requires: prefect-docker>=0.3.1
-    image_name:  # Set by GitHub Actions
-    tag:  # Set by GitHub Actions
-    dockerfile: "Dockerfile"
+    image_name:  local-flow-image # This will be overridden by the GitHub Actions workflow
+    tag:  latest
+    dockerfile: Dockerfile
 
 push:
 - prefect_docker.deployments.steps.push_docker_image:

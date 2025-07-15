@@ -11,8 +11,7 @@ from datetime import datetime
 from datetime import timezone
 
 import boto3
-
-# import mlflow.pyfunc
+import mlflow.pyfunc
 import pandas as pd
 from prefect import flow
 from prefect import get_run_logger
@@ -44,9 +43,9 @@ def fetch_model(model_name: str, alias: str):
     logger = get_run_logger()
     logger.info("Fetching model '%s' with alias '%s'", model_name, alias)
 
-    # model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}@{alias}")
-    # logger.info("Model '%s' fetched successfully: %s", model_name, model)
-    # return model
+    model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}@{alias}")
+    logger.info("Model '%s' fetched successfully: %s", model_name, model)
+    return model
 
 
 @task
