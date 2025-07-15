@@ -327,7 +327,7 @@ resource "aws_ecs_task_definition" "prefect_worker" {
 
       prefect work-pool get-default-base-job-template --type ecs > template.json;
 
-      jq --arg role_arn "${aws_iam_role.prefect_worker_task_exec_role.arn}" --arg cluster "${var.project_id}-cluster" '.variables.properties.task_role_arn.default = $role_arn | .variables.properties.execution_role_arn.default = $role_arn | .variables.properties.cluster.default = $cluster' template.json > tmp.json && mv tmp.json template.json;
+      jq --arg mlflow_tracking_uri "${var.mlflow_tracking_uri}" --arg role_arn "${aws_iam_role.prefect_worker_task_exec_role.arn}" --arg cluster "${var.project_id}-cluster" '.variables.properties.env.default = \'{ "MLFLOW_TRACKING_URI": $mlflow_tracking_uri }\' | .variables.properties.task_role_arn.default = $role_arn | .variables.properties.execution_role_arn.default = $role_arn | .variables.properties.cluster.default = $cluster' template.json > tmp.json && mv tmp.json template.json
 
       prefect work-pool delete ${var.project_id}-pool;
       prefect work-pool create --type ecs ${var.project_id}-pool --base-job-template=template.json;

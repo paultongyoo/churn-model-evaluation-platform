@@ -13,3 +13,7 @@ output "mlflow_target_group_arn" {
 output "prefect_target_group_arn" {
   value = aws_lb_target_group.prefect.arn
 }
+
+output "mlflow_tracking_uri" {
+  value = "http://${aws_lb.main.dns_name}:5000"
+}

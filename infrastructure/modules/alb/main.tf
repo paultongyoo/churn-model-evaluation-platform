@@ -131,12 +131,6 @@ resource "null_resource" "write_service_urls_to_env" {
       fi
 
       ## --- Update deploy-prefect.yml env block ---
-      if grep -q "MLFLOW_TRACKING_URI:" "$WORKFLOW_FILE"; then
-        sed -i.bak "s|MLFLOW_TRACKING_URI:.*|MLFLOW_TRACKING_URI: $MLFLOW_TRACKING_URI|" "$WORKFLOW_FILE"
-      else
-        echo "WARNING: MLFLOW_TRACKING_URI not found in $WORKFLOW_FILE"
-      fi
-
       if grep -q "PREFECT_API_URL:" "$WORKFLOW_FILE"; then
         sed -i.bak "s|PREFECT_API_URL:.*|PREFECT_API_URL: $PREFECT_API_URL|" "$WORKFLOW_FILE"
       else
@@ -146,7 +140,7 @@ resource "null_resource" "write_service_urls_to_env" {
       echo "✅ Files updated:"
       echo "  .env -> MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI"
       echo "  .env -> PREFECT_API_URL=$PREFECT_API_URL"
-      echo "  deploy-prefect.yml updated if env keys were found"
+      echo "  deploy-prefect.yml updated if PREFECT_API_URL was found"
     EOT
     interpreter = ["/bin/bash", "-c"]
   }

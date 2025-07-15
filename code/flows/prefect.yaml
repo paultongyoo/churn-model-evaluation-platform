@@ -26,7 +26,7 @@ deployments:
 - name: default
   entrypoint: churn_prediction_pipeline.py:churn_prediction_pipeline
   work_pool:
-    name: mlops-churn-pipeline-pool
+    name: # This will be set by update_prefect_yaml through GitHub Actions (or manually)
     type: ecs
     job_variables:
       image: '{{ build_image.image }}'

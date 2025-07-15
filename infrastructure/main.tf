@@ -57,6 +57,7 @@ module "ecs_stack" {
     prefect_target_group_arn = module.alb.prefect_target_group_arn
     mlflow_target_group_arn = module.alb.mlflow_target_group_arn
     bucket_arn = module.s3_bucket.bucket_arn
+    mlflow_tracking_uri = module.alb.mlflow_tracking_uri
 }
 
 module "alb" {
