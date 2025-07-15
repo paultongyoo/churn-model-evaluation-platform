@@ -461,3 +461,27 @@ resource "aws_iam_role_policy_attachment" "prefect_worker_s3_access_attachment" 
   role       = aws_iam_role.prefect_worker_task_exec_role.name
   policy_arn = aws_iam_policy.prefect_worker_s3_access.arn
 }
+
+resource "null_resource" "write_work_pool_name_to_github_action_yml" {
+  provisioner "local-exec" {
+    command = <<EOT
+      set -e
+
+      WORKFLOW_FILE="../.github/workflows/deploy-prefect.yml"
+      WORK_POOL_NAME="${var.project_id}-pool"
+
+      ## --- Update deploy-prefect.yml env block ---
+      if grep -q "WORK_POOL_NAME:" "$WORKFLOW_FILE"; then
+        sed -i.bak "s|WORK_POOL_NAME:.*|WORK_POOL_NAME: $WORK_POOL_NAME|" "$WORKFLOW_FILE"
+
+        echo "✅ File updated:"
+        echo "  deploy-prefect.yml -> WORK_POOL_NAME=$WORK_POOL_NAME"
+      else
+        echo "❗ WARNING: WORK_POOL_NAME not found in $WORKFLOW_FILE"
+      fi
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = [aws_ecs_task_definition.prefect_worker]
+}

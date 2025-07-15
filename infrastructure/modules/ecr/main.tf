@@ -4,6 +4,30 @@ resource "aws_ecr_repository" "prefect" {
   force_delete         = true
 }
 
+resource "null_resource" "write_repo_name_to_github_action_yml" {
+  provisioner "local-exec" {
+    command = <<EOT
+      set -e
+
+      WORKFLOW_FILE="../.github/workflows/deploy-prefect.yml"
+
+      ## --- Update deploy-prefect.yml env block ---
+      if grep -q "ECR_REPO_NAME:" "$WORKFLOW_FILE"; then
+        sed -i.bak "s|ECR_REPO_NAME:.*|ECR_REPO_NAME: ${aws_ecr_repository.prefect.name}|" "$WORKFLOW_FILE"
+
+        echo "✅ File updated:"
+        echo "  deploy-prefect.yml -> ECR_REPO_NAME=${aws_ecr_repository.prefect.name}"
+      else
+        echo "❗ WARNING: ECR_REPO_NAME not found in $WORKFLOW_FILE"
+      fi
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = [aws_ecr_repository.prefect]
+}
+
+
 ####### ECR Repository for MLflow Docker Image #######
 
 resource "aws_ecr_repository" "mlflow" {

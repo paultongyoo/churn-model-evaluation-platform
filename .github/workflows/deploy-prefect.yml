@@ -13,11 +13,12 @@ jobs:
 
     env:
       AWS_REGION: us-east-2
-      ECR_REPO_NAME: mlops-churn-pipeline-prefect
 
-      # These will be replaced by Terraform ALB local-exec
-      PREFECT_API_URL: http://mlops-churn-pipeline-alb-826438446.us-east-2.elb.amazonaws.com:4200/api
-      MLFLOW_TRACKING_URI: http://mlops-churn-pipeline-alb-826438446.us-east-2.elb.amazonaws.com:5000
+      # These will be set by Terraform local-execs
+      ECR_REPO_NAME: mlops-churn-pipeline-prefect
+      WORK_POOL_NAME: mlops-churn-pipeline-pool
+      PREFECT_API_URL: http://mlops-churn-pipeline-alb-1016424371.us-east-2.elb.amazonaws.com:4200/api
+      MLFLOW_TRACKING_URI: http://mlops-churn-pipeline-alb-1016424371.us-east-2.elb.amazonaws.com:5000
 
     steps:
       - name: Checkout code
@@ -41,9 +42,9 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Inject IMAGE_NAME and IMAGE_TAG into prefect.yaml
+      - name: Inject IMAGE_NAME, IMAGE_TAG, MLFLOW_TRACKING_URI into prefect.yaml
         working-directory: ./code/flows
-        run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG"
+        run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG" "MLFLOW_TRACKING_URI"
 
       - name: Show updated prefect.yaml
         working-directory: ./code/flows

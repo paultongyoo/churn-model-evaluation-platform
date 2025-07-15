@@ -4,12 +4,15 @@ import sys
 
 import yaml
 
-if len(sys.argv) != 3:
-    print("Usage: python update_prefect_yaml.py <IMAGE_NAME> <IMAGE_TAG>")
+if len(sys.argv) != 4:
+    print(
+        "Usage: python update_prefect_yaml.py <IMAGE_NAME> <IMAGE_TAG> <MFLOW_TRACKING_URI>"
+    )
     sys.exit(1)
 
 image_name = sys.argv[1]
 image_tag = sys.argv[2]
+mlflow_tracking_uri = sys.argv[3]
 
 with open("prefect.yaml", encoding="utf-8") as f:
     config = yaml.safe_load(f)
@@ -22,6 +25,13 @@ if "build" in config:
                 if key == "prefect_docker.deployments.steps.build_docker_image":
                     val["image_name"] = image_name
                     val["tag"] = image_tag
+
+# Add env in the deployment section
+if "deployments" in config:
+    for deployment in config["deployments"]:
+        if "env" not in deployment:
+            deployment["env"] = {}
+        deployment["env"]["MLFLOW_TRACKING_URI"] = mlflow_tracking_uri
 
 with open("prefect.yaml", "w", encoding="utf-8") as f:
     yaml.dump(config, f, sort_keys=False)
