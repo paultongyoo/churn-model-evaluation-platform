@@ -8,7 +8,7 @@ prefect = "*"
 pandas = "*"
 boto3 = "*"
 mlflow = "*"
-numpy = "==2.2.0"
+numpy = "*"
 
 [dev-packages]
 
