@@ -175,7 +175,8 @@ def churn_prediction_pipeline(bucket: str, key: str):
     except Exception as e:
         err_msg = f"An unexpected error occurred in the churn prediction pipeline: {e}"
         logger.error(err_msg)
-        move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
+        if latest_s3_key:
+            move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
         return
 
 
