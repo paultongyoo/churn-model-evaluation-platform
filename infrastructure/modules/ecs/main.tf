@@ -428,3 +428,33 @@ resource "aws_cloudwatch_log_group" "prefect_worker_logs" {
   name              = "/ecs/${var.project_id}-prefect-worker"
   retention_in_days = 7
 }
+
+resource "aws_iam_policy" "prefect_worker_s3_access" {
+  name = "${var.project_id}-prefect-worker-s3-access"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:ListBucket",
+          "s3:HeadBucket"
+        ],
+        Resource = "${var.bucket_arn}"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = "${var.bucket_arn}/*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "prefect_worker_s3_access_attachment" {
+  role       = aws_iam_role.prefect_worker_task_exec_role.name
+  policy_arn = aws_iam_policy.prefect_worker_s3_access.arn
+}

@@ -62,3 +62,8 @@ variable "alb_sg_id" {
   description = "Security group ID for the Application Load Balancer"
   type        = string
 }
+
+variable "bucket_arn" {
+  description = "ARN of the S3 bucket"
+  type        = string
+}
