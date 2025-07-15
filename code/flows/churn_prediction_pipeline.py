@@ -45,6 +45,7 @@ def fetch_model(mlflow_tracking_uri: str, model_name: str, alias: str):
         mlflow.pyfunc.PyFuncModel: The loaded MLflow model.
     """
     logger = get_run_logger()
+    logger.info("Setting MLflow tracking URI: %s", mlflow_tracking_uri)
     logger.info("Fetching model '%s' with alias '%s'", model_name, alias)
 
     try:
