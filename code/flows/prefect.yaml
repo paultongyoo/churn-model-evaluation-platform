@@ -16,6 +16,9 @@ push:
     tag: '{{ build_image.tag }}'
 
 pull:
+- prefect.deployments.steps.pip_install_requirements:
+    directory: "{{ pull_code.directory }}"
+    requirements_file: requirements_extra.txt
 - prefect.deployments.steps.set_working_directory:
     directory: /opt/prefect/flows
 
