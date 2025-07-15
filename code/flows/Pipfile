@@ -7,7 +7,7 @@ name = "pypi"
 prefect = "*"
 pandas = "*"
 boto3 = "*"
-mlflow = {extras = ["scikit-learn"], version = "*"}
+mlflow = "*"
 numpy = "*"
 
 [dev-packages]
