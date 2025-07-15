@@ -6,6 +6,7 @@ It also includes task(s) to retrain the model if the model's churn prediction
 performance does not meet specified threshold.
 """
 
+import os
 import sys
 from datetime import datetime
 from datetime import timezone
@@ -17,6 +18,9 @@ from prefect import flow
 from prefect import get_run_logger
 from prefect import task
 
+MLFLOW_TRACKING_URI = os.getenv(
+    "MLFLOW_TRACKING_URI"
+)  # Let model lookup fail if not set
 AWS_REGION = "us-east-2"
 s3_client = boto3.client("s3", region_name=AWS_REGION)
 
@@ -31,7 +35,7 @@ FOLDER_LOGS = "data/logs"
 
 
 @task
-def fetch_model(model_name: str, alias: str):
+def fetch_model(mlflow_tracking_uri: str, model_name: str, alias: str):
     """
     Fetch the model from MLflow registry.
     Args:
@@ -44,6 +48,7 @@ def fetch_model(model_name: str, alias: str):
     logger.info("Fetching model '%s' with alias '%s'", model_name, alias)
 
     try:
+        mlflow.set_tracking_uri(mlflow_tracking_uri)
         model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}@{alias}")
         logger.info("Model '%s' fetched successfully: %s", model_name, model)
         return model
@@ -161,7 +166,7 @@ def churn_prediction_pipeline(bucket: str, key: str):
             return
 
         # Fetch the model from MLflow
-        model = fetch_model(MODEL_NAME, MODEL_ALIAS)
+        model = fetch_model(MLFLOW_TRACKING_URI, MODEL_NAME, MODEL_ALIAS)
         input_example = pd.DataFrame(model.input_example)
         logger.info("Model input example columns: %s", input_example.columns.tolist())
 
