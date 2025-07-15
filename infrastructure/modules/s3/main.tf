@@ -4,7 +4,12 @@ resource "aws_s3_bucket" "bucket" {
 }
 
 resource "aws_s3_object" "prefixes" {
-  for_each = toset(["data/input/", "data/processed/"])
+  for_each = toset([
+    "data/input/",
+    "data/processing/",
+    "data/processed/",
+    "data/errored/",
+    "data/logs/"])
 
   bucket = aws_s3_bucket.bucket.id
   key    = each.key
