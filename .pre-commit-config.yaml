@@ -86,6 +86,9 @@ repos:
         additional_dependencies:
         - pylint
         - prefect
+        - boto3
+        - mlflow
+        - pandas
   - repo: local
     hooks:
       - id: pytest-check
