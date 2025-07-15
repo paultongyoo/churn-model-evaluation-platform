@@ -12,7 +12,7 @@ COPY . /opt/prefect/flows
 
 COPY [ "Pipfile", "Pipfile.lock", "./" ]
 
-RUN pipenv install --system --deploy --verbose
+RUN pipenv install --system --verbose
 
 # Prefect version label
 LABEL io.prefect.version=3.4.8
