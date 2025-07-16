@@ -12,23 +12,50 @@ correctly retrieves a model from MLflow and handles errors appropriately."""
 
 
 class TestFetchModel(unittest.TestCase):
-    @patch("flows.churn_prediction_pipeline.get_run_logger")
-    @patch("flows.churn_prediction_pipeline.mlflow")
-    def test_fetch_model_success(self, mock_mlflow, mock_logger):
+
+    def setUp(self):
+        self.patcher_mlflow = patch("flows.churn_prediction_pipeline.mlflow")
+        self.patcher_logger = patch("flows.churn_prediction_pipeline.get_run_logger")
+
+        self.mock_mlflow = self.patcher_mlflow.start()
+        self.mock_logger = self.patcher_logger.start()
+
+        self.mock_logger.return_value = MagicMock()
+
+    def tearDown(self):
+        self.patcher_mlflow.stop()
+        self.patcher_logger.stop()
+
+    def test_fetch_model_success(self):
         """
         Test that fetch_model retrieves the model correctly.
         """
-        mock_logger.return_value = MagicMock()
 
         mock_model = MagicMock()
         mock_model.input_example = {"feature1": "value1", "feature2": "value2"}
-        mock_mlflow.pyfunc.load_model.return_value = mock_model
+        self.mock_mlflow.pyfunc.load_model.return_value = mock_model
 
         model = fetch_model.fn("http://mlflow-server:5000", "test_model", "latest")
 
         self.assertEqual(
             model.input_example, {"feature1": "value1", "feature2": "value2"}
         )
-        mock_mlflow.pyfunc.load_model.assert_called_once_with(
+        self.mock_mlflow.pyfunc.load_model.assert_called_once_with(
             model_uri="models:/test_model@latest"
         )
+
+    def test_fetch_model_missing_model(self):
+        """
+        Test that fetch_model raises an error with the expected error message
+        when the model is not found.
+        """
+        expected_error = (
+            "Failed to fetch model 'missing_model' with alias 'latest' - "
+            "Does it exist in the MLFlow registry?'"
+        )
+        self.mock_mlflow.pyfunc.load_model.side_effect = RuntimeError(expected_error)
+
+        with self.assertRaises(RuntimeError) as context:
+            fetch_model.fn("http://mlflow-server:5000", "missing_model", "latest")
+
+        self.assertTrue(str(context.exception).startswith(expected_error))

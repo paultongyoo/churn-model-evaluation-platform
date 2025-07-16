@@ -54,8 +54,10 @@ def fetch_model(mlflow_tracking_uri: str, model_name: str, alias: str):
         logger.info("Model '%s' fetched successfully: %s", model_name, model)
         return model
     except Exception as e:
-        err_msg = f"""Failed to fetch model '{model_name}' with alias '{alias} -
-        Does it exist in the MLFlow registry?': {e}"""
+        err_msg = (
+            f"Failed to fetch model '{model_name}' with alias '{alias}' "
+            f"- Does it exist in the MLFlow registry?': {e}"
+        )
         logger.error(err_msg)
         raise RuntimeError(err_msg) from e
 
