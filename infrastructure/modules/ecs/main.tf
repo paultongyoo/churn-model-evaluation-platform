@@ -208,7 +208,7 @@ resource "aws_ecs_task_definition" "prefect_server" {
   container_definitions = jsonencode([
     {
       name      = "prefect-server"
-      image     = "prefecthq/prefect:3.4.8-python3.9"
+      image     = "prefecthq/prefect:3.4.8-python3.10"
       essential = true
       environment = [
         {
@@ -326,7 +326,7 @@ resource "aws_ecs_task_definition" "prefect_worker" {
 
   container_definitions = jsonencode([{
     name      = "prefect-worker",
-    image     = "prefecthq/prefect:3.4.8-python3.9",
+    image     = "prefecthq/prefect:3.4.8-python3.10",
     essential = true,
     command = [
       "/bin/bash",

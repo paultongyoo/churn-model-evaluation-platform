@@ -1,5 +1,5 @@
 # Use official Prefect image as the base
-FROM prefecthq/prefect:3.4.8-python3.9
+FROM prefecthq/prefect:3.4.8-python3.10
 
 RUN pip install -U pip
 RUN pip install pipenv

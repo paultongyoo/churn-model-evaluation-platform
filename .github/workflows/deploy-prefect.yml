@@ -19,7 +19,7 @@ jobs:
     env:
       ECR_REPO_NAME: mlops-churn-pipeline-prefect
       WORK_POOL_NAME: mlops-churn-pipeline-pool
-      PREFECT_API_URL: http://mlops-churn-pipeline-alb-2142174262.us-east-2.elb.amazonaws.com:4200/api
+      PREFECT_API_URL: http://mlops-churn-pipeline-alb-1835604851.us-east-2.elb.amazonaws.com:4200/api
 
     steps:
     - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.10'
         cache: 'pip'  # optional, enables caching
 
     - name: Install pipenv
