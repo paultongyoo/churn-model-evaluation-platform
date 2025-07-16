@@ -1,4 +1,6 @@
-"""This file contains tests for the fetch_model function."""
+"""
+This file contains tests for the fetch_model function.
+"""
 
 import unittest
 from unittest.mock import MagicMock
@@ -6,9 +8,11 @@ from unittest.mock import patch
 
 from flows.churn_prediction_pipeline import fetch_model
 
-"""Test class for the fetch_model function.
+"""
+Test class for the fetch_model function.
 This class contains unit tests to ensure that the fetch_model function
-correctly retrieves a model from MLflow and handles errors appropriately."""
+correctly retrieves a model from MLflow and handles errors appropriately.
+"""
 
 
 class TestFetchModel(unittest.TestCase):
@@ -46,8 +50,8 @@ class TestFetchModel(unittest.TestCase):
 
     def test_fetch_model_missing_model(self):
         """
-        Test that fetch_model raises an error with the expected error message
-        when the model is not found.
+        Test that fetch_model raises expected error type with
+        the expected error message when the model is not found.
         """
         expected_error = (
             "Failed to fetch model 'missing_model' with alias 'latest' - "
