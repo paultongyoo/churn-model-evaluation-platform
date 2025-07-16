@@ -32,7 +32,7 @@ class TestValidateFileInput(unittest.TestCase):
         Test that validate_file_input returns True when the file confirms
         to the validation requirements:
         -- Expected file extension (csv)
-        -- Can be converted into a CSV
+        -- Can be converted into a CSV (i.e. calling read_csv does not raise an error)
         -- CSV contains expected columns
         """
         mock_bucket = "any_bucket"

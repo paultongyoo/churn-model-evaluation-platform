@@ -30,11 +30,13 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies with pipenv
+      - name: Install dependencies with pipenv and requirements_extra.txt
+        working-directory: ./code/flows
         run: |
           python -m pip install --upgrade pip
           pip install pipenv
           pipenv install --dev
+          pip install -r requirements_extra.txt
 
       - name: Run tests
         run: |
