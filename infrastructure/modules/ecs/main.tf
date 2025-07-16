@@ -268,8 +268,8 @@ resource "aws_cloudwatch_log_group" "prefect_logs" {
   retention_in_days = 7
 }
 
-resource "aws_ecs_service" "prefect" {
-  name            = "${var.project_id}-prefect-service"
+resource "aws_ecs_service" "prefect_server" {
+  name            = "${var.project_id}-prefect-server-service"
   cluster         = aws_ecs_cluster.mlops_cluster.id
   task_definition = aws_ecs_task_definition.prefect_server.arn
   desired_count   = 1
