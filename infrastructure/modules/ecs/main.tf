@@ -129,7 +129,7 @@ resource "aws_ecs_task_definition" "mlflow" {
   container_definitions = jsonencode([
     {
       name      = "mlflow"
-      image     = "ghcr.io/mlflow/mlflow:v3.1.1" #var.mlflow_image_uri
+      image     = "ghcr.io/mlflow/mlflow:v3.1.1"
       essential = true
       portMappings = [
         {
