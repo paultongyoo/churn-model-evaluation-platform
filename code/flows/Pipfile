@@ -9,6 +9,7 @@ pandas = "*"
 boto3 = "*"
 mlflow = "*"
 numpy = "*"
+xgboost = "*"
 
 [dev-packages]
 
