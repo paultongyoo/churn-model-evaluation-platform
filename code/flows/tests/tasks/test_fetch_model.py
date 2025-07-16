@@ -24,8 +24,6 @@ class TestFetchModel(unittest.TestCase):
         self.mock_mlflow = self.patcher_mlflow.start()
         self.mock_logger = self.patcher_logger.start()
 
-        self.mock_logger.return_value = MagicMock()
-
     def tearDown(self):
         self.patcher_mlflow.stop()
         self.patcher_logger.stop()
