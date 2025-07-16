@@ -38,7 +38,7 @@ jobs:
       working-directory: ./code/flows
       run: |
         pipenv install --dev
-        pipenv run pip install -r requirements_extra.txt
+#pipenv run pip install -r requirements_extra.txt
 
     - name: Run tests
       working-directory: ./code/flows
@@ -73,7 +73,7 @@ jobs:
     - name: Install Prefect
       run: |
         pip install --upgrade pip
-        pip install prefect pyyaml
+        pip install prefect
 
     # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
     # to ECS Prefect Server.  Not recommended for production environments!
