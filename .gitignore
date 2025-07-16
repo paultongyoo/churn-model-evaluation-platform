@@ -9,3 +9,4 @@ shap_summary_plot_*.png
 training_data.csv
 __pycache__/
 *.bak
+.pytest_cache/
