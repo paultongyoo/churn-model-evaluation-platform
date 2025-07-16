@@ -42,7 +42,7 @@ jobs:
 
     - name: Run tests
       working-directory: ./code/flows
-      run: PYTHONPATH=./code pipenv run pytest --maxfail=1 --disable-warnings
+      run: PYTHONPATH=code pipenv run pytest --maxfail=1 --disable-warnings --import-mode=importlib
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
