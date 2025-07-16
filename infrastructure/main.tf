@@ -18,18 +18,6 @@ provider "aws" {
     region = var.aws_region
 }
 
-# Create base deploy-prefect.yml file from template (ignored by git)
-resource "null_resource" "prepare_deploy_yaml" {
-  provisioner "local-exec" {
-    command = "cp ../.github/workflows/deploy-prefect.yml.template ../.github/workflows/deploy-prefect.yml"
-  }
-
-  # Run only once unless the template changes
-  triggers = {
-    template_sha1 = filesha1("../.github/workflows/deploy-prefect.yml.template")
-  }
-}
-
 module "s3_bucket" {
     source = "./modules/s3"
     bucket_name = "${var.project_id}"
@@ -51,8 +39,6 @@ module "ecr" {
     source = "./modules/ecr"
     project_id = var.project_id
     aws_region = var.aws_region
-
-    depends_on = [null_resource.prepare_deploy_yaml]
 }
 
 module "ecs_stack" {
@@ -71,8 +57,6 @@ module "ecs_stack" {
     mlflow_target_group_arn = module.alb.mlflow_target_group_arn
     bucket_arn = module.s3_bucket.bucket_arn
     mlflow_tracking_uri = module.alb.mlflow_tracking_uri
-
-    depends_on = [null_resource.prepare_deploy_yaml]
 }
 
 module "alb" {
@@ -82,8 +66,6 @@ module "alb" {
     subnet_ids = var.subnet_ids
     my_ip = var.my_ip
     ecs_sg_id = module.ecs_stack.ecs_sg_id
-
-    depends_on = [null_resource.prepare_deploy_yaml]
 }
 
 module "s3_to_prefect_lambda" {

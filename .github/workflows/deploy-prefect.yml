@@ -11,14 +11,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # These are set by Terraform local-execs
+    #
+    # NOTE: PREFECT_API_URL exposed here for NON-PRODUCTION project!
+    #       This file should be updated to pull it from GitHub Secrets before any production deployment.
+    #       TODO: Set secret via GitHub REST API using env token
     env:
-      # TODO: Set this from Terraform local-exec
-      AWS_REGION: us-east-2
-
-      # These will be set by Terraform local-execs
-      ECR_REPO_NAME:
-      WORK_POOL_NAME:
-      PREFECT_API_URL:
+      ECR_REPO_NAME: mlops-churn-pipeline-prefect
+      WORK_POOL_NAME: mlops-churn-pipeline-pool
+      PREFECT_API_URL: http://mlops-churn-pipeline-alb-1547454498.us-east-2.elb.amazonaws.com:4200/api
 
     steps:
       - name: Checkout code
@@ -29,7 +30,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -38,7 +39,7 @@ jobs:
       - name: Set IMAGE_NAME and IMAGE TAG
         run: |
           IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          IMAGE_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME
+          IMAGE_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/$ECR_REPO_NAME
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
