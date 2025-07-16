@@ -41,7 +41,8 @@ jobs:
         pipenv run pip install -r requirements_extra.txt
 
     - name: Run tests
-      run: PYTHONPATH=code pipenv run pytest --maxfail=1 --disable-warnings -q --import-mode=importlib
+      working-directory: ./code/flows
+      run: PYTHONPATH=./code pipenv run pytest --maxfail=1 --disable-warnings -q --import-mode=importlib
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
