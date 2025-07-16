@@ -100,7 +100,7 @@ repos:
         always_run: true
         args: [
           "code/flows/tests/",
-          "code/integration-tests/"
+          "code/s3_to_prefect_lambda/tests/"
         ]
         additional_dependencies:
         - pytest
