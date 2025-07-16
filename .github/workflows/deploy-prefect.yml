@@ -64,7 +64,7 @@ jobs:
 
     - name: Inject IMAGE_NAME, IMAGE_TAG & WORK_POOL_NAME into prefect.yaml
       working-directory: ./code/flows
-      run: pip install yaml && python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG" "$WORK_POOL_NAME"
+      run: pip install pyyaml && python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG" "$WORK_POOL_NAME"
 
     - name: Show updated prefect.yaml
       working-directory: ./code/flows
