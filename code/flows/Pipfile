@@ -10,6 +10,7 @@ boto3 = "*"
 mlflow = "*"
 numpy = "*"
 xgboost = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
