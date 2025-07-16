@@ -18,10 +18,10 @@ variable "subnet_ids" {
   description = "List of subnet IDs in different AZs"
 }
 
-variable "mlflow_image_uri" {
-    description = "The Docker image for the MLflow container"
-    type        = string
-}
+# variable "mlflow_image_uri" {
+#     description = "The Docker image for the MLflow container"
+#     type        = string
+# }
 
 variable "db_username" {
   description = "RDS database username"

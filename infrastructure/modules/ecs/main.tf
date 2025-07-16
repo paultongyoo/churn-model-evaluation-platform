@@ -129,7 +129,7 @@ resource "aws_ecs_task_definition" "mlflow" {
   container_definitions = jsonencode([
     {
       name      = "mlflow"
-      image     = var.mlflow_image_uri
+      image     = "ghcr.io/mlflow/mlflow:v3.1.1" #var.mlflow_image_uri
       essential = true
       portMappings = [
         {
@@ -146,11 +146,12 @@ resource "aws_ecs_task_definition" "mlflow" {
         }
       }
       command = [
-        "mlflow", "server",
-        "--backend-store-uri", "postgresql://${var.db_username}:${var.db_password}@${var.db_endpoint}/mlflow_db",
-        "--default-artifact-root", "s3://${var.project_id}/mlflow/",
-        "--host", "0.0.0.0",
-        "--port", "5000"
+        "/bin/bash",
+        "-c",
+        <<-EOF
+        pip install psycopg2-binary boto3;
+        mlflow server --backend-store-uri postgresql://${var.db_username}:${var.db_password}@${var.db_endpoint}/mlflow_db --default-artifact-root s3://${var.project_id}/mlflow/ --host 0.0.0.0 --port 5000;
+        EOF
       ]
     }
   ])

@@ -47,7 +47,7 @@ module "ecs_stack" {
     aws_region = var.aws_region
     vpc_id = var.vpc_id
     subnet_ids = var.subnet_ids
-    mlflow_image_uri = module.ecr.mlflow_image_uri
+    # mlflow_image_uri = module.ecr.mlflow_image_uri
     db_username = var.db_username
     db_password = var.db_password
     db_endpoint = module.rds_postgres.endpoint

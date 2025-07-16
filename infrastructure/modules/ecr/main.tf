@@ -30,44 +30,44 @@ resource "null_resource" "write_repo_name_to_github_action_yml" {
 
 ####### ECR Repository for MLflow Docker Image #######
 
-resource "aws_ecr_repository" "mlflow" {
-  name                 = "${var.project_id}-mlflow"
-  image_tag_mutability = "MUTABLE"
-  force_delete         = true
-}
+# resource "aws_ecr_repository" "mlflow" {
+#   name                 = "${var.project_id}-mlflow"
+#   image_tag_mutability = "MUTABLE"
+#   force_delete         = true
+# }
 
-resource "null_resource" "build_and_push_mlflow_image" {
-    triggers = {
-        docker_file = md5(file("../code/mlflow/Dockerfile"))
-    }
+# resource "null_resource" "build_and_push_mlflow_image" {
+#     triggers = {
+#         docker_file = md5(file("../code/mlflow/Dockerfile"))
+#     }
 
-    provisioner "local-exec" {
-        command = <<EOT
-            set -e
+#     provisioner "local-exec" {
+#         command = <<EOT
+#             set -e
 
-            echo "Generating Image tag..."
-            IMAGE_TAG=$(git rev-parse --short HEAD)
+#             echo "Generating Image tag..."
+#             IMAGE_TAG=$(git rev-parse --short HEAD)
 
-            echo "Logging in to ECR..."
-            aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.mlflow.repository_url}
+#             echo "Logging in to ECR..."
+#             aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.mlflow.repository_url}
 
-            echo "Building Docker image with tag $IMAGE_TAG..."
-            docker build -t ${aws_ecr_repository.mlflow.repository_url}:$IMAGE_TAG ../code/mlflow/
+#             echo "Building Docker image with tag $IMAGE_TAG..."
+#             docker build -t ${aws_ecr_repository.mlflow.repository_url}:$IMAGE_TAG ../code/mlflow/
 
-            echo "Pushing image to ECR with tag $IMAGE_TAG..."
-            docker push ${aws_ecr_repository.mlflow.repository_url}:$IMAGE_TAG
+#             echo "Pushing image to ECR with tag $IMAGE_TAG..."
+#             docker push ${aws_ecr_repository.mlflow.repository_url}:$IMAGE_TAG
 
-            echo "$IMAGE_TAG" > ${path.module}/mlflow_image_tag.txt
-        EOT
-    }
+#             echo "$IMAGE_TAG" > ${path.module}/mlflow_image_tag.txt
+#         EOT
+#     }
 
-    depends_on = [aws_ecr_repository.mlflow]
-}
+#     depends_on = [aws_ecr_repository.mlflow]
+# }
 
-data "local_file" "mlflow_image_tag" {
-  filename = "${path.module}/mlflow_image_tag.txt"
-  depends_on = [null_resource.build_and_push_mlflow_image]
-}
+# data "local_file" "mlflow_image_tag" {
+#   filename = "${path.module}/mlflow_image_tag.txt"
+#   depends_on = [null_resource.build_and_push_mlflow_image]
+# }
 
 ####### ECR Repository for S3-to-Prefect Lambda Docker Image #######
 
