@@ -10,3 +10,4 @@ training_data.csv
 __pycache__/
 *.bak
 .pytest_cache/
+deploy-prefect.yml
