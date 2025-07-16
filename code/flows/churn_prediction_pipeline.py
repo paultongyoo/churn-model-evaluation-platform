@@ -99,7 +99,7 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
         logger.error(err_msg)
         return False, err_msg
 
-    return True
+    return True, None
 
 
 @task
