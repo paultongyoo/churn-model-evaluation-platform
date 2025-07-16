@@ -25,6 +25,15 @@ resource "aws_security_group_rule" "allow_alb_to_mlflow" {
   source_security_group_id = var.alb_sg_id
 }
 
+resource "aws_security_group_rule" "allow_prefect_worker_to_mlflow" {
+  type                     = "ingress"
+  from_port                = 5000
+  to_port                  = 5000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_sg.id
+  source_security_group_id = aws_security_group.ecs_sg.id
+}
+
 ######### MLflow ECS Task and Service #########
 
 resource "aws_iam_role" "mlflow_task_exec_role" {
@@ -327,7 +336,9 @@ resource "aws_ecs_task_definition" "prefect_worker" {
 
       prefect work-pool get-default-base-job-template --type ecs > template.json;
 
-      jq --arg mlflow_tracking_uri "${var.mlflow_tracking_uri}" --arg role_arn "${aws_iam_role.prefect_worker_task_exec_role.arn}" --arg cluster "${var.project_id}-cluster" '.variables.properties.env.default = { "MLFLOW_TRACKING_URI": $mlflow_tracking_uri } | .variables.properties.task_role_arn.default = $role_arn | .variables.properties.execution_role_arn.default = $role_arn | .variables.properties.cluster.default = $cluster' template.json > tmp.json && mv tmp.json template.json;
+      SUBNETS_JSON='${jsonencode(var.subnet_ids)}'
+
+      jq --arg vpc_id "${var.vpc_id}" --arg mlflow_tracking_uri "${var.mlflow_tracking_uri}" --arg role_arn "${aws_iam_role.prefect_worker_task_exec_role.arn}" --arg cluster "${var.project_id}-cluster" --arg sg_id "${aws_security_group.ecs_sg.id}" --arg subnets "$SUBNETS_JSON" '.variables.properties.vpc_id.default = $vpc_id | .variables.properties.env.default = { "MLFLOW_TRACKING_URI": $mlflow_tracking_uri } | .variables.properties.task_role_arn.default = $role_arn | .variables.properties.execution_role_arn.default = $role_arn | .variables.properties.cluster.default = $cluster | .variables.properties.network_configuration.default = { "assignPublicIp": "ENABLED", "securityGroups": [$sg_id], "subnets": ($subnets | fromjson) }' template.json > tmp.json && mv tmp.json template.json;
 
       prefect work-pool delete ${var.project_id}-pool;
       prefect work-pool create --type ecs ${var.project_id}-pool --base-job-template=template.json;

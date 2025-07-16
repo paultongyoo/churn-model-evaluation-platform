@@ -61,11 +61,12 @@ module "ecs_stack" {
 }
 
 module "alb" {
-  source     = "./modules/alb"
-  project_id = var.project_id
-  vpc_id     = var.vpc_id
-  subnet_ids = var.subnet_ids
-  my_ip = var.my_ip
+    source     = "./modules/alb"
+    project_id = var.project_id
+    vpc_id     = var.vpc_id
+    subnet_ids = var.subnet_ids
+    my_ip = var.my_ip
+    ecs_sg_id = module.ecs_stack.ecs_sg_id
 }
 
 module "s3_to_prefect_lambda" {

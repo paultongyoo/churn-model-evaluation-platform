@@ -18,13 +18,26 @@ resource "aws_security_group" "alb_sg" {
     description = "Allows public access (incl GitHub Actions) to Prefect UI/API"
   }
 
+  # Allows Prefect Worker ECS Task to access MLflow via ALB
+  # Configuring access by security group was not working for an unknown reason
+  # This is a workaround to allow access from ECS tasks to MLflow via ALB
+  # TODO: Investigate why security group access was not working
   ingress {
-    from_port   = 5000
-    to_port     = 5000
-    protocol    = "tcp"
-    cidr_blocks = ["${var.my_ip}/32"]
-    description = "Allow MLFlow from my IP"
+    from_port       = 5000
+    to_port         = 5000
+    protocol        = "tcp"
+    #security_groups = [var.ecs_sg_id]
+    cidr_blocks = ["0.0.0.0/0"]
+    description     = "Allow ECS tasks to access MLflow via ALB on port 5000"
   }
+
+  # ingress {
+  #   from_port   = 5000
+  #   to_port     = 5000
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["${var.my_ip}/32"]
+  #   description = "Allow MLFlow from my IP"
+  # }
 
   egress {
     from_port   = 0
