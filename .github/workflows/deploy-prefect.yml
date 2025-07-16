@@ -22,60 +22,61 @@ jobs:
       PREFECT_API_URL: http://mlops-churn-pipeline-alb-2142174262.us-east-2.elb.amazonaws.com:4200/api
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip'  # optional, enables caching
 
-      - name: Install dependencies with pipenv and requirements_extra.txt
-        working-directory: ./code/flows
-        run: |
-          python -m pip install --upgrade pip
-          pip install pipenv
-          pipenv install --dev
-          pipenv run pip install -r requirements_extra.txt
+    - name: Install pipenv
+      run: pip install pipenv
 
-      - name: Run tests
-        working-directory: ./code/flows
-        run: |
-          pipenv run pytest --maxfail=1 --disable-warnings -q --import-mode=importlib
+    - name: Install dependencies with pipenv
+      working-directory: ./code/flows
+      run: |
+        pipenv install --dev --verbose
+        pipenv install -r requirements_extra.txt
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+    - name: Run tests
+      working-directory: ./code/flows
+      run: pipenv run pytest --maxfail=1 --disable-warnings -q --import-mode=importlib
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Set IMAGE_NAME and IMAGE TAG
-        run: |
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          IMAGE_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/$ECR_REPO_NAME
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Inject IMAGE_NAME, IMAGE_TAG & WORK_POOL_NAME into prefect.yaml
-        working-directory: ./code/flows
-        run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG" "$WORK_POOL_NAME"
+    - name: Set IMAGE_NAME and IMAGE TAG
+      run: |
+        IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+        IMAGE_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/$ECR_REPO_NAME
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Show updated prefect.yaml
-        working-directory: ./code/flows
-        run: cat prefect.yaml
+    - name: Inject IMAGE_NAME, IMAGE_TAG & WORK_POOL_NAME into prefect.yaml
+      working-directory: ./code/flows
+      run: python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG" "$WORK_POOL_NAME"
 
-      - name: Install Prefect
-        run: |
-          pip install --upgrade pip
-          pip install prefect pyyaml
+    - name: Show updated prefect.yaml
+      working-directory: ./code/flows
+      run: cat prefect.yaml
 
-      # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
-      # to ECS Prefect Server.  Not recommended for production environments!
-      - name: Deploy to Prefect Server
-        working-directory: ./code/flows
-        run: prefect --no-prompt deploy --all
+    - name: Install Prefect
+      run: |
+        pip install --upgrade pip
+        pip install prefect pyyaml
+
+    # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
+    # to ECS Prefect Server.  Not recommended for production environments!
+    - name: Deploy to Prefect Server
+      working-directory: ./code/flows
+      run: prefect --no-prompt deploy --all
