@@ -38,7 +38,7 @@ jobs:
       working-directory: ./code/flows
       run: |
         pipenv install --dev --verbose
-        pipenv install -r requirements_extra.txt
+        pipenv run pip -r requirements_extra.txt
 
     - name: Run tests
       working-directory: ./code/flows
