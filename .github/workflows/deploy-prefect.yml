@@ -36,7 +36,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pipenv
           pipenv install --dev
-          pipenv install pip install -r requirements_extra.txt
+          pipenv run pip install -r requirements_extra.txt
 
       - name: Run tests
         working-directory: ./code/flows
