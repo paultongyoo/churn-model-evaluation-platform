@@ -82,7 +82,8 @@ repos:
         args: [
           "-rn", # Only display messages
           "-sn", # Don't display the score
-          "--recursive=y"
+          "--recursive=y",
+          "--disable=missing-class-docstring,pointless-string-statement"
         ]
         additional_dependencies:
         - pylint
@@ -90,11 +91,9 @@ repos:
         - boto3
         - mlflow
         - pandas
-  - repo: local
-    hooks:
       - id: pytest-check
         name: pytest-check
-        entry: pytest
+        entry: pytest --import-mode=importlib
         language: python
         pass_filenames: false
         always_run: true
@@ -104,3 +103,7 @@ repos:
         ]
         additional_dependencies:
         - pytest
+        - boto3
+        - prefect
+        - mlflow
+        - pandas
