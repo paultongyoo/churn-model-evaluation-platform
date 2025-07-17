@@ -91,9 +91,11 @@ repos:
         - boto3
         - mlflow
         - pandas
+        - xgboost
+        - optuna
       - id: pytest-check
         name: pytest-check
-        entry: pytest --import-mode=importlib
+        entry: pytest -v --import-mode=importlib
         language: python
         pass_filenames: false
         always_run: true
