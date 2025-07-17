@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import pandas as pd
 from orchestration.churn_prediction_pipeline import validate_file_input
+from pandas.testing import assert_frame_equal
 
 
 class TestValidateFileInput(unittest.TestCase):
@@ -42,9 +43,8 @@ class TestValidateFileInput(unittest.TestCase):
 
         mock_bucket = "any_bucket"
         mock_key = "key_with_required_file_extension.csv"
-        mock_input_example = MagicMock()
-        mock_input_example.columns = pd.Index(
-            ["expected_feature_1", "expected_feature_2"]
+        mock_input_example = pd.DataFrame(
+            columns=["expected_feature_1", "expected_feature_2"]
         )
 
         # Set up mock return values
@@ -60,7 +60,7 @@ class TestValidateFileInput(unittest.TestCase):
             }
         )
 
-        result, error_message = validate_file_input.fn(
+        result, input_df, error_message = validate_file_input.fn(
             mock_bucket, mock_key, mock_input_example
         )
 
@@ -74,6 +74,7 @@ class TestValidateFileInput(unittest.TestCase):
 
         # Assert that the result is True and no error message is returned
         self.assertTrue(result)
+        assert_frame_equal(input_df, mock_pd.read_csv.return_value)
         self.assertIsNone(error_message)
 
     def test_validate_file_input_invalid_csv(self):
@@ -82,21 +83,20 @@ class TestValidateFileInput(unittest.TestCase):
         """
         mock_bucket = "any_bucket"
         mock_key = "malformed.csv"
-        mock_input_example = MagicMock()
-        mock_input_example.columns = pd.Index(
-            ["expected_feature_1", "expected_feature_2"]
+        mock_input_example = pd.DataFrame(
+            columns=["expected_feature_1", "expected_feature_2"]
         )
 
         # Simulate invalid binary data
         binary_data = b"\xff\xfe\xfa\xfb\xfd"
         self.mock_s3_client.get_object.return_value = {"Body": BytesIO(binary_data)}
 
-        result, error_message = validate_file_input.fn(
+        result, input_df, error_message = validate_file_input.fn(
             mock_bucket, mock_key, mock_input_example
         )
 
         self.assertFalse(result)
-        print(error_message)
+        self.assertIsNone(input_df)
         self.assertTrue(error_message.startswith("Error reading CSV file"))
 
     @patch("orchestration.churn_prediction_pipeline.pd")
@@ -108,9 +108,8 @@ class TestValidateFileInput(unittest.TestCase):
 
         mock_bucket = "any_bucket"
         mock_key = "expected_extension.csv"
-        mock_input_example = MagicMock()
-        mock_input_example.columns = pd.Index(
-            ["expected_feature_1", "expected_feature_2"]
+        mock_input_example = pd.DataFrame(
+            columns=["expected_feature_1", "expected_feature_2"]
         )
 
         self.mock_s3_client.get_object.return_value = {
@@ -125,11 +124,12 @@ class TestValidateFileInput(unittest.TestCase):
             }
         )
 
-        result, error_message = validate_file_input.fn(
+        result, input_df, error_message = validate_file_input.fn(
             mock_bucket, mock_key, mock_input_example
         )
 
         self.assertFalse(result)
+        self.assertIsNone(input_df)
         self.assertEqual(
             error_message,
             f"""Input file {mock_key} does not match expected structure.

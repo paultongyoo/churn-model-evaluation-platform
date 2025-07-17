@@ -71,6 +71,8 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
         input_example (pd.DataFrame): Example DataFrame structure for validation.
     Returns:
         bool: True if the file is valid, False otherwise.
+        pd.DataFrame: The DataFrame read from the file if valid, None if invalid.
+        str: Error message if validation fails, None if successful.
     """
     logger = get_run_logger()
     logger.info("Validating S3 key: %s", key)
@@ -78,7 +80,7 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
     if not key.endswith(".csv"):
         err_msg = f"Invalid file type for {key}. Expected a CSV file."
         logger.error(err_msg)
-        return False, err_msg
+        return False, None, err_msg
 
     # Read the file from S3
     try:
@@ -87,7 +89,7 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
     except Exception as e:
         err_msg = f"Error reading CSV file {key}: {e}"
         logger.error(err_msg)
-        return False, err_msg
+        return False, None, err_msg
 
     data.columns = data.columns.str.strip()  # Strip whitespace from column names
     logger.info("Data columns: %s", data.columns.tolist())
@@ -97,9 +99,9 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
         err_msg = f"""Input file {key} does not match expected structure.
             Expected columns: {input_example.columns.tolist()}"""
         logger.error(err_msg)
-        return False, err_msg
+        return False, None, err_msg
 
-    return True, None
+    return True, data, None
 
 
 @task
@@ -177,14 +179,13 @@ def churn_prediction_pipeline(bucket: str, key: str):
         latest_s3_key = move_to_folder(bucket, key, FOLDER_PROCESSING)
 
         # Validate the input file, using the model input example
-        success, err_msg = validate_file_input(bucket, latest_s3_key, input_example)
+        success, _, err_msg = validate_file_input(bucket, latest_s3_key, input_example)
         if not success:
             move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
             return
 
         # Here you would call other tasks to perform the steps of the pipeline
         # For example:
-        # data = ingest_data()
         # preprocessed_data = preprocess_data(data)
         # model = train_model(preprocessed_data)
         # evaluate_model(model, preprocessed_data)
