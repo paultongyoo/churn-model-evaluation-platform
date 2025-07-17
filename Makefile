@@ -1,12 +1,11 @@
 setup:
-	pipenv install --dev
 	pre-commit install
 
 test:
-	pipenv run pytest -v --import-mode=importlib
+	pytest -v --import-mode=importlib
 
 quality:
-	pipenv run pre-commit run --all-files
+	pre-commit run --all-files
 
 commit:
 	@echo "Staging all changes..."
