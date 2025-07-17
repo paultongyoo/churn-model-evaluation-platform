@@ -9,10 +9,12 @@ WORKDIR /opt/prefect/orchestration
 
 COPY [ "Pipfile", "Pipfile.lock", "./" ]
 
-RUN pipenv install --system --deploy --verbose
-
 # Copy your flow code into the container
+# Ensure this is done _before_ installing dependencies
+# to include local modules (e.g. 'modeling')
 COPY . /opt/prefect/orchestration
+
+RUN pipenv install --system --deploy --verbose
 
 # Prefect version label
 LABEL io.prefect.version=3.4.8
