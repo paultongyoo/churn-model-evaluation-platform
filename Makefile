@@ -42,4 +42,4 @@ apply:
 
 destroy:
 	cd infrastructure && \
-	terraform destroy -var-file=stg.tfvars --auto-approve
+	terraform destroy -var-file=vars/stg.tfvars --auto-approve
