@@ -12,3 +12,4 @@ __pycache__/
 .pytest_cache/
 .terraform.lock.hcl
 *.egg-info
+.pre-commit-config.yaml
