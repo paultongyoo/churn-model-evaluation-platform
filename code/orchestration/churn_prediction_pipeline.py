@@ -146,7 +146,7 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
 
 
 @task
-def prepare_churn_dataset(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+def prepare_dataset(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     """
     Prepare the labeled churn dataset for model inference.  Reuses the
     prepare_data function from the churn_training module.
@@ -277,7 +277,7 @@ def churn_prediction_pipeline(bucket: str, key: str):
             move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
             return
 
-        X, y = prepare_churn_dataset(input_df)
+        X, y = prepare_dataset(input_df)
 
         # TODO:  Assess feature drift and retrain if necessary
         # For now, we will skip the retraining logic and just generate predictions
