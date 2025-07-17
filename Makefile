@@ -26,7 +26,7 @@ commit:
 
 plan:
 	cd infrastructure && \
-	terraform plan -var-file=stg.tfvars
+	terraform plan -var-file=vars/stg.tfvars
 
 apply:
 	@echo "Running Terraform apply..."
