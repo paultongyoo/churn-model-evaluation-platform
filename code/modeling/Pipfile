@@ -15,12 +15,13 @@ numpy = "*"
 optuna = "*"
 dotenv = "*"
 prefect = "*"
-pre-commit = "*"
-pytest = "*"
-pylint = "*"
 
 [dev-packages]
 ipykernel = "*"
+ipython = "*"
+pytest = "*"
+pylint = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.10"
