@@ -5,6 +5,8 @@ test:
 	pytest -v --import-mode=importlib
 
 quality:
+	@ABS_PATH=$$(realpath code/orchestration/modeling) && \
+	sed "s|MODELING_PKG_ABS_PATH|$${ABS_PATH}|" .pre-commit-config.yaml.template > .pre-commit-config.yaml && \
 	pre-commit run --all-files
 
 commit:

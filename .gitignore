@@ -11,3 +11,4 @@ __pycache__/
 *.bak
 .pytest_cache/
 .terraform.lock.hcl
+*.egg-info

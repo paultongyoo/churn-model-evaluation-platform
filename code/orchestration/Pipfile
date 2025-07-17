@@ -12,6 +12,8 @@ numpy = "*"
 xgboost = "*"
 scikit-learn = "*"
 optuna = "*"
+modeling = {path = "./modeling"}
+seaborn = "*"
 
 [dev-packages]
 pytest = "*"

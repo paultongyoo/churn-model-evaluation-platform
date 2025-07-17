@@ -25,7 +25,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
-CUSTOMER_CHURN_DATASET = "../../data/customer_churn_0.csv"
+CUSTOMER_CHURN_DATASET = "../../../data/customer_churn_0.csv"
 TARGET_COLUMN = "Churn"
 
 
@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
     df = pd.read_csv(CUSTOMER_CHURN_DATASET)
 
-    env_path = Path().resolve().parents[1] / ".env"
+    env_path = Path().resolve().parents[2] / ".env"
     load_dotenv(dotenv_path=env_path)
     MLFLOW_TRACKING_URI = os.getenv(
         "MLFLOW_TRACKING_URI"
