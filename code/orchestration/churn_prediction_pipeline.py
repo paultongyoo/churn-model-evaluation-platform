@@ -211,6 +211,7 @@ def log_predictions(
     predictions_df = X.copy()
     predictions_df["Churn_Actual"] = y_actual
     predictions_df["Churn_Prediction"] = y_pred
+    predictions_df["Churn_Prediction"] = predictions_df["Churn_Prediction"].astype(bool)
 
     # Define the output file name by combining original key and model details
     filename = os.path.basename(key)
