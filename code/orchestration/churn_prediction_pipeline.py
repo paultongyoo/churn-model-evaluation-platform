@@ -214,10 +214,11 @@ def log_predictions(
 
     # Define the output file name by combining original key and model details
     filename = os.path.basename(key)
+    filename = filename.replace(".csv", "")
     model_version_obj = mlflow.tracking.MlflowClient().get_model_version_by_alias(
         name=MODEL_NAME, alias=MODEL_ALIAS
     )
-    model_version = model_version_obj.name
+    model_version = model_version_obj.version
     output_filename = f"{filename}_predictions_{MODEL_NAME}_v{model_version}.csv"
     logger.info("Output filename for predictions: %s", output_filename)
     output_key = f"{FOLDER_PROCESSING}/{output_filename}"
