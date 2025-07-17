@@ -66,6 +66,9 @@ module "alb" {
     subnet_ids = var.subnet_ids
     my_ip = var.my_ip
     ecs_sg_id = module.ecs_stack.ecs_sg_id
+    db_username = var.db_username
+    db_password = var.db_password
+    db_endpoint = module.rds_postgres.endpoint
 }
 
 module "s3_to_prefect_lambda" {

@@ -78,6 +78,9 @@ resource "null_resource" "create_additional_dbs" {
 
       echo "Creating prefect_db..."
       PGPASSWORD='${var.db_password}' psql -h ${aws_db_instance.postgres.address} -U ${var.db_username} -d postgres -c "CREATE DATABASE prefect_db;"
+
+      echo "Creating metrics_db..."
+      PGPASSWORD='${var.db_password}' psql -h ${aws_db_instance.postgres.address} -U ${var.db_username} -d postgres -c "CREATE DATABASE metrics_db;"
     EOT
 
     interpreter = ["/bin/bash", "-c"]

@@ -160,3 +160,24 @@ resource "null_resource" "write_service_urls_to_env" {
 
   depends_on = [aws_lb.main]
 }
+
+resource "null_resource" "store_prefect_secrets" {
+  provisioner "local-exec" {
+    command = <<EOT
+bash -c " \
+source ../.env && \
+echo '📦 Installing Prefect and storing secrets...' && \
+pip install --quiet prefect && \
+python3 store_prefect_secrets.py
+"
+EOT
+
+    environment = {
+      DB_USERNAME = var.db_username,
+      DB_PASSWORD = var.db_password,
+      DB_ENDPOINT = var.db_endpoint
+    }
+  }
+
+  depends_on = [null_resource.write_service_urls_to_env]
+}

@@ -19,7 +19,7 @@ jobs:
     env:
       ECR_REPO_NAME: mlops-churn-pipeline-prefect
       WORK_POOL_NAME: mlops-churn-pipeline-pool
-      PREFECT_API_URL: http://mlops-churn-pipeline-alb-864388427.us-east-2.elb.amazonaws.com:4200/api
+      PREFECT_API_URL: http://mlops-churn-pipeline-alb-1918604706.us-east-2.elb.amazonaws.com:4200/api
 
     steps:
     - name: Checkout code

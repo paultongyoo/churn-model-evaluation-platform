@@ -21,3 +21,18 @@ variable "ecs_sg_id" {
   description = "Security group ID for the ECS tasks"
   type        = string
 }
+
+variable "db_username" {
+  description = "RDS database username"
+  type        = string
+}
+
+variable "db_password" {
+  description = "RDS database password"
+  sensitive   = true
+}
+
+variable "db_endpoint" {
+  description = "RDS database endpoint"
+  type        = string
+}
