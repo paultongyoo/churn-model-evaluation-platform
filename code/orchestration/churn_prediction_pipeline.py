@@ -14,7 +14,7 @@ from datetime import timezone
 import boto3
 import mlflow.pyfunc
 import pandas as pd
-from orchestration.modeling.churn_training import prepare_data
+from modeling.churn_training import prepare_data
 from prefect import flow
 from prefect import get_run_logger
 from prefect import task

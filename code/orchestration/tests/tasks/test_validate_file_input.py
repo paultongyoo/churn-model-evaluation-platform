@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pandas as pd
-from orchestration.churn_prediction_pipeline import validate_file_input
+from churn_prediction_pipeline import validate_file_input
 from pandas.testing import assert_frame_equal
 
 
@@ -16,13 +16,9 @@ class TestValidateFileInput(unittest.TestCase):
 
     def setUp(self):
 
-        self.patcher_s3_client = patch(
-            "orchestration.churn_prediction_pipeline.s3_client"
-        )
-        self.patcher_logger = patch(
-            "orchestration.churn_prediction_pipeline.get_run_logger"
-        )
-        self.patcher_pd = patch("orchestration.churn_prediction_pipeline.pd")
+        self.patcher_s3_client = patch("churn_prediction_pipeline.s3_client")
+        self.patcher_logger = patch("churn_prediction_pipeline.get_run_logger")
+        self.patcher_pd = patch("churn_prediction_pipeline.pd")
 
         self.mock_s3_client = self.patcher_s3_client.start()
         self.mock_logger = self.patcher_logger.start()
@@ -31,7 +27,7 @@ class TestValidateFileInput(unittest.TestCase):
         self.patcher_s3_client.stop()
         self.patcher_logger.stop()
 
-    @patch("orchestration.churn_prediction_pipeline.pd")
+    @patch("churn_prediction_pipeline.pd")
     def test_validate_file_input_success(self, mock_pd):
         """
         Test that validate_file_input returns True when the file confirms
@@ -99,7 +95,7 @@ class TestValidateFileInput(unittest.TestCase):
         self.assertIsNone(input_df)
         self.assertTrue(error_message.startswith("Error reading CSV file"))
 
-    @patch("orchestration.churn_prediction_pipeline.pd")
+    @patch("churn_prediction_pipeline.pd")
     def test_validate_file_input_missing_columns(self, mock_pd):
         """
         Test that validate_file_input returns False when the file does not contain

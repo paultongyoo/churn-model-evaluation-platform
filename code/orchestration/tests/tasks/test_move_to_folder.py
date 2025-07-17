@@ -5,8 +5,8 @@ This file contains tests for the move_to_folder function.
 import unittest
 from unittest.mock import patch
 
-from orchestration.churn_prediction_pipeline import FOLDER_LOGS
-from orchestration.churn_prediction_pipeline import move_to_folder
+from churn_prediction_pipeline import FOLDER_LOGS
+from churn_prediction_pipeline import move_to_folder
 
 """
 Test class for the move_to_folder function.
@@ -18,12 +18,8 @@ correctly moves an S3 object to a specified folder and handles errors appropriat
 class TestMoveToFolder(unittest.TestCase):
 
     def setUp(self):
-        self.patcher_s3_client = patch(
-            "orchestration.churn_prediction_pipeline.s3_client"
-        )
-        self.patcher_logger = patch(
-            "orchestration.churn_prediction_pipeline.get_run_logger"
-        )
+        self.patcher_s3_client = patch("churn_prediction_pipeline.s3_client")
+        self.patcher_logger = patch("churn_prediction_pipeline.get_run_logger")
 
         self.mock_s3_client = self.patcher_s3_client.start()
         self.mock_logger = self.patcher_logger.start()

@@ -1,2 +1,2 @@
 [tool.pylint.main]
-init-hook = 'import sys; sys.path.insert(0, "code")'
+init-hook = 'import sys; sys.path.insert(0, "code/orchestration")'
