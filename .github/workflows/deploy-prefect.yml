@@ -36,9 +36,7 @@ jobs:
 
     - name: Install dependencies with pipenv
       working-directory: ./code/flows
-      run: |
-        pipenv install --dev
-#pipenv run pip install -r requirements_extra.txt
+      run: pipenv install --dev
 
     - name: Run tests
       working-directory: ./code/flows
