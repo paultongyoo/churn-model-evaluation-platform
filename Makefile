@@ -8,13 +8,18 @@ test:
 quality:
 	pipenv run pre-commit run --all-files
 
-commit: quality test
+commit:
 	@echo "Staging all changes..."
 	git add .
 
 	@echo "Enter commit message: " && read msg && \
 	if [ -n "$$msg" ]; then \
+		echo "Committing changes..."; \
 		git commit -m "$$msg"; \
+		echo "Pulling latest changes from origin..."; \
+		git pull --rebase; \
+		echo "Pushing to origin..."; \
+		git push origin HEAD; \
 	else \
 		echo "Aborted: No commit message entered."; \
 	fi
