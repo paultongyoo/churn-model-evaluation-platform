@@ -7,16 +7,20 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pandas as pd
-from flows.churn_prediction_pipeline import validate_file_input
+from orchestration.churn_prediction_pipeline import validate_file_input
 
 
 class TestValidateFileInput(unittest.TestCase):
 
     def setUp(self):
 
-        self.patcher_s3_client = patch("flows.churn_prediction_pipeline.s3_client")
-        self.patcher_logger = patch("flows.churn_prediction_pipeline.get_run_logger")
-        self.patcher_pd = patch("flows.churn_prediction_pipeline.pd")
+        self.patcher_s3_client = patch(
+            "orchestration.churn_prediction_pipeline.s3_client"
+        )
+        self.patcher_logger = patch(
+            "orchestration.churn_prediction_pipeline.get_run_logger"
+        )
+        self.patcher_pd = patch("orchestration.churn_prediction_pipeline.pd")
 
         self.mock_s3_client = self.patcher_s3_client.start()
         self.mock_pd = self.patcher_pd.start()

@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from flows.churn_prediction_pipeline import fetch_model
+from orchestration.churn_prediction_pipeline import fetch_model
 
 """
 Test class for the fetch_model function.
@@ -18,8 +18,10 @@ correctly retrieves a model from MLflow and handles errors appropriately.
 class TestFetchModel(unittest.TestCase):
 
     def setUp(self):
-        self.patcher_mlflow = patch("flows.churn_prediction_pipeline.mlflow")
-        self.patcher_logger = patch("flows.churn_prediction_pipeline.get_run_logger")
+        self.patcher_mlflow = patch("orchestration.churn_prediction_pipeline.mlflow")
+        self.patcher_logger = patch(
+            "orchestration.churn_prediction_pipeline.get_run_logger"
+        )
 
         self.mock_mlflow = self.patcher_mlflow.start()
         self.mock_logger = self.patcher_logger.start()

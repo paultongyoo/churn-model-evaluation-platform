@@ -98,7 +98,7 @@ repos:
         pass_filenames: false
         always_run: true
         args: [
-          "code/flows/tests/",
+          "code/orchestration/tests/",
           "code/s3_to_prefect_lambda/tests/"
         ]
         additional_dependencies:

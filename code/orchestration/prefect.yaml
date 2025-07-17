@@ -1,4 +1,4 @@
-name: flows
+name: orchestration
 prefect-version: 3.4.8
 
 build:
@@ -17,7 +17,7 @@ push:
 
 pull:
 - prefect.deployments.steps.set_working_directory:
-    directory: /opt/prefect/flows
+    directory: /opt/prefect/orchestration
 
 deployments:
 - name: default

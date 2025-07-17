@@ -5,14 +5,14 @@ RUN pip install -U pip
 RUN pip install pipenv
 
 # Set working directory in container
-WORKDIR /opt/prefect/flows
+WORKDIR /opt/prefect/orchestration
 
 COPY [ "Pipfile", "Pipfile.lock", "./" ]
 
 RUN pipenv install --system --deploy --verbose
 
 # Copy your flow code into the container
-COPY . /opt/prefect/flows
+COPY . /opt/prefect/orchestration
 
 # Prefect version label
 LABEL io.prefect.version=3.4.8
