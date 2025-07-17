@@ -40,7 +40,7 @@ jobs:
 
     - name: Run tests
       working-directory: ./code/orchestration
-      run: PYTHONPATH=code pipenv run pytest --maxfail=1 --disable-warnings --import-mode=importlib
+      run: PYTHONPATH=code pipenv run pytest -v --maxfail=1 --disable-warnings --import-mode=importlib
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2

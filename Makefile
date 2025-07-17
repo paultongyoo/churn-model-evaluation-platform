@@ -3,7 +3,7 @@ setup:
 	pre-commit install
 
 test:
-	pipenv run pytest --import-mode=importlib
+	pipenv run pytest -v --import-mode=importlib
 
 quality:
 	pipenv run pre-commit run --all-files
