@@ -11,6 +11,7 @@ mlflow = "*"
 numpy = "*"
 xgboost = "*"
 scikit-learn = "*"
+optuna = "*"
 
 [dev-packages]
 pytest = "*"

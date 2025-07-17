@@ -108,4 +108,7 @@ repos:
         - boto3
         - prefect
         - mlflow
+        - optuna
+        - xgboost
+        - scikit-learn
         - pandas

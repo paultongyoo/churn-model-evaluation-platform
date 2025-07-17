@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name,broad-exception-caught
+# pylint: disable=invalid-name,broad-exception-caught,fixme,too-many-arguments,too-many-positional-arguments
 """
 This module houses the Prefect flow for the churn prediction pipeline.
 It orchestrates the entire process from data ingestion to model evaluation.
@@ -14,6 +14,7 @@ from datetime import timezone
 import boto3
 import mlflow.pyfunc
 import pandas as pd
+from modeling.churn_training import prepare_data
 from prefect import flow
 from prefect import get_run_logger
 from prefect import task
@@ -32,6 +33,46 @@ FOLDER_PROCESSING = "data/processing"
 FOLDER_PROCESSED = "data/processed"
 FOLDER_ERRORED = "data/errored"
 FOLDER_LOGS = "data/logs"
+
+
+@task
+def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
+    """
+    Move the S3 object to a specified folder.
+    """
+    logger = get_run_logger()
+
+    # Move the file to the specified folder
+    filename = key.split("/")[-1]
+    new_key = f"{folder}/{filename}"
+    logger.info("Attempting to move %s://%s to %s...", bucket, key, new_key)
+    s3_client.copy_object(
+        Bucket=bucket, CopySource={"Bucket": bucket, "Key": key}, Key=new_key
+    )
+    s3_client.delete_object(Bucket=bucket, Key=key)
+    logger.info("Moved %s to %s", key, new_key)
+
+    # Log the move
+    log_msg = (
+        f"{datetime.now(timezone.utc).isoformat()} Moved {key} → {new_key}. {message}\n"
+    )
+    logger.info(log_msg.strip())
+
+    # Define log key
+    log_key = f"{FOLDER_LOGS}/{filename}.log"
+
+    # Append log to S3 (create if doesn't exist)
+    try:
+        existing = (
+            s3_client.get_object(Bucket=bucket, Key=log_key)["Body"].read().decode()
+        )
+    except s3_client.exceptions.NoSuchKey:
+        existing = ""
+
+    updated_log = existing + log_msg
+    s3_client.put_object(Bucket=bucket, Key=log_key, Body=updated_log.encode())
+
+    return new_key
 
 
 @task
@@ -105,43 +146,96 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
 
 
 @task
-def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
+def prepare_churn_dataset(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     """
-    Move the S3 object to a specified folder.
+    Prepare the labeled churn dataset for model inference.  Reuses the
+    prepare_data function from the churn_training module.
+    Args:
+        df (pd.DataFrame): The input DataFrame containing churn data.
+    Returns:
+        tuple: A tuple containing:
+            - pd.DataFrame: The feature DataFrame (X).
+            - pd.Series: The target Series (y).
     """
     logger = get_run_logger()
+    logger.info("Preparing churn dataset...")
 
-    # Move the file to the specified folder
-    filename = key.split("/")[-1]
-    new_key = f"{folder}/{filename}"
-    logger.info("Attempting to move %s://%s to %s...", bucket, key, new_key)
-    s3_client.copy_object(
-        Bucket=bucket, CopySource={"Bucket": bucket, "Key": key}, Key=new_key
+    return prepare_data(df)
+
+
+@task
+def generate_predictions(X: pd.DataFrame, model) -> pd.DataFrame:
+    """
+    Generates churn predictions using the provided model.
+    Args:
+        X (pd.DataFrame): The feature DataFrame.
+        model (mlflow.pyfunc.PyFuncModel): The MLflow model to use for predictions.
+    Returns:
+        pd.DataFrame: The DataFrame with predictions appended as a new column.
+    """
+    logger = get_run_logger()
+    logger.info("Generating predictions...")
+
+    # Make predictions
+    y_pred = model.predict(X)
+    y_pred_proba = model.predict_proba(X)[
+        :, 1
+    ]  # Get probabilities for the positive class
+
+    logger.info("Predictions generated successfully.")
+    return y_pred, y_pred_proba
+
+
+@task
+def log_predictions(
+    X: pd.DataFrame,
+    y_actual: pd.Series,
+    y_pred: pd.Series,
+    y_pred_proba: pd.Series,
+    bucket: str,
+    key: str,
+) -> str:
+    """
+    Logs the predictions to S3 and returns the new S3 key.
+    Args:
+        X (pd.DataFrame): The feature DataFrame.
+        y_actual (pd.Series): The actual labels.
+        y_pred (pd.Series): The predicted labels.
+        y_pred_proba (pd.Series): The predicted probabilities.
+        model (mlflow.pyfunc.PyFuncModel): The MLflow model used for predictions.
+        bucket (str): The S3 bucket to log the predictions.
+        key (str): The S3 key for the input data.
+    Returns:
+        str: The new S3 key where the predictions are logged.
+    """
+    logger = get_run_logger()
+    logger.info("Logging predictions to S3...")
+
+    # Create final DataFrame with predictions
+    predictions_df = X.copy()
+    predictions_df["Churn_Actual"] = y_actual
+    predictions_df["Churn_Prediction"] = y_pred
+    predictions_df["Churn_Probability"] = y_pred_proba
+
+    # Define the output file name by combining original key and model details
+    filename = os.path.basename(key)
+    model_version_obj = mlflow.tracking.MlflowClient().get_model_version_by_alias(
+        name=MODEL_NAME, alias=MODEL_ALIAS
     )
+    model_version = model_version_obj.name
+    output_filename = f"{filename}_predictions_{MODEL_NAME}_v{model_version}.csv"
+    logger.info("Output filename for predictions: %s", output_filename)
+    output_key = f"{FOLDER_PROCESSING}/{output_filename}"
+
+    # Replace the original file with predictions
+    logger.info("Uploading predictions to S3: %s://%s", bucket, output_key)
+    csv_buffer = predictions_df.to_csv(index=False)
+    s3_client.put_object(Bucket=bucket, Key=output_key, Body=csv_buffer)
     s3_client.delete_object(Bucket=bucket, Key=key)
-    logger.info("Moved %s to %s", key, new_key)
 
-    # Log the move
-    log_msg = (
-        f"{datetime.now(timezone.utc).isoformat()} Moved {key} → {new_key}. {message}\n"
-    )
-    logger.info(log_msg.strip())
+    logger.info("Predictions logged successfully to %s://%s", bucket, output_key)
 
-    # Define log key
-    log_key = f"{FOLDER_LOGS}/{filename}.log"
-
-    # Append log to S3 (create if doesn't exist)
-    try:
-        existing = (
-            s3_client.get_object(Bucket=bucket, Key=log_key)["Body"].read().decode()
-        )
-    except s3_client.exceptions.NoSuchKey:
-        existing = ""
-
-    updated_log = existing + log_msg
-    s3_client.put_object(Bucket=bucket, Key=log_key, Body=updated_log.encode())
-
-    return new_key
+    return output_key
 
 
 @flow(name="churn_prediction_pipeline", log_prints=True)
@@ -179,16 +273,30 @@ def churn_prediction_pipeline(bucket: str, key: str):
         latest_s3_key = move_to_folder(bucket, key, FOLDER_PROCESSING)
 
         # Validate the input file, using the model input example
-        success, _, err_msg = validate_file_input(bucket, latest_s3_key, input_example)
+        success, input_df, err_msg = validate_file_input(
+            bucket, latest_s3_key, input_example
+        )
         if not success:
             move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
             return
 
-        # Here you would call other tasks to perform the steps of the pipeline
-        # For example:
-        # preprocessed_data = preprocess_data(data)
-        # model = train_model(preprocessed_data)
-        # evaluate_model(model, preprocessed_data)
+        X, y = prepare_churn_dataset(input_df)
+
+        # TODO:  Assess feature drift and retrain if necessary
+        # For now, we will skip the retraining logic and just generate predictions
+
+        y_pred, y_pred_proba = generate_predictions(X, model)
+
+        # TODO: Assess prediction drift and retrain if necessary
+        # For now, we will skip the retraining logic and just log the predictions
+
+        latest_s3_key = log_predictions(
+            X, y, y_pred, y_pred_proba, bucket, latest_s3_key
+        )
+
+        logger.info("Churn prediction pipeline completed successfully.")
+        move_to_folder(bucket, latest_s3_key, FOLDER_PROCESSED)
+
     except Exception as e:
         err_msg = f"An unexpected error occurred in the churn prediction pipeline: {e}"
         logger.error(err_msg)
