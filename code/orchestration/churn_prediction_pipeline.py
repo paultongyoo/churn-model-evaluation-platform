@@ -12,7 +12,7 @@ from datetime import datetime
 from datetime import timezone
 
 import boto3
-import mlflow.pyfunc
+import mlflow
 import pandas as pd
 from modeling.churn_training import prepare_data
 from prefect import flow
@@ -83,7 +83,7 @@ def fetch_model(model_name: str, alias: str):
         model_name (str): The name of the model in MLflow.
         alias (str): The alias of the model version to fetch.
     Returns:
-        mlflow.pyfunc.PyFuncModel: The loaded MLflow model.
+        mlflow.pyfunc.PyFuncModel: The fetched model.
     """
     logger = get_run_logger()
     logger.info("Setting MLflow tracking URI: %s", MLFLOW_TRACKING_URI)
@@ -178,12 +178,9 @@ def generate_predictions(X: pd.DataFrame, model) -> pd.DataFrame:
 
     # Make predictions
     y_pred = model.predict(X)
-    y_pred_proba = model.predict_proba(X)[
-        :, 1
-    ]  # Get probabilities for the positive class
 
     logger.info("Predictions generated successfully.")
-    return y_pred, y_pred_proba
+    return y_pred
 
 
 @task
@@ -191,7 +188,6 @@ def log_predictions(
     X: pd.DataFrame,
     y_actual: pd.Series,
     y_pred: pd.Series,
-    y_pred_proba: pd.Series,
     bucket: str,
     key: str,
 ) -> str:
@@ -215,7 +211,6 @@ def log_predictions(
     predictions_df = X.copy()
     predictions_df["Churn_Actual"] = y_actual
     predictions_df["Churn_Prediction"] = y_pred
-    predictions_df["Churn_Probability"] = y_pred_proba
 
     # Define the output file name by combining original key and model details
     filename = os.path.basename(key)
@@ -285,14 +280,12 @@ def churn_prediction_pipeline(bucket: str, key: str):
         # TODO:  Assess feature drift and retrain if necessary
         # For now, we will skip the retraining logic and just generate predictions
 
-        y_pred, y_pred_proba = generate_predictions(X, model)
+        y_pred = generate_predictions(X, model)
 
         # TODO: Assess prediction drift and retrain if necessary
         # For now, we will skip the retraining logic and just log the predictions
 
-        latest_s3_key = log_predictions(
-            X, y, y_pred, y_pred_proba, bucket, latest_s3_key
-        )
+        latest_s3_key = log_predictions(X, y, y_pred, bucket, latest_s3_key)
 
         logger.info("Churn prediction pipeline completed successfully.")
         move_to_folder(bucket, latest_s3_key, FOLDER_PROCESSED)
