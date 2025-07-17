@@ -27,19 +27,6 @@ from xgboost import XGBClassifier
 
 CUSTOMER_CHURN_DATASET = "../../data/customer_churn_0.csv"
 TARGET_COLUMN = "Churn"
-df = pd.read_csv(CUSTOMER_CHURN_DATASET)
-
-env_path = Path().resolve().parents[1] / ".env"
-load_dotenv(dotenv_path=env_path)
-MLFLOW_TRACKING_URI = os.getenv(
-    "MLFLOW_TRACKING_URI"
-)  # This should be set in your .env file
-print(f"MLFLOW_TRACKING_URI: {MLFLOW_TRACKING_URI}")
-if not MLFLOW_TRACKING_URI:
-    raise ValueError("MLFLOW_TRACKING_URI is not set. Please check your .env file.")
-
-mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-mlflow.set_experiment("mlops-churn-pipeline")
 
 
 def prepare_data(data_df):
@@ -58,14 +45,6 @@ def prepare_data(data_df):
     return data_X, data_y
 
 
-X, y = prepare_data(df)
-
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-
-
 def train_model(data_X, data_y, params):
     """
     Trains an XGBoost model with the given parameters on the provided data.
@@ -73,15 +52,6 @@ def train_model(data_X, data_y, params):
     model = XGBClassifier(**params, objective="binary:logistic", eval_metric="logloss")
     model.fit(data_X, data_y)
     return model
-
-
-base_params = {
-    "n_estimators": 100,
-    "max_depth": 3,
-    "learning_rate": 0.1,
-    "random_state": 42,
-}
-clf = train_model(X_train, y_train, base_params)
 
 
 def evaluate_model(
@@ -200,35 +170,65 @@ def tune_model_with_cv(data_X, data_y):
     return model
 
 
-# Uncomment the line below to run hyperparameter tuning
-# clf = tune_model_with_cv(X_train, y_train)
+if __name__ == "__main__":
 
-# Train final model with best tuned hyperparameters to-date
-# These parameters are based on the best results from previous tuning runs
-# X_test precision/recall/f1: 0.92 0.81 0.86
-best_params_to_date = {
-    "n_estimators": 352,
-    "learning_rate": 0.07154324375438634,
-    "max_depth": 7,
-    "min_child_weight": 1,
-    "gamma": 0.23500630396472585,
-    "subsample": 0.9472361823473306,
-    "colsample_bytree": 0.6149847610884563,
-    "reg_alpha": 0.029080723124195962,
-    "reg_lambda": 1.9394489642211972,
-}
-clf = train_model(X_train, y_train, best_params_to_date)
+    df = pd.read_csv(CUSTOMER_CHURN_DATASET)
 
-# First evaluate tuned model on training data to check for bias
-evaluate_model(clf, X_train, y_train, "X_train")
+    env_path = Path().resolve().parents[1] / ".env"
+    load_dotenv(dotenv_path=env_path)
+    MLFLOW_TRACKING_URI = os.getenv(
+        "MLFLOW_TRACKING_URI"
+    )  # This should be set in your .env file
+    print(f"MLFLOW_TRACKING_URI: {MLFLOW_TRACKING_URI}")
+    if not MLFLOW_TRACKING_URI:
+        raise ValueError("MLFLOW_TRACKING_URI is not set. Please check your .env file.")
 
-# Next evaluate tuned model on test data to check for variance
-evaluate_model(
-    clf,
-    X_test,
-    y_test,
-    "X_test",
-    log_model=True,
-    log_model_X_train=X_train,
-    log_model_y_train=y_train,
-)
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    mlflow.set_experiment("mlops-churn-pipeline")
+
+    X, y = prepare_data(df)
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    # base_params = {
+    #     "n_estimators": 100,
+    #     "max_depth": 3,
+    #     "learning_rate": 0.1,
+    #     "random_state": 42,
+    # }
+    # clf = train_model(X_train, y_train, base_params)
+
+    # Uncomment the line below to run hyperparameter tuning
+    # clf = tune_model_with_cv(X_train, y_train)
+
+    # Train final model with best tuned hyperparameters to-date
+    # These parameters are based on the best results from previous tuning runs
+    # X_test precision/recall/f1: 0.92 0.81 0.86
+    best_params_to_date = {
+        "n_estimators": 352,
+        "learning_rate": 0.07154324375438634,
+        "max_depth": 7,
+        "min_child_weight": 1,
+        "gamma": 0.23500630396472585,
+        "subsample": 0.9472361823473306,
+        "colsample_bytree": 0.6149847610884563,
+        "reg_alpha": 0.029080723124195962,
+        "reg_lambda": 1.9394489642211972,
+    }
+    clf = train_model(X_train, y_train, best_params_to_date)
+
+    # First evaluate tuned model on training data to check for bias
+    evaluate_model(clf, X_train, y_train, "X_train")
+
+    # Next evaluate tuned model on test data to check for variance
+    evaluate_model(
+        clf,
+        X_test,
+        y_test,
+        "X_test",
+        log_model=True,
+        log_model_X_train=X_train,
+        log_model_y_train=y_train,
+    )
