@@ -39,7 +39,7 @@ class TestFetchModel(unittest.TestCase):
         mock_model.input_example = {"feature1": "value1", "feature2": "value2"}
         self.mock_mlflow.pyfunc.load_model.return_value = mock_model
 
-        model = fetch_model.fn("http://mlflow-server:5000", "test_model", "latest")
+        model = fetch_model.fn("test_model", "latest")
 
         self.assertEqual(
             model.input_example, {"feature1": "value1", "feature2": "value2"}
@@ -60,6 +60,6 @@ class TestFetchModel(unittest.TestCase):
         self.mock_mlflow.pyfunc.load_model.side_effect = RuntimeError(expected_error)
 
         with self.assertRaises(RuntimeError) as context:
-            fetch_model.fn("http://mlflow-server:5000", "missing_model", "latest")
+            fetch_model.fn("missing_model", "latest")
 
         self.assertTrue(str(context.exception).startswith(expected_error))

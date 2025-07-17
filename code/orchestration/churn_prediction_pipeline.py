@@ -35,7 +35,7 @@ FOLDER_LOGS = "data/logs"
 
 
 @task
-def fetch_model(mlflow_tracking_uri: str, model_name: str, alias: str):
+def fetch_model(model_name: str, alias: str):
     """
     Fetch the model from MLflow registry.
     Args:
@@ -45,11 +45,11 @@ def fetch_model(mlflow_tracking_uri: str, model_name: str, alias: str):
         mlflow.pyfunc.PyFuncModel: The loaded MLflow model.
     """
     logger = get_run_logger()
-    logger.info("Setting MLflow tracking URI: %s", mlflow_tracking_uri)
+    logger.info("Setting MLflow tracking URI: %s", MLFLOW_TRACKING_URI)
     logger.info("Fetching model '%s' with alias '%s'", model_name, alias)
 
     try:
-        mlflow.set_tracking_uri(mlflow_tracking_uri)
+        mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
         model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}@{alias}")
         logger.info("Model '%s' fetched successfully: %s", model_name, model)
         return model
@@ -169,7 +169,7 @@ def churn_prediction_pipeline(bucket: str, key: str):
             return
 
         # Fetch the model from MLflow
-        model = fetch_model(MLFLOW_TRACKING_URI, MODEL_NAME, MODEL_ALIAS)
+        model = fetch_model(MODEL_NAME, MODEL_ALIAS)
         input_example = pd.DataFrame(model.input_example)
         logger.info("Model input example columns: %s", input_example.columns.tolist())
 
