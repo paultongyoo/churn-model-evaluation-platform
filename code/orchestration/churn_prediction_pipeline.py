@@ -269,13 +269,16 @@ def generate_drift_report(prediction_df: pd.DataFrame):
     logger = get_run_logger()
     logger.info("Generating data drift report...")
 
-    # Load training data for drift comparison
+    # Load reference data for drift comparison
     try:
-        ARTIFACT_URI = (
-            f"models:/{MODEL_NAME}@{MODEL_ALIAS}/{MODEL_REFERENCE_DATA_FOLDER}"
-            f"/{MODEL_REFERENCE_DATA_FILE_NAME}"
+        model_version_obj = mlflow.tracking.MlflowClient().get_model_version_by_alias(
+            name=MODEL_NAME, alias=MODEL_ALIAS
         )
-        reference_data_local_path = download_artifacts(artifact_uri=ARTIFACT_URI)
+        run_id = model_version_obj.run_id
+        reference_data_local_path = download_artifacts(
+            run_id=run_id,
+            artifact_path=f"{MODEL_REFERENCE_DATA_FOLDER}/{MODEL_REFERENCE_DATA_FILE_NAME}",
+        )
         reference_df = pd.read_parquet(reference_data_local_path)
         logger.info(
             "Reference data loaded successfully from %s - Shape: %s",
@@ -284,8 +287,8 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         )
     except Exception as e:
         err_msg = (
-            f"Failed to load artifact data from {ARTIFACT_URI}' "
-            f"- Does it exist in the MLFlow registry?': {e}"
+            f"Failed to load artifact data from '{MODEL_REFERENCE_DATA_FOLDER}/"
+            f"{MODEL_REFERENCE_DATA_FILE_NAME}' - Does it exist in the MLFlow registry?': {e}"
         )
         logger.error(err_msg)
         raise RuntimeError(err_msg) from e
