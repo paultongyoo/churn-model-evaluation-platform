@@ -293,6 +293,16 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         logger.error(err_msg)
         raise RuntimeError(err_msg) from e
 
+    # Print info about the reference and prediction DataFrames
+    logger.info(
+        "Reference DataFrame info: %s",
+        reference_df.columns.info(),
+    )
+    logger.info(
+        "Predictions DataFrame info: %s",
+        prediction_df.columns.info(),
+    )
+
     # Define Evidently DataDefinition and Training and Inference datasets
     data_definition = DataDefinition(
         classification=[
