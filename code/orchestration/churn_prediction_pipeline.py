@@ -294,12 +294,12 @@ def generate_drift_report(prediction_df: pd.DataFrame):
 
     # Define Evidently DataDefinition and Training and Inference datasets
     data_definition = DataDefinition(
-        classification=[
-            BinaryClassification(
-                target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
-            )
-        ],
-        # numerical_columns=NUMERICAL_COLUMNS,
+        # classification=[
+        #     BinaryClassification(
+        #         target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
+        #     )
+        # ],
+        numerical_columns=NUMERICAL_COLUMNS,
     )
 
     reference_dataset = Dataset.from_pandas(
