@@ -302,6 +302,30 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         numerical_columns=NUMERICAL_COLUMNS,
     )
 
+    print("Checking if target and prediction columns exist in both dataframes...")
+    print(TARGET_COLUMN in reference_df.columns)
+    print(TARGET_PREDICTION_COLUMN in reference_df.columns)
+    print(TARGET_COLUMN in prediction_df.columns)
+    print(TARGET_PREDICTION_COLUMN in prediction_df.columns)
+
+    logger.info("Checking data types of target and prediction columns...")
+    print(type(reference_df[TARGET_COLUMN]))
+    print(type(reference_df[TARGET_PREDICTION_COLUMN]))
+    print(type(prediction_df[TARGET_COLUMN]))
+    print(type(prediction_df[TARGET_PREDICTION_COLUMN]))
+
+    print("Checking null counts in target and prediction columns...")
+    print(reference_df[TARGET_COLUMN].isnull().sum())  # Should be 0
+    print(reference_df[TARGET_PREDICTION_COLUMN].isnull().sum())  # Should be 0
+    print(prediction_df[TARGET_COLUMN].isnull().sum())  # Should be
+    print(prediction_df[TARGET_PREDICTION_COLUMN].isnull().sum())
+
+    print("Checking value counts in target and prediction columns...")
+    print(reference_df[TARGET_COLUMN].value_counts(dropna=False))
+    print(reference_df[TARGET_PREDICTION_COLUMN].value_counts(dropna=False))
+    print(prediction_df[TARGET_COLUMN].value_counts(dropna=False))
+    print(prediction_df[TARGET_PREDICTION_COLUMN].value_counts(dropna=False))
+
     reference_dataset = Dataset.from_pandas(
         reference_df, data_definition=data_definition
     )
