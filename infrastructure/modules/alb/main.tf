@@ -31,13 +31,15 @@ resource "aws_security_group" "alb_sg" {
     description     = "Allow ECS tasks to access MLflow via ALB on port 5000"
   }
 
-  # ingress {
-  #   from_port   = 5000
-  #   to_port     = 5000
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["${var.my_ip}/32"]
-  #   description = "Allow MLFlow from my IP"
-  # }
+  # Allows Prefect Worker ECS Task to access Evidently UI via ALB
+  ingress {
+    from_port       = 8000
+    to_port         = 8000
+    protocol        = "tcp"
+    #security_groups = [var.ecs_sg_id]
+    cidr_blocks = ["0.0.0.0/0"]
+    description     = "Allow ECS tasks to access Evidently UI via ALB on port 8000"
+  }
 
   egress {
     from_port   = 0
@@ -72,6 +74,14 @@ resource "aws_lb_target_group" "prefect" {
   target_type = "ip"
 }
 
+resource "aws_lb_target_group" "evidently_ui" {
+  name        = "${var.project_id}-evidently" # Shortened to <32 char
+  port        = 8000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+}
+
 # Listeners
 resource "aws_lb_listener" "mlflow" {
   load_balancer_arn = aws_lb.main.arn
@@ -92,6 +102,17 @@ resource "aws_lb_listener" "prefect" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.prefect.arn
+  }
+}
+
+resource "aws_lb_listener" "evidently_ui" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = 8000
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.evidently_ui.arn
   }
 }
 
@@ -125,10 +146,11 @@ resource "null_resource" "write_service_urls_to_env" {
         exit 1
       fi
 
-      echo "Updating .env file with MLFLOW_TRACKING_URI and PREFECT_API_URL..."
+      echo "Updating .env file with MLFLOW_TRACKING_URI, PREFECT_API_URL, and EVIDENTLY_UI_URL..."
 
       MLFLOW_TRACKING_URI="http://$DNS_NAME:5000"
       PREFECT_API_URL="http://$DNS_NAME:4200/api"
+      EVIDENTLY_UI_URL="http://$DNS_NAME:8000"
 
       # --- Update .env file ---
       if grep -q "^MLFLOW_TRACKING_URI=" "$ENV_FILE"; then
@@ -143,6 +165,12 @@ resource "null_resource" "write_service_urls_to_env" {
         echo "PREFECT_API_URL=$PREFECT_API_URL" >> "$ENV_FILE"
       fi
 
+      if grep -q "^EVIDENTLY_UI_URL=" "$ENV_FILE"; then
+        sed -i.bak "s|^EVIDENTLY_UI_URL=.*|EVIDENTLY_UI_URL=$EVIDENTLY_UI_URL|" "$ENV_FILE"
+      else
+        echo "EVIDENTLY_UI_URL=$EVIDENTLY_UI_URL" >> "$ENV_FILE"
+      fi
+
       ## --- Update deploy-prefect.yml env block ---
       if grep -q "PREFECT_API_URL:" "$WORKFLOW_FILE"; then
         sed -i.bak "s|PREFECT_API_URL:.*|PREFECT_API_URL: $PREFECT_API_URL|" "$WORKFLOW_FILE"
@@ -153,6 +181,7 @@ resource "null_resource" "write_service_urls_to_env" {
       echo "✅ Files updated:"
       echo "  .env -> MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI"
       echo "  .env -> PREFECT_API_URL=$PREFECT_API_URL"
+      echo "  .env -> EVIDENTLY_UI_URL=$EVIDENTLY_UI_URL"
       echo "  deploy-prefect.yml updated if PREFECT_API_URL was found"
     EOT
     interpreter = ["/bin/bash", "-c"]
@@ -175,7 +204,8 @@ EOT
     environment = {
       DB_USERNAME = var.db_username,
       DB_PASSWORD = var.db_password,
-      DB_ENDPOINT = var.db_endpoint
+      DB_ENDPOINT = var.db_endpoint,
+      EVIDENTLY_UI_URL = "http://${aws_lb.main.dns_name}:8000"
     }
   }
 

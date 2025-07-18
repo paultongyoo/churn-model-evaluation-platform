@@ -53,6 +53,11 @@ variable "mlflow_target_group_arn" {
   type        = string
 }
 
+variable "evidently_ui_target_group_arn" {
+  description = "ARN of the Evidently UI target group"
+  type        = string
+}
+
 variable "alb_sg_id" {
   description = "Security group ID for the Application Load Balancer"
   type        = string

@@ -103,11 +103,6 @@ resource "aws_iam_role_policy_attachment" "mlflow_logs_write_attachment" {
   policy_arn = aws_iam_policy.mlflow_logs_write.arn
 }
 
-resource "aws_iam_role_policy_attachment" "mlflow_ecr_access" {
-  role       = aws_iam_role.mlflow_task_exec_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
 resource "aws_cloudwatch_log_group" "mlflow_logs" {
   name              = "/ecs/${var.project_id}-mlflow"
   retention_in_days = 7
@@ -496,4 +491,111 @@ resource "null_resource" "write_work_pool_name_to_github_action_yml" {
   }
 
   depends_on = [aws_ecs_task_definition.prefect_worker]
+}
+
+######### Evidently UI ECS Task and Service #########
+
+resource "aws_ecs_task_definition" "evidently_ui" {
+  family                   = "evidently-ui"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = aws_iam_role.evidently_ui_task_exec_role.arn
+  task_role_arn            = aws_iam_role.evidently_ui_task_exec_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "evidently_ui"
+      image     = "evidently/evidently-service:0.7.10"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 8000
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project_id}-evidently-ui",
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_service" "evidently_ui" {
+  name            = "${var.project_id}-evidently-ui-service"
+  cluster         = aws_ecs_cluster.mlops_cluster.id
+  task_definition = aws_ecs_task_definition.evidently_ui.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  force_new_deployment = true
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_sg.id]
+  }
+
+  load_balancer {
+    target_group_arn = var.evidently_ui_target_group_arn
+    container_name   = "evidently_ui"
+    container_port   = 8000
+  }
+}
+
+resource "aws_iam_role" "evidently_ui_task_exec_role" {
+  name = "${var.project_id}-evidently-ui-task-exec-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_policy" "evidently_ui_logs_write" {
+  name = "${var.project_id}-evidently-ui-logs-write"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-evidently-ui:log-stream:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "evidently_ui_logs_write_attachment" {
+  role       = aws_iam_role.evidently_ui_task_exec_role.name
+  policy_arn = aws_iam_policy.evidently_ui_logs_write.arn
+}
+
+resource "aws_cloudwatch_log_group" "evidently_ui_logs" {
+  name              = "/ecs/${var.project_id}-evidently-ui"
+  retention_in_days = 7
+}
+
+resource "aws_security_group_rule" "allow_alb_to_evidently_ui" {
+  type                     = "ingress"
+  from_port                = 8000
+  to_port                  = 8000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_sg.id
+  source_security_group_id = var.alb_sg_id
 }
