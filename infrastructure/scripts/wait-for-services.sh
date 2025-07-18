@@ -84,8 +84,8 @@ for idx in "${!ENV_VARS[@]}"; do
 done
 
 # --- Update deploy-prefect.yml ---
-if grep -q "PREFECT_API_URL:" "$WORKFLOW_FILE"; then
-  sed -i "s|PREFECT_API_URL:.*|PREFECT_API_URL: $PREFECT_API_URL|" "$WORKFLOW_FILE"
+if /usr/bin/grep -q "PREFECT_API_URL:" "$WORKFLOW_FILE"; then
+  /usr/bin/sed -i "s|PREFECT_API_URL:.*|PREFECT_API_URL: $PREFECT_API_URL|" "$WORKFLOW_FILE"
   echo "📝 Updated PREFECT_API_URL in $WORKFLOW_FILE"
 else
   echo "⚠️ WARNING: PREFECT_API_URL not found in $WORKFLOW_FILE"
