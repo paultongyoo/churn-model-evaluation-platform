@@ -230,9 +230,8 @@ def log_predictions(
 
     # Create final DataFrame with predictions
     predictions_df = X.copy()
-    predictions_df["Churn_Actual"] = y_actual
-    predictions_df["Churn_Prediction"] = y_pred
-    predictions_df["Churn_Prediction"] = predictions_df["Churn_Prediction"].astype(bool)
+    predictions_df[TARGET_COLUMN] = y_actual
+    predictions_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(bool)
 
     # Define the output file name by combining original key and model details
     filename = os.path.basename(key)
@@ -292,16 +291,6 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         )
         logger.error(err_msg)
         raise RuntimeError(err_msg) from e
-
-    # Print info about the reference and prediction DataFrames
-    logger.info(
-        "Reference DataFrame info: %s",
-        reference_df.info(),
-    )
-    logger.info(
-        "Predictions DataFrame info: %s",
-        prediction_df.info(),
-    )
 
     # Define Evidently DataDefinition and Training and Inference datasets
     data_definition = DataDefinition(
