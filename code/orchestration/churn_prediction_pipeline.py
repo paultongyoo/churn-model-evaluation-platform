@@ -293,23 +293,23 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         raise RuntimeError(err_msg) from e
 
     # Define Evidently DataDefinition and Training and Inference datasets
-    # data_definition = DataDefinition(
-    #     classification=[
-    #         BinaryClassification(
-    #             target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
-    #         )
-    #     ],
-    #     numerical_columns=NUMERICAL_COLUMNS,
-    # )
+    data_definition = DataDefinition(
+        classification=[
+            BinaryClassification(
+                target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
+            )
+        ],
+        # numerical_columns=NUMERICAL_COLUMNS,
+    )
 
-    # reference_dataset = Dataset.from_pandas(
-    #     reference_df, data_definition=data_definition
-    # )
-    # predictions_dataset = Dataset.from_pandas(
-    #     prediction_df, data_definition=data_definition
-    # )
-    reference_dataset = Dataset.from_pandas(reference_df)
-    predictions_dataset = Dataset.from_pandas(prediction_df)
+    reference_dataset = Dataset.from_pandas(
+        reference_df, data_definition=data_definition
+    )
+    predictions_dataset = Dataset.from_pandas(
+        prediction_df, data_definition=data_definition
+    )
+    # reference_dataset = Dataset.from_pandas(reference_df)
+    # predictions_dataset = Dataset.from_pandas(prediction_df)
 
     drift_report = Report([DataDriftPreset()])
 
