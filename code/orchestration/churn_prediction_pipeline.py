@@ -296,11 +296,11 @@ def generate_drift_report(prediction_df: pd.DataFrame):
     # Print info about the reference and prediction DataFrames
     logger.info(
         "Reference DataFrame info: %s",
-        reference_df.columns.info(),
+        reference_df.info(),
     )
     logger.info(
         "Predictions DataFrame info: %s",
-        prediction_df.columns.info(),
+        prediction_df.info(),
     )
 
     # Define Evidently DataDefinition and Training and Inference datasets
