@@ -67,9 +67,6 @@ module "alb" {
     subnet_ids = var.subnet_ids
     my_ip = var.my_ip
     ecs_sg_id = module.ecs_stack.ecs_sg_id
-    db_username = var.db_username
-    db_password = var.db_password
-    db_endpoint = module.rds_postgres.endpoint
 }
 
 module "s3_to_prefect_lambda" {
@@ -80,4 +77,37 @@ module "s3_to_prefect_lambda" {
     s3_to_prefect_lambda_image_uri = module.ecr.s3_to_prefect_lambda_image_uri
     alb_dns_name = module.alb.alb_dns_name
     lambda_filter_prefix = var.lambda_filter_prefix
+}
+
+resource "null_resource" "write_service_urls_to_env" {
+    provisioner "local-exec" {
+        command = "bash ./scripts/wait-for-services.sh --env-file ../.env --workflow-file ../.github/workflows/deploy-prefect.yml --dns-name ${module.alb.alb_dns_name}"
+    }
+
+    depends_on = [
+        module.alb,
+        module.ecs_stack
+    ]
+}
+
+resource "null_resource" "store_prefect_secrets" {
+  provisioner "local-exec" {
+    command = <<EOT
+              bash -c " \
+              source ../.env && \
+              echo '📦 Installing Prefect and storing secrets...' && \
+              pip install --quiet prefect && \
+              python3 ./scripts/store_prefect_secrets.py
+              "
+              EOT
+
+    environment = {
+      DB_USERNAME = var.db_username,
+      DB_PASSWORD = var.db_password,
+      DB_ENDPOINT = module.rds_postgres.endpoint,
+      EVIDENTLY_UI_URL = "http://${module.alb.alb_dns_name}:8000"
+    }
+  }
+
+  depends_on = [null_resource.write_service_urls_to_env]
 }
