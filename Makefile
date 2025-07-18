@@ -36,7 +36,8 @@ apply:
 	cd infrastructure && \
 	terraform apply --var-file=vars/stg.tfvars --auto-approve
 
-	@echo "🎉 All systems go! 🎉"; \
+	@echo ""; \
+	echo "🎉 All systems go! 🎉"; \
 	echo ""; \
 	echo "MLflow, Prefect, and Evidently UI URLs"; \
 	echo "--------------------------------------"; \
