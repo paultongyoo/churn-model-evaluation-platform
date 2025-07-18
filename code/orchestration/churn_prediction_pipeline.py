@@ -263,7 +263,7 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         inference_df (pd.DataFrame): The input DataFrame containing churn data.
         prediction_df (pd.DataFrame): The DataFrame containing predictions.
     Returns:
-        Report: The Evidently report object containing drift evaluation results.
+        dict: The drift report results.
     """
     logger = get_run_logger()
     logger.info("Generating data drift report...")
