@@ -18,6 +18,7 @@ from evidently import BinaryClassification
 from evidently import DataDefinition
 from evidently import Dataset
 from evidently import Report
+from evidently.presets import ClassificationPreset
 from evidently.presets import DataDriftPreset
 from mlflow.artifacts import download_artifacts
 from modeling.churn_training import MODEL_ALIAS
@@ -216,7 +217,7 @@ def log_predictions(
 
 
 @task
-def generate_drift_report(prediction_df: pd.DataFrame):
+def generate_data_report(prediction_df: pd.DataFrame):
     """
     Generate an Evidently.ai data and prediction drift report.
     Args:
@@ -226,7 +227,7 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         dict: The drift report results.
     """
     logger = get_run_logger()
-    logger.info("Generating data drift report...")
+    logger.info("Generating data report...")
 
     # Load reference data for drift comparison
     try:
@@ -269,16 +270,16 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         prediction_df, data_definition=data_definition
     )
 
-    drift_report = Report([DataDriftPreset()])
+    data_report = Report([DataDriftPreset(), ClassificationPreset()])
 
-    drift_report_run = drift_report.run(
+    data_report_run = data_report.run(
         reference_data=reference_dataset, current_data=predictions_dataset
     ).dict()
 
-    logger.info("Data and Prediction Drift report generated successfully.")
-    logger.info("Drift evaluation results: %s", drift_report_run)
+    logger.info("Data report generated successfully.")
+    logger.info("Data Drift and Classification evaluation results: %s", data_report_run)
 
-    return drift_report_run
+    return data_report_run
 
 
 def load_database_secrets():
@@ -429,12 +430,12 @@ def churn_prediction_pipeline(bucket: str, key: str):
             X, y, y_pred, bucket, latest_s3_key
         )
 
-        drift_report_run = generate_drift_report(  # pylint: disable=unused-variable
+        drift_report_run = generate_data_report(  # pylint: disable=unused-variable
             predictions_df
         )
 
         # TODO Write drift report to database
-        # TODO Fire alerts if drift exceeds threshold
+        # TODO If drift exceeds threshold, publish message to SNS topic
 
         logger.info("Churn prediction pipeline completed successfully.")
         move_to_folder(bucket, latest_s3_key, FOLDER_PROCESSED)
