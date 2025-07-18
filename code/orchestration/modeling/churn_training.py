@@ -26,7 +26,27 @@ from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
 CUSTOMER_CHURN_DATASET = "../../../data/customer_churn_0.csv"
+
 TARGET_COLUMN = "Churn"
+TARGET_PREDICTION_COLUMN = "Churn_Prediction"
+NUMERICAL_COLUMNS = [
+    "Call  Failure",
+    "Complains",
+    "Subscription  Length",
+    "Charge  Amount",
+    "Seconds of Use",
+    "Frequency of use",
+    "Frequency of SMS",
+    "Distinct Called Numbers",
+    "Status",
+    "Age",
+    "Customer Value",
+]
+
+MODEL_NAME = "XGBoostChurnModel"
+MODEL_ALIAS = "staging"
+MODEL_REFERENCE_DATA_FILE_NAME = "reference_data.parquet"
+MODEL_REFERENCE_DATA_FOLDER = "reference_data"
 
 
 def prepare_data(data_df):
@@ -54,15 +74,7 @@ def train_model(data_X, data_y, params):
     return model
 
 
-def evaluate_model(
-    model,
-    data_X,
-    data_y,
-    dataset_name,
-    log_model=False,
-    log_model_X_train=None,
-    log_model_y_train=None,
-):
+def evaluate_model(model, data_X, data_y, dataset_name, log_model=False):
     """
     Evaluates the trained model on the provided dataset and logs the results to MLflow.
     If log_model is True, the model and training data are logged to MLflow.
@@ -73,7 +85,7 @@ def evaluate_model(
 
         y_pred = model.predict(data_X)
 
-        print("Logging model to MLflow...")
+        print(f"\nLogging {dataset_name} model to MLflow...")
         logged_result = mlflow.xgboost.log_model(
             model,
             name="XGBoostChurnModel",
@@ -109,18 +121,22 @@ def evaluate_model(
 
         if log_model:
 
-            # Log the training data
-            print("Logging training data with model...")
-            train_data_path = "training_data.csv"
-            log_model_X_train.assign(target=log_model_y_train).to_csv(
-                train_data_path, index=False
+            # Log the training data to MLflow and then delete it
+            print("Logging reference data with model...")
+            reference_data_path = MODEL_REFERENCE_DATA_FILE_NAME
+            reference_df = data_X.copy()
+            reference_df[TARGET_COLUMN] = data_y.astype(bool)
+            reference_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(bool)
+            reference_df.to_parquet(reference_data_path, index=False)
+            mlflow.log_artifact(
+                reference_data_path, artifact_path=MODEL_REFERENCE_DATA_FOLDER
             )
-            mlflow.log_artifact(train_data_path, artifact_path="training_data")
+            os.remove(reference_data_path)
 
             # Set the model alias to "staging" for easy retrieval in the pipeline
             print("Setting model alias to 'staging' in MLflow registry...\n")
             MlflowClient().set_registered_model_alias(
-                "XGBoostChurnModel", "staging", logged_result.registered_model_version
+                MODEL_NAME, MODEL_ALIAS, logged_result.registered_model_version
             )
 
 
@@ -175,7 +191,7 @@ if __name__ == "__main__":
     df = pd.read_csv(CUSTOMER_CHURN_DATASET)
 
     env_path = Path().resolve().parents[2] / ".env"
-    load_dotenv(dotenv_path=env_path)
+    load_dotenv(dotenv_path=env_path, override=True)
     MLFLOW_TRACKING_URI = os.getenv(
         "MLFLOW_TRACKING_URI"
     )  # This should be set in your .env file
@@ -223,12 +239,4 @@ if __name__ == "__main__":
     evaluate_model(clf, X_train, y_train, "X_train")
 
     # Next evaluate tuned model on test data to check for variance
-    evaluate_model(
-        clf,
-        X_test,
-        y_test,
-        "X_test",
-        log_model=True,
-        log_model_X_train=X_train,
-        log_model_y_train=y_train,
-    )
+    evaluate_model(clf, X_test, y_test, "X_test", log_model=True)

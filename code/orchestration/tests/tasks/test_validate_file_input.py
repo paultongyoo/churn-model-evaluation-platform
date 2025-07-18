@@ -56,7 +56,7 @@ class TestValidateFileInput(unittest.TestCase):
             }
         )
 
-        result, input_df, error_message = validate_file_input.fn(
+        result, inference_df, error_message = validate_file_input.fn(
             mock_bucket, mock_key, mock_input_example
         )
 
@@ -70,7 +70,7 @@ class TestValidateFileInput(unittest.TestCase):
 
         # Assert that the result is True and no error message is returned
         self.assertTrue(result)
-        assert_frame_equal(input_df, mock_pd.read_csv.return_value)
+        assert_frame_equal(inference_df, mock_pd.read_csv.return_value)
         self.assertIsNone(error_message)
 
     def test_validate_file_input_invalid_csv(self):
@@ -87,12 +87,12 @@ class TestValidateFileInput(unittest.TestCase):
         binary_data = b"\xff\xfe\xfa\xfb\xfd"
         self.mock_s3_client.get_object.return_value = {"Body": BytesIO(binary_data)}
 
-        result, input_df, error_message = validate_file_input.fn(
+        result, inference_df, error_message = validate_file_input.fn(
             mock_bucket, mock_key, mock_input_example
         )
 
         self.assertFalse(result)
-        self.assertIsNone(input_df)
+        self.assertIsNone(inference_df)
         self.assertTrue(error_message.startswith("Error reading CSV file"))
 
     @patch("churn_prediction_pipeline.pd")
@@ -120,12 +120,12 @@ class TestValidateFileInput(unittest.TestCase):
             }
         )
 
-        result, input_df, error_message = validate_file_input.fn(
+        result, inference_df, error_message = validate_file_input.fn(
             mock_bucket, mock_key, mock_input_example
         )
 
         self.assertFalse(result)
-        self.assertIsNone(input_df)
+        self.assertIsNone(inference_df)
         self.assertEqual(
             error_message,
             f"""Input file {mock_key} does not match expected structure.

@@ -14,10 +14,27 @@ from datetime import timezone
 import boto3
 import mlflow
 import pandas as pd
+from evidently import BinaryClassification
+from evidently import DataDefinition
+from evidently import Dataset
+from evidently import Report
+from evidently.presets import DataDriftPreset
+from mlflow.artifacts import download_artifacts
+from modeling.churn_training import MODEL_ALIAS
+from modeling.churn_training import MODEL_NAME
+from modeling.churn_training import MODEL_REFERENCE_DATA_FILE_NAME
+from modeling.churn_training import MODEL_REFERENCE_DATA_FOLDER
+from modeling.churn_training import NUMERICAL_COLUMNS
+from modeling.churn_training import TARGET_COLUMN
+from modeling.churn_training import TARGET_PREDICTION_COLUMN
 from modeling.churn_training import prepare_data
 from prefect import flow
 from prefect import get_run_logger
 from prefect import task
+from prefect.blocks.system import Secret
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 MLFLOW_TRACKING_URI = os.getenv(
     "MLFLOW_TRACKING_URI"
@@ -25,14 +42,17 @@ MLFLOW_TRACKING_URI = os.getenv(
 AWS_REGION = "us-east-2"
 s3_client = boto3.client("s3", region_name=AWS_REGION)
 
-MODEL_NAME = "XGBoostChurnModel"
-MODEL_ALIAS = "staging"
-
 FOLDER_INPUT = "data/input"
 FOLDER_PROCESSING = "data/processing"
 FOLDER_PROCESSED = "data/processed"
 FOLDER_ERRORED = "data/errored"
 FOLDER_LOGS = "data/logs"
+
+DATABASE_NAME = "metrics_db"
+SECRET_KEY_DB_USERNAME = "db-username"
+SECRET_KEY_DB_PASSWORD = "db-password"
+SECRET_KEY_DB_ENDPOINT = "db-endpoint"
+TABLE_NAME_DATA_DRIFT = "data_drift_report"
 
 
 @task
@@ -203,6 +223,7 @@ def log_predictions(
         key (str): The S3 key for the input data.
     Returns:
         str: The new S3 key where the predictions are logged.
+        predictions_df (pd.DataFrame): The DataFrame containing predictions.
     """
     logger = get_run_logger()
     logger.info("Logging predictions to S3...")
@@ -232,7 +253,130 @@ def log_predictions(
 
     logger.info("Predictions logged successfully to %s://%s", bucket, output_key)
 
-    return output_key
+    return output_key, predictions_df
+
+
+@task
+def generate_drift_report(prediction_df: pd.DataFrame):
+    """
+    Generate an Evidently.ai data and prediction drift report.
+    Args:
+        inference_df (pd.DataFrame): The input DataFrame containing churn data.
+        prediction_df (pd.DataFrame): The DataFrame containing predictions.
+    Returns:
+        Report: The Evidently report object containing drift evaluation results.
+    """
+    logger = get_run_logger()
+    logger.info("Generating data drift report...")
+
+    # Load training data for drift comparison
+    try:
+        ARTIFACT_URI = (
+            f"models:/{MODEL_NAME}@{MODEL_ALIAS}/{MODEL_REFERENCE_DATA_FOLDER}"
+            f"/{MODEL_REFERENCE_DATA_FILE_NAME}"
+        )
+        reference_data_local_path = download_artifacts(artifact_uri=ARTIFACT_URI)
+        reference_df = pd.read_parquet(reference_data_local_path)
+        logger.info(
+            "Reference data loaded successfully from %s - Shape: %s",
+            reference_data_local_path,
+            reference_df.shape,
+        )
+    except Exception as e:
+        err_msg = (
+            f"Failed to load artifact data from {ARTIFACT_URI}' "
+            f"- Does it exist in the MLFlow registry?': {e}"
+        )
+        logger.error(err_msg)
+        raise RuntimeError(err_msg) from e
+
+    # Define Evidently DataDefinition and Training and Inference datasets
+    data_definition = DataDefinition(
+        classification=[
+            BinaryClassification(
+                target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
+            )
+        ],
+        numerical_columns=NUMERICAL_COLUMNS,
+    )
+
+    reference_dataset = Dataset.from_pandas(
+        reference_df, data_definition=data_definition
+    )
+    predictions_dataset = Dataset.from_pandas(
+        prediction_df, data_definition=data_definition
+    )
+
+    drift_report = Report([DataDriftPreset()])
+
+    drift_report_run = drift_report.run(
+        reference_dataset=reference_dataset, current_dataset=predictions_dataset
+    )
+
+    logger.info("Data and Prediction Drift report generated successfully.")
+    logger.info("Drift evaluation results: %s", drift_report_run)
+
+    return drift_report_run
+
+
+@task
+def load_database_secrets():
+    """
+    Load database secrets from Prefect Secrets.
+    Returns:
+        dict: A dictionary containing the database credentials.
+    """
+    logger = get_run_logger()
+    logger.info("Loading database secrets...")
+
+    try:
+        db_username = Secret.load(SECRET_KEY_DB_USERNAME).get()
+        db_password = Secret.load(SECRET_KEY_DB_PASSWORD).get()
+        db_endpoint = Secret.load(SECRET_KEY_DB_ENDPOINT).get()
+        logger.info("Database secrets loaded successfully.")
+        return {
+            "username": db_username,
+            "password": db_password,
+            "endpoint": db_endpoint,
+            "database": DATABASE_NAME,
+        }
+    except Exception as e:
+        err_msg = f"Failed to load database secrets: {e}"
+        logger.error(err_msg)
+        raise RuntimeError(err_msg) from e
+
+
+def connect_to_database(secrets: dict):
+    """
+    Connect to the database using the provided secrets.
+    Args:
+        secrets (dict): A dictionary containing the database credentials.
+    Returns:
+        session: SQLAlchemy session object for database interaction.
+        Base: SQLAlchemy declarative base for ORM mapping.
+    """
+    logger = get_run_logger()
+    logger.info("Connecting to the database...")
+
+    logger.info(
+        "Connecting to database %s at %s with user %s",
+        secrets["database"],
+        secrets["endpoint"],
+        secrets["username"],
+    )
+
+    DATABASE_URL = (
+        f"postgresql+psycopg2://{secrets['username']}:{secrets['password']}"
+        f"@{secrets['endpoint']}:5432/{secrets['database']}"
+    )
+
+    engine = create_engine(DATABASE_URL)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    Base = declarative_base()
+
+    logger.info("Database connection established successfully.")
+    return session, Base
 
 
 @flow(name="churn_prediction_pipeline", log_prints=True)
@@ -270,24 +414,27 @@ def churn_prediction_pipeline(bucket: str, key: str):
         latest_s3_key = move_to_folder(bucket, key, FOLDER_PROCESSING)
 
         # Validate the input file, using the model input example
-        success, input_df, err_msg = validate_file_input(
+        success, inference_df, err_msg = validate_file_input(
             bucket, latest_s3_key, input_example
         )
         if not success:
             move_to_folder(bucket, latest_s3_key, FOLDER_ERRORED, message=err_msg)
             return
 
-        X, y = prepare_dataset(input_df)
-
-        # TODO:  Assess feature drift and retrain if necessary
-        # For now, we will skip the retraining logic and just generate predictions
+        X, y = prepare_dataset(inference_df)
 
         y_pred = generate_predictions(X, model)
 
-        # TODO: Assess prediction drift and retrain if necessary
-        # For now, we will skip the retraining logic and just log the predictions
+        latest_s3_key, predictions_df = log_predictions(
+            X, y, y_pred, bucket, latest_s3_key
+        )
 
-        latest_s3_key = log_predictions(X, y, y_pred, bucket, latest_s3_key)
+        drift_report_run = generate_drift_report(  # pylint: disable=unused-variable
+            predictions_df
+        )
+
+        # TODO Write drift report to database
+        # TODO Fire alerts if drift exceeds threshold
 
         logger.info("Churn prediction pipeline completed successfully.")
         move_to_folder(bucket, latest_s3_key, FOLDER_PROCESSED)

@@ -6,7 +6,7 @@
 mlflow.db
 mlruns/
 shap_summary_plot_*.png
-training_data.csv
+reference_data.parquet
 __pycache__/
 *.bak
 .pytest_cache/

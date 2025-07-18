@@ -88,7 +88,7 @@ repos:
           "-rn", # Only display messages
           "-sn", # Don't display the score
           "--recursive=y",
-          "--disable=missing-class-docstring,pointless-string-statement"
+          "--disable=missing-class-docstring,pointless-string-statement,import-error"
         ]
         additional_dependencies:
         - pylint
@@ -117,3 +117,4 @@ repos:
         - xgboost
         - scikit-learn
         - pandas
+        - evidently
