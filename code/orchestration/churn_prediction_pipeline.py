@@ -231,7 +231,7 @@ def log_predictions(
     # Create final DataFrame with predictions
     predictions_df = X.copy()
     predictions_df[TARGET_COLUMN] = y_actual
-    predictions_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(bool)
+    predictions_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(int)
 
     # Define the output file name by combining original key and model details
     filename = os.path.basename(key)

@@ -121,8 +121,8 @@ def evaluate_model(model, data_X, data_y, dataset_name, log_model=False):
             print("Logging reference data with model...")
             reference_data_path = MODEL_REFERENCE_DATA_FILE_NAME
             reference_df = data_X.copy()
-            reference_df[TARGET_COLUMN] = data_y.astype(bool)
-            reference_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(bool)
+            reference_df[TARGET_COLUMN] = data_y.astype(int)
+            reference_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(int)
             reference_df.to_parquet(reference_data_path, index=False)
             mlflow.log_artifact(
                 reference_data_path, artifact_path=MODEL_REFERENCE_DATA_FOLDER
