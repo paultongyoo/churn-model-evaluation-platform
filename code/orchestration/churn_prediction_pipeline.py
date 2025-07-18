@@ -309,12 +309,8 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         prediction_df, data_definition=data_definition
     )
     # Print data types for debugging
-    logger.info(
-        "Reference dataset dtypes: %s", reference_dataset.dataframe.dtypes.to_dict()
-    )
-    logger.info(
-        "Predictions dataset dtypes: %s", predictions_dataset.dataframe.dtypes.to_dict()
-    )
+    logger.info("Reference dataset dtypes: %s", reference_df.dtypes.to_dict())
+    logger.info("Predictions dataset dtypes: %s", prediction_df.dtypes.to_dict())
 
     drift_report = Report([DataDriftPreset()])
 
