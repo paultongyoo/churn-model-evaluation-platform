@@ -1,3 +1,5 @@
+.PHONY: disable-s3-lambda enable-s3-lambda setup test quality commit plan apply destroy
+
 setup:
 	pre-commit install
 
@@ -50,3 +52,13 @@ apply:
 destroy:
 	cd infrastructure && \
 	terraform destroy -var-file=vars/stg.tfvars --auto-approve
+
+disable-lambda:
+	@echo "🛑 Disabling S3-to-Lambda trigger by updating prefix to 'disabled/'..."
+	cd infrastructure && \
+	terraform apply -var="lambda_filter_prefix=disabled/" -var-file=vars/stg.tfvars -auto-approve
+
+enable-lambda:
+	@echo "✅ Enabling S3-to-Lambda trigger by restoring prefix to 'data/input/'..."
+	cd infrastructure && \
+	terraform apply -var="lambda_filter_prefix=data/input/" -var-file=vars/stg.tfvars -auto-approve

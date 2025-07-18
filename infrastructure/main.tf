@@ -79,4 +79,5 @@ module "s3_to_prefect_lambda" {
     bucket_id = module.s3_bucket.bucket_id
     s3_to_prefect_lambda_image_uri = module.ecr.s3_to_prefect_lambda_image_uri
     alb_dns_name = module.alb.alb_dns_name
+    lambda_filter_prefix = var.lambda_filter_prefix
 }

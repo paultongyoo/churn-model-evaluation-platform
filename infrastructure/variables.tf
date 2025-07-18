@@ -33,3 +33,9 @@ variable "db_password" {
 variable "my_ip" {
   description = "Your public IP (e.g. '203.0.113.5')"
 }
+
+variable "lambda_filter_prefix" {
+  description = "Prefix for S3 objects that trigger the Lambda function"
+  type        = string
+  default     = "data/input/"
+}

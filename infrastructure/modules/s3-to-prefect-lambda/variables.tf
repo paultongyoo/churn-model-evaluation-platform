@@ -23,3 +23,9 @@ variable "alb_dns_name" {
   description = "DNS name of the Application Load Balancer"
   type        = string
 }
+
+variable "lambda_filter_prefix" {
+  description = "Prefix for S3 objects that trigger the Lambda function"
+  type        = string
+  default     = "data/input/"
+}

@@ -41,13 +41,14 @@ resource "aws_lambda_permission" "allow_s3" {
   source_arn    = var.bucket_arn
 }
 
+# See Makefile for the lambda filter prefix
 resource "aws_s3_bucket_notification" "s3_to_lambda" {
   bucket = var.bucket_id
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.prefect_trigger.arn
     events              = ["s3:ObjectCreated:*"]
-    filter_prefix      = "data/input/"
+    filter_prefix       = var.lambda_filter_prefix
   }
 
   depends_on = [aws_lambda_permission.allow_s3]
