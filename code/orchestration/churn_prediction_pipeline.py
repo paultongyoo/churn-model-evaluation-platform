@@ -56,46 +56,6 @@ TABLE_NAME_DATA_DRIFT = "data_drift_report"
 
 
 @task
-def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
-    """
-    Move the S3 object to a specified folder.
-    """
-    logger = get_run_logger()
-
-    # Move the file to the specified folder
-    filename = key.split("/")[-1]
-    new_key = f"{folder}/{filename}"
-    logger.info("Attempting to move %s://%s to %s...", bucket, key, new_key)
-    s3_client.copy_object(
-        Bucket=bucket, CopySource={"Bucket": bucket, "Key": key}, Key=new_key
-    )
-    s3_client.delete_object(Bucket=bucket, Key=key)
-    logger.info("Moved %s to %s", key, new_key)
-
-    # Log the move
-    log_msg = (
-        f"{datetime.now(timezone.utc).isoformat()} Moved {key} → {new_key}. {message}\n"
-    )
-    logger.info(log_msg.strip())
-
-    # Define log key
-    log_key = f"{FOLDER_LOGS}/{filename}.log"
-
-    # Append log to S3 (create if doesn't exist)
-    try:
-        existing = (
-            s3_client.get_object(Bucket=bucket, Key=log_key)["Body"].read().decode()
-        )
-    except s3_client.exceptions.NoSuchKey:
-        existing = ""
-
-    updated_log = existing + log_msg
-    s3_client.put_object(Bucket=bucket, Key=log_key, Body=updated_log.encode())
-
-    return new_key
-
-
-@task
 def fetch_model(model_name: str, alias: str):
     """
     Fetch the model from MLflow registry.
@@ -321,7 +281,6 @@ def generate_drift_report(prediction_df: pd.DataFrame):
     return drift_report_run
 
 
-@task
 def load_database_secrets():
     """
     Load database secrets from Prefect Secrets.
@@ -379,6 +338,45 @@ def connect_to_database(secrets: dict):
 
     logger.info("Database connection established successfully.")
     return session, Base
+
+
+def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
+    """
+    Move the S3 object to a specified folder.
+    """
+    logger = get_run_logger()
+
+    # Move the file to the specified folder
+    filename = key.split("/")[-1]
+    new_key = f"{folder}/{filename}"
+    logger.info("Attempting to move %s://%s to %s...", bucket, key, new_key)
+    s3_client.copy_object(
+        Bucket=bucket, CopySource={"Bucket": bucket, "Key": key}, Key=new_key
+    )
+    s3_client.delete_object(Bucket=bucket, Key=key)
+    logger.info("Moved %s to %s", key, new_key)
+
+    # Log the move
+    log_msg = (
+        f"{datetime.now(timezone.utc).isoformat()} Moved {key} → {new_key}. {message}\n"
+    )
+    logger.info(log_msg.strip())
+
+    # Define log key
+    log_key = f"{FOLDER_LOGS}/{filename}.log"
+
+    # Append log to S3 (create if doesn't exist)
+    try:
+        existing = (
+            s3_client.get_object(Bucket=bucket, Key=log_key)["Body"].read().decode()
+        )
+    except s3_client.exceptions.NoSuchKey:
+        existing = ""
+
+    updated_log = existing + log_msg
+    s3_client.put_object(Bucket=bucket, Key=log_key, Body=updated_log.encode())
+
+    return new_key
 
 
 @flow(name="churn_prediction_pipeline", log_prints=True)
