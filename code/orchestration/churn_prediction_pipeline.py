@@ -312,6 +312,11 @@ def generate_drift_report(prediction_df: pd.DataFrame):
     logger.info("Reference dataset dtypes: %s", reference_df.dtypes.to_dict())
     logger.info("Predictions dataset dtypes: %s", prediction_df.dtypes.to_dict())
 
+    assert reference_df[TARGET_COLUMN].isnull().sum() == 0
+    assert reference_df[TARGET_PREDICTION_COLUMN].isnull().sum() == 0
+    assert prediction_df[TARGET_COLUMN].isnull().sum() == 0
+    assert prediction_df[TARGET_PREDICTION_COLUMN].isnull().sum() == 0
+
     drift_report = Report([DataDriftPreset()])
 
     drift_report_run = drift_report.run(
