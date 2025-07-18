@@ -308,8 +308,6 @@ def generate_drift_report(prediction_df: pd.DataFrame):
     predictions_dataset = Dataset.from_pandas(
         prediction_df, data_definition=data_definition
     )
-    # reference_dataset = Dataset.from_pandas(reference_df)
-    # predictions_dataset = Dataset.from_pandas(prediction_df)
 
     drift_report = Report([DataDriftPreset()])
 

@@ -39,7 +39,6 @@ NUMERICAL_COLUMNS = [
     "Frequency of SMS",
     "Distinct Called Numbers",
     "Status",
-    "Age",
     "Customer Value",
 ]
 
