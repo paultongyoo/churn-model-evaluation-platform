@@ -20,6 +20,7 @@ from evidently import Dataset
 from evidently import Report
 from evidently.presets import ClassificationPreset
 from evidently.presets import DataDriftPreset
+from evidently.ui.workspace import RemoteWorkspace
 from mlflow.artifacts import download_artifacts
 from modeling.churn_training import MODEL_ALIAS
 from modeling.churn_training import MODEL_NAME
@@ -54,6 +55,8 @@ SECRET_KEY_DB_USERNAME = "db-username"
 SECRET_KEY_DB_PASSWORD = "db-password"
 SECRET_KEY_DB_ENDPOINT = "db-endpoint"
 TABLE_NAME_DATA_DRIFT = "data_drift_report"
+
+EVIDENTLY_PROJECT_NAME = "mlops-churn-pipeline"
 
 
 @task
@@ -217,14 +220,16 @@ def log_predictions(
 
 
 @task
-def generate_data_report(prediction_df: pd.DataFrame):
+def generate_data_report(
+    prediction_df: pd.DataFrame,
+):  # pylint: disable=too-many-locals
     """
     Generate an Evidently.ai data and prediction drift report.
     Args:
         inference_df (pd.DataFrame): The input DataFrame containing churn data.
         prediction_df (pd.DataFrame): The DataFrame containing predictions.
     Returns:
-        dict: The drift report results.
+        Evidently Report Run: The drift report run.
     """
     logger = get_run_logger()
     logger.info("Generating data report...")
@@ -274,10 +279,29 @@ def generate_data_report(prediction_df: pd.DataFrame):
 
     data_report_run = data_report.run(
         reference_data=reference_dataset, current_data=predictions_dataset
-    ).dict()
+    )
+
+    # Add report to Evidently UI
+    try:
+        evidently_ui_url = Secret.load("evidently-ui-url").get()
+        logger.info("Evidently UI URL: %s", evidently_ui_url)
+        workspace = RemoteWorkspace(evidently_ui_url)
+        project = workspace.get_project(EVIDENTLY_PROJECT_NAME)
+        if not project:
+            project = workspace.create_project(EVIDENTLY_PROJECT_NAME)
+        workspace.add_run(project.id, data_report_run)
+    except Exception as e:
+        err_msg = (
+            f"Failed to add report to Evidently Workspace using {evidently_ui_url}: {e}"
+        )
+        logger.error(err_msg)
+        raise RuntimeError(err_msg) from e
 
     logger.info("Data report generated successfully.")
-    logger.info("Data Drift and Classification evaluation results: %s", data_report_run)
+    logger.info("View the report at: %s", evidently_ui_url)
+    logger.info(
+        "Data Drift and Classification evaluation results: %s", data_report_run.dict()
+    )
 
     return data_report_run
 
