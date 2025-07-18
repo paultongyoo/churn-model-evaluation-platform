@@ -38,6 +38,7 @@ NUMERICAL_COLUMNS = [
     "Frequency of use",
     "Frequency of SMS",
     "Distinct Called Numbers",
+    "Age Group",
     "Status",
     "Customer Value",
 ]
@@ -53,13 +54,9 @@ def prepare_data(data_df):
     Prepares the churn dataset for training by selecting relevant features and converting types.
     """
     data_X = data_df.copy()
-    data_X = data_X.select_dtypes("int64").astype(
-        "float64"
-    )  # Stops MLflow integer/missing values warning
-    data_y = data_X.pop("Churn")
-    data_y = data_y.astype(bool)
-
-    data_X = data_X.drop(columns=["Age", "Tariff Plan"])
+    data_y = data_X.pop("Churn").astype(int)
+    data_X = data_X[NUMERICAL_COLUMNS]
+    data_X = data_X.astype("float64")  # Stops MLflow missing values warning
 
     return data_X, data_y
 
@@ -87,8 +84,8 @@ def evaluate_model(model, data_X, data_y, dataset_name, log_model=False):
         print(f"\nLogging {dataset_name} model to MLflow...")
         logged_result = mlflow.xgboost.log_model(
             model,
-            name="XGBoostChurnModel",
-            registered_model_name="XGBoostChurnModel",
+            name=MODEL_NAME,
+            registered_model_name=MODEL_NAME,
             signature=infer_signature(data_X, y_pred),
             input_example=data_X.head(1),
             model_format="ubj",
