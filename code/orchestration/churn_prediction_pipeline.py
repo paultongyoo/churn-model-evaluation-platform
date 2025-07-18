@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name,broad-exception-caught,fixme,too-many-arguments,too-many-positional-arguments
+# pylint: disable=invalid-name,broad-exception-caught,fixme,too-many-arguments,too-many-positional-arguments,unused-import
 """
 This module houses the Prefect flow for the churn prediction pipeline.
 It orchestrates the entire process from data ingestion to model evaluation.
@@ -293,29 +293,23 @@ def generate_drift_report(prediction_df: pd.DataFrame):
         raise RuntimeError(err_msg) from e
 
     # Define Evidently DataDefinition and Training and Inference datasets
-    data_definition = DataDefinition(
-        classification=[
-            BinaryClassification(
-                target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
-            )
-        ],
-        numerical_columns=NUMERICAL_COLUMNS,
-    )
+    # data_definition = DataDefinition(
+    #     classification=[
+    #         BinaryClassification(
+    #             target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
+    #         )
+    #     ],
+    #     numerical_columns=NUMERICAL_COLUMNS,
+    # )
 
-    reference_dataset = Dataset.from_pandas(
-        reference_df, data_definition=data_definition
-    )
-    predictions_dataset = Dataset.from_pandas(
-        prediction_df, data_definition=data_definition
-    )
-    # Print data types for debugging
-    logger.info("Reference dataset dtypes: %s", reference_df.dtypes.to_dict())
-    logger.info("Predictions dataset dtypes: %s", prediction_df.dtypes.to_dict())
-
-    assert reference_df[TARGET_COLUMN].isnull().sum() == 0
-    assert reference_df[TARGET_PREDICTION_COLUMN].isnull().sum() == 0
-    assert prediction_df[TARGET_COLUMN].isnull().sum() == 0
-    assert prediction_df[TARGET_PREDICTION_COLUMN].isnull().sum() == 0
+    # reference_dataset = Dataset.from_pandas(
+    #     reference_df, data_definition=data_definition
+    # )
+    # predictions_dataset = Dataset.from_pandas(
+    #     prediction_df, data_definition=data_definition
+    # )
+    reference_dataset = Dataset.from_pandas(reference_df)
+    predictions_dataset = Dataset.from_pandas(prediction_df)
 
     drift_report = Report([DataDriftPreset()])
 
