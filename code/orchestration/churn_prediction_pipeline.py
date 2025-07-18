@@ -294,11 +294,11 @@ def generate_drift_report(prediction_df: pd.DataFrame):
 
     # Define Evidently DataDefinition and Training and Inference datasets
     data_definition = DataDefinition(
-        # classification=[
-        #     BinaryClassification(
-        #         target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
-        #     )
-        # ],
+        classification=[
+            BinaryClassification(
+                target=TARGET_COLUMN, prediction_labels=TARGET_PREDICTION_COLUMN
+            )
+        ],
         numerical_columns=NUMERICAL_COLUMNS,
     )
 
@@ -313,7 +313,7 @@ def generate_drift_report(prediction_df: pd.DataFrame):
 
     drift_report_run = drift_report.run(
         reference_data=reference_dataset, current_data=predictions_dataset
-    )
+    ).dict()
 
     logger.info("Data and Prediction Drift report generated successfully.")
     logger.info("Drift evaluation results: %s", drift_report_run)
