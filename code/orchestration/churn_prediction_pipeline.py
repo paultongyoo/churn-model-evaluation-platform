@@ -36,6 +36,7 @@ from prefect import flow
 from prefect import get_run_logger
 from prefect import task
 from prefect.blocks.system import Secret
+from prefect.variables import Variable
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -59,6 +60,7 @@ SECRET_KEY_DB_ENDPOINT = "db-endpoint"
 TABLE_NAME_DATA_DRIFT = "data_drift_report"
 
 EVIDENTLY_PROJECT_NAME = "mlops-churn-pipeline"
+EVIDENTLY_PROJECT_ID_BLOCK_NAME = "evidently-project-id"
 
 
 @task
@@ -296,18 +298,21 @@ def generate_data_report(
     evidently_ui_url = Secret.load("evidently-ui-url").get()
     logger.info("Evidently UI URL: %s", evidently_ui_url)
     workspace = RemoteWorkspace(evidently_ui_url)
-    try:
-        project = workspace.get_project(EVIDENTLY_PROJECT_NAME)
-    except EvidentlyError as ee:
-        if "not found" in str(ee).lower():
-            logger.info(
-                "Project '%s' not found. Creating a new project...",
-                EVIDENTLY_PROJECT_NAME,
+    evidently_project_id = get_evidently_project_id()
+    if evidently_project_id:
+        try:
+            project = workspace.get_project(evidently_project_id)
+        except EvidentlyError:
+            logger.error(
+                "Failed to get Evidently project with ID %s, creating a new one...",
+                evidently_project_id,
             )
             project = workspace.create_project(EVIDENTLY_PROJECT_NAME)
-        else:
-            logger.error("Error accessing Evidently project: %s", ee)
-            raise ee
+            save_evidently_project_id(project.id)
+    else:
+        logger.info("Creating new Evidently project: %s", EVIDENTLY_PROJECT_NAME)
+        project = workspace.create_project(EVIDENTLY_PROJECT_NAME)
+        save_evidently_project_id(project.id)
     workspace.add_run(project.id, data_report_run)
 
     logger.info("Data report generated successfully.")
@@ -317,6 +322,33 @@ def generate_data_report(
     )
 
     return data_report_run
+
+
+def get_evidently_project_id():
+    """
+    Get the Evidently project ID for the current project.
+    Returns:
+        str: The Evidently project ID or None if it doesn't exist.
+    """
+    try:
+        evidently_project_id = Variable.get(EVIDENTLY_PROJECT_ID_BLOCK_NAME)
+        print(f"✅ Loaded existing Evidently Project ID: {evidently_project_id}")
+        return evidently_project_id
+    except ValueError:
+        # Block doesn't exist yet
+        print("No existing Evidently Project ID, returning None")
+        return None
+
+
+def save_evidently_project_id(project_id: str):
+    """
+    Save the Evidently project ID to a Prefect block for future reference.
+    Args:
+        project_id (str): The Evidently project ID to save.
+    """
+    print(f"Saving Evidently Project ID: {project_id}")
+    Variable.set(EVIDENTLY_PROJECT_ID_BLOCK_NAME, str(project_id), overwrite=True)
+    print(f"✅ Saved Evidently Project ID: {project_id}")
 
 
 def load_database_secrets():
