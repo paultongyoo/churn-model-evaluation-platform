@@ -31,9 +31,9 @@ fi
 MAX_RETRIES=99999
 SLEEP_SECONDS=5
 
-ENV_VARS=("MLFLOW_TRACKING_URI" "PREFECT_API_URL" "EVIDENTLY_UI_URL")
-PORTS=("5000" "4200" "8000")
-PATHS=("/" "/api/health" "/")
+ENV_VARS=("MLFLOW_TRACKING_URI" "PREFECT_UI_URL" "PREFECT_API_URL" "EVIDENTLY_UI_URL")
+PORTS=("5000" "4200" "4200" "8000")
+PATHS=("/" "/api/health" "/api/health" "/")
 
 echo "🔁 Checking services for readiness at DNS: $DNS_NAME"
 
