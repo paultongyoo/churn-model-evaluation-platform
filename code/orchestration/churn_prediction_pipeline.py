@@ -18,6 +18,7 @@ from evidently import BinaryClassification
 from evidently import DataDefinition
 from evidently import Dataset
 from evidently import Report
+from evidently.errors import EvidentlyError
 from evidently.presets import ClassificationPreset
 from evidently.presets import DataDriftPreset
 from evidently.ui.workspace import RemoteWorkspace
@@ -193,9 +194,12 @@ def log_predictions(
     logger.info("Logging predictions to S3...")
 
     # Create final DataFrame with predictions
+    #
+    # Ensure TARGET_COLUMN and TARGET_PREDICTION_COLUMN are integers
+    # This is necessary for compatibility with Evidently
     predictions_df = X.copy()
-    predictions_df[TARGET_COLUMN] = y_actual.to_numpy(dtype=float)
-    predictions_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(float)
+    predictions_df[TARGET_COLUMN] = y_actual.to_numpy(dtype=int)
+    predictions_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(int)
 
     # Define the output file name by combining original key and model details
     filename = os.path.basename(key)
@@ -268,6 +272,12 @@ def generate_data_report(
         numerical_columns=NUMERICAL_COLUMNS,
     )
 
+    # Ensure Target columns are integers for compatibility with Evidently
+    reference_df[TARGET_COLUMN] = reference_df[TARGET_COLUMN].astype(int)
+    reference_df[TARGET_PREDICTION_COLUMN] = reference_df[
+        TARGET_PREDICTION_COLUMN
+    ].astype(int)
+
     reference_dataset = Dataset.from_pandas(
         reference_df, data_definition=data_definition
     )
@@ -282,20 +292,22 @@ def generate_data_report(
     )
 
     # Add report to Evidently UI
+    evidently_ui_url = Secret.load("evidently-ui-url").get()
+    logger.info("Evidently UI URL: %s", evidently_ui_url)
+    workspace = RemoteWorkspace(evidently_ui_url)
     try:
-        evidently_ui_url = Secret.load("evidently-ui-url").get()
-        logger.info("Evidently UI URL: %s", evidently_ui_url)
-        workspace = RemoteWorkspace(evidently_ui_url)
         project = workspace.get_project(EVIDENTLY_PROJECT_NAME)
-        if not project:
+    except EvidentlyError as ee:
+        if "not found" in str(ee).lower():
+            logger.info(
+                "Project '%s' not found. Creating a new project...",
+                EVIDENTLY_PROJECT_NAME,
+            )
             project = workspace.create_project(EVIDENTLY_PROJECT_NAME)
-        workspace.add_run(project.id, data_report_run)
-    except Exception as e:
-        err_msg = (
-            f"Failed to add report to Evidently Workspace using {evidently_ui_url}: {e}"
-        )
-        logger.error(err_msg)
-        raise RuntimeError(err_msg) from e
+        else:
+            logger.error("Error accessing Evidently project: %s", ee)
+            raise ee
+    workspace.add_run(project.id, data_report_run)
 
     logger.info("Data report generated successfully.")
     logger.info("View the report at: %s", evidently_ui_url)
