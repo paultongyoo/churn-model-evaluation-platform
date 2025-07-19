@@ -30,6 +30,7 @@ from modeling.churn_training import MODEL_REFERENCE_DATA_FOLDER
 from modeling.churn_training import NUMERICAL_COLUMNS
 from modeling.churn_training import TARGET_COLUMN
 from modeling.churn_training import TARGET_PREDICTION_COLUMN
+from modeling.churn_training import clean_column_names
 from modeling.churn_training import prepare_data
 from prefect import flow
 from prefect import get_run_logger
@@ -117,7 +118,7 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
         logger.error(err_msg)
         return False, None, err_msg
 
-    data.columns = data.columns.str.strip()  # Strip whitespace from column names
+    data = clean_column_names(data)
     logger.info("Data columns: %s", data.columns.tolist())
 
     # Validate against the input example
@@ -248,7 +249,7 @@ def generate_data_report(
             run_id=run_id,
             artifact_path=f"{MODEL_REFERENCE_DATA_FOLDER}/{MODEL_REFERENCE_DATA_FILE_NAME}",
         )
-        reference_df = pd.read_parquet(reference_data_local_path)
+        reference_df = pd.read_csv(reference_data_local_path)
         logger.info(
             "Reference data loaded successfully from %s - Shape: %s",
             reference_data_local_path,

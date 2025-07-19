@@ -27,38 +27,66 @@ from xgboost import XGBClassifier
 
 CUSTOMER_CHURN_DATASET = "../../../data/customer_churn_0.csv"
 
-TARGET_COLUMN = "Churn"
-TARGET_PREDICTION_COLUMN = "Churn_Prediction"
+TARGET_COLUMN = "churn"
+TARGET_PREDICTION_COLUMN = "churn_prediction"
 NUMERICAL_COLUMNS = [
-    "Call  Failure",
-    "Complains",
-    "Subscription  Length",
-    "Charge  Amount",
-    "Seconds of Use",
-    "Frequency of use",
-    "Frequency of SMS",
-    "Distinct Called Numbers",
-    "Age Group",
-    "Status",
-    "Customer Value",
+    "call_failure",
+    "complains",
+    "subscription_length",
+    "charge_amount",
+    "seconds_of_use",
+    "frequency_of_use",
+    "frequency_of_sms",
+    "distinct_called_numbers",
+    "age_group",
+    "status",
+    "customer_value",
 ]
 
 MODEL_NAME = "XGBoostChurnModel"
 MODEL_ALIAS = "staging"
-MODEL_REFERENCE_DATA_FILE_NAME = "reference_data.parquet"
+MODEL_REFERENCE_DATA_FILE_NAME = "reference_data.csv"
 MODEL_REFERENCE_DATA_FOLDER = "reference_data"
 
 
 def prepare_data(data_df):
     """
-    Prepares the churn dataset for training by selecting relevant features and converting types.
+    Prepares the churn dataset for training by cleaning column names,
+    extracting the target variable, selecting relevant features,
+    and converting types.
     """
-    data_X = data_df.copy()
-    data_y = data_X.pop("Churn").astype(int)
-    data_X = data_X[NUMERICAL_COLUMNS]
-    data_X = data_X.astype("float64")  # Stops MLflow missing values warning
+    data_to_prepare = data_df.copy()
+
+    # Convert all column names to lowercase,
+    # replace multiple spaces with a single space,
+    # remove leading/trailing spaces, and replace spaces with underscores
+    data_to_prepare = clean_column_names(data_to_prepare)
+
+    # Ensure the target column is present and convert it to integer type
+    if TARGET_COLUMN not in data_to_prepare.columns:
+        raise ValueError(f"Target column '{TARGET_COLUMN}' not found in the dataset.")
+    data_y = data_to_prepare.pop(TARGET_COLUMN).astype(int)
+    data_X = data_to_prepare[NUMERICAL_COLUMNS]
+
+    # Stops MLflow missing values warning
+    data_X = data_X.astype("float64")
 
     return data_X, data_y
+
+
+def clean_column_names(data_df):
+    """
+    Cleans the column names of the DataFrame by converting them to lowercase,
+    replacing multiple spaces with a single space, removing leading/trailing spaces,
+    and replacing spaces with underscores.
+    """
+    data_df.columns = (
+        data_df.columns.str.lower()
+        .str.replace("  ", " ")
+        .str.strip()
+        .str.replace(" ", "_")
+    )
+    return data_df
 
 
 def train_model(data_X, data_y, params):
@@ -123,7 +151,7 @@ def evaluate_model(model, data_X, data_y, dataset_name, log_model=False):
             reference_df = data_X.copy()
             reference_df[TARGET_COLUMN] = data_y.to_numpy(dtype=int)
             reference_df[TARGET_PREDICTION_COLUMN] = y_pred.astype(int)
-            reference_df.to_parquet(reference_data_path, index=False)
+            reference_df.to_csv(reference_data_path, index=False)
             mlflow.log_artifact(
                 reference_data_path, artifact_path=MODEL_REFERENCE_DATA_FOLDER
             )
