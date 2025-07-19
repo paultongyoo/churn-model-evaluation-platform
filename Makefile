@@ -63,3 +63,8 @@ enable-lambda:
 	@echo "✅ Enabling S3-to-Lambda trigger by restoring prefix to 'data/input/'..."
 	cd infrastructure && \
 	terraform apply -var="lambda_filter_prefix=data/input/" -var-file=vars/stg.tfvars -auto-approve
+
+register-model:
+	@echo "Registering model in MLflow..."
+	cd code/orchestration/modeling && \
+	python churn_training.py
