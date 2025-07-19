@@ -68,3 +68,8 @@ register-model:
 	@echo "Registering model in MLflow..."
 	cd code/orchestration/modeling && \
 	python churn_training.py
+
+process-test-data:
+	@echo "Processing test data..."
+	cd code/orchestration && \
+	python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv
