@@ -7,6 +7,7 @@ performance does not meet specified threshold.
 """
 
 import os
+import re
 import sys
 from datetime import datetime
 from datetime import timezone
@@ -37,7 +38,13 @@ from prefect import get_run_logger
 from prefect import task
 from prefect.blocks.system import Secret
 from prefect.variables import Variable
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Float
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -57,7 +64,7 @@ DATABASE_NAME = "metrics_db"
 SECRET_KEY_DB_USERNAME = "db-username"
 SECRET_KEY_DB_PASSWORD = "db-password"
 SECRET_KEY_DB_ENDPOINT = "db-endpoint"
-TABLE_NAME_DATA_DRIFT = "data_drift_report"
+TABLE_NAME_DRIFT_METRICS = "drift_metrics"
 
 EVIDENTLY_PROJECT_NAME = "mlops-churn-pipeline"
 EVIDENTLY_PROJECT_ID_BLOCK_NAME = "evidently-project-id"
@@ -324,6 +331,114 @@ def generate_data_report(
     return data_report_run
 
 
+@task
+def save_report_to_database(session, Base, report_run: Report) -> None:
+    """
+    Save the Evidently report run to the database.
+    Args:
+        report_run (Report): The Evidently report run to save.
+    """
+    logger = get_run_logger()
+    logger.info("Saving Evidently report run to database...")
+    try:
+        secrets = load_database_secrets()
+        session, Base = connect_to_database(secrets)
+
+        # Parse the report run to extract relevant metrics
+        report_dict = report_run.dict()
+        parse_and_save_all_drift_metrics(report_dict, session, Base)
+        logger.info("Evidently report metrics saved successfully.")
+    except Exception as e:
+        session.rollback()
+        err_msg = f"Failed to save Evidently report run to database: {e}"
+        logger.error(err_msg)
+        raise RuntimeError(err_msg) from e
+    finally:
+        session.close()
+
+
+def parse_and_save_all_drift_metrics(
+    drift_report: dict, session: Session, Base
+) -> None:
+    """
+    Parse the Evidently drift report and save the metrics to the database.
+    Args:
+        drift_report (dict): The Evidently drift report dictionary.
+        session (Session): SQLAlchemy session for database interaction.
+        Base: SQLAlchemy declarative base for ORM mapping.
+    """
+
+    # Define the Data Drift Report model
+    class DriftMetric(Base):  # pylint: disable=too-few-public-methods
+        __tablename__ = TABLE_NAME_DRIFT_METRICS
+
+        id = Column(Integer, primary_key=True)
+        metric_name = Column(String, nullable=False)
+        value = Column(Float, nullable=False)
+        created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    Base.metadata.create_all(session.bind)
+
+    drift_metrics = []
+
+    for metric in drift_report.metrics:
+        metric_id = metric.get("metric_id")
+        simple_metric_name = simplify_metric_name(metric_id)
+        value = metric.get("value")
+
+        # Case 1: scalar value (float or int)
+        if isinstance(value, (float, int)):
+            drift_metrics.append(
+                DriftMetric(
+                    metric_name=simple_metric_name,
+                    value=float(value),
+                    created_at=datetime.utcnow(),
+                )
+            )
+
+        # Case 2: dictionary value (e.g., per-label metrics)
+        elif isinstance(value, dict):
+            for key, subvalue in value.items():
+                if isinstance(subvalue, (float, int)):
+                    drift_metrics.append(
+                        DriftMetric(
+                            metric_name=f"{simple_metric_name}[{key}]",
+                            value=float(subvalue),
+                            created_at=datetime.timezone.utc(),
+                        )
+                    )
+
+        # Optionally log or raise on unexpected formats
+        else:
+            print(f"Skipping unsupported metric: {metric_id} with value: {value}")
+
+    session.add_all(drift_metrics)
+    session.commit()
+
+
+def simplify_metric_name(metric_id: str) -> str:
+    """
+    Converts a metric_id string to a simplified, lowercase name.
+
+    Examples:
+    - "Accuracy()" → "accuracy"
+    - "F1Score(conf_matrix=True)" → "f1score"
+    - "ValueDrift(column=age_group)" → "valuedrift_age_group"
+    - "F1ByLabel()" with label="0" → "f1bylabel_0"
+    """
+
+    # Match function name (e.g., "F1Score", "Accuracy")
+    match = re.match(r"([a-zA-Z0-9_]+)(\((.*?)\))?", metric_id)
+    base = match.group(1).lower() if match else metric_id.lower()
+
+    # Try to extract column from ValueDrift(column=foo)
+    column_match = re.search(r"column=([\w\d_]+)", metric_id)
+    if column_match:
+        base += f"_{column_match.group(1).lower()}"
+
+    return base
+
+
 def get_evidently_project_id():
     """
     Get the Evidently project ID for the current project.
@@ -402,8 +517,8 @@ def connect_to_database(secrets: dict):
     )
 
     engine = create_engine(DATABASE_URL)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    SessionLocal = sessionmaker(bind=engine)
+    session = SessionLocal()
     Base = declarative_base()
 
     logger.info("Database connection established successfully.")
