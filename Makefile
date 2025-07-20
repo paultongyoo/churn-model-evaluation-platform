@@ -42,9 +42,8 @@ apply:
 	@echo ""; \
 	echo "🎉 All systems go! 🎉"; \
 	echo ""; \
-	echo "MLflow, Prefect, and Evidently UI URLs"; \
-	echo "--------------------------------------"; \
-	echo ""; \
+	echo "MLflow, Prefect, Evidently, and Grafana UI URLs"; \
+	echo "-----------------------------------------------"; \
 	export $$(grep -E '^MLFLOW_TRACKING_URI=|^PREFECT_API_URL=|^EVIDENTLY_UI_URL=|^GRAFANA_UI_URL=' .env | xargs); \
 	PREFECT_UI_URL=$$(echo $$PREFECT_API_URL | sed 's:/api$$::'); \
 	echo ""; \
