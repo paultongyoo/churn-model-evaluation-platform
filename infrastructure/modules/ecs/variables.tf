@@ -58,6 +58,11 @@ variable "evidently_ui_target_group_arn" {
   type        = string
 }
 
+variable "grafana_target_group_arn" {
+  description = "ARN of the Grafana target group"
+  type        = string
+}
+
 variable "alb_sg_id" {
   description = "Security group ID for the Application Load Balancer"
   type        = string
@@ -70,5 +75,26 @@ variable "bucket_arn" {
 
 variable "mlflow_tracking_uri" {
   description = "MLflow tracking URI"
+  type        = string
+}
+
+variable "grafana_admin_user" {
+  description = "Grafana admin username"
+  type        = string
+}
+
+variable "grafana_admin_password" {
+  description = "Grafana admin password"
+  type        = string
+}
+
+variable "grafana_anon_org_name" {
+  description = "Name of the anonymous organization in Grafana"
+  type        = string
+  default     = "Main Org."
+}
+
+variable "grafana_image_uri" {
+  description = "URI of the Grafana Docker image in ECR"
   type        = string
 }

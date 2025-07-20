@@ -18,6 +18,10 @@ output "evidently_ui_target_group_arn" {
   value = aws_lb_target_group.evidently_ui.arn
 }
 
+output "grafana_target_group_arn" {
+  value = aws_lb_target_group.grafana.arn
+}
+
 output "mlflow_tracking_uri" {
   value = "http://${aws_lb.main.dns_name}:5000"
 }

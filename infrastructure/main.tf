@@ -56,8 +56,13 @@ module "ecs_stack" {
     prefect_target_group_arn = module.alb.prefect_target_group_arn
     mlflow_target_group_arn = module.alb.mlflow_target_group_arn
     evidently_ui_target_group_arn = module.alb.evidently_ui_target_group_arn
+    grafana_target_group_arn = module.alb.grafana_target_group_arn
     bucket_arn = module.s3_bucket.bucket_arn
     mlflow_tracking_uri = module.alb.mlflow_tracking_uri
+    grafana_admin_user = var.grafana_admin_user
+    grafana_admin_password = var.grafana_admin_password
+    grafana_anon_org_name = var.grafana_anon_org_name
+    grafana_image_uri = module.ecr.grafana_image_uri
 }
 
 module "alb" {

@@ -1,7 +1,7 @@
 # Security group for the ALB
 resource "aws_security_group" "alb_sg" {
   name        = "${var.project_id}-alb-sg"
-  description = "Allow HTTP access from my IP"
+  description = "Allow HTTP access to Pipeline Services"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -39,6 +39,14 @@ resource "aws_security_group" "alb_sg" {
     #security_groups = [var.ecs_sg_id]
     cidr_blocks = ["0.0.0.0/0"]
     description     = "Allow ECS tasks to access Evidently UI via ALB on port 8000"
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["${var.my_ip}/32"]
+    description = "Allows my IP access to Grafana UI"
   }
 
   egress {
@@ -82,6 +90,14 @@ resource "aws_lb_target_group" "evidently_ui" {
   target_type = "ip"
 }
 
+resource "aws_lb_target_group" "grafana" {
+  name        = "${var.project_id}-grafana"
+  port        = 8000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+}
+
 # Listeners
 resource "aws_lb_listener" "mlflow" {
   load_balancer_arn = aws_lb.main.arn
@@ -113,5 +129,16 @@ resource "aws_lb_listener" "evidently_ui" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.evidently_ui.arn
+  }
+}
+
+resource "aws_lb_listener" "grafana" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = 3000
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.grafana.arn
   }
 }

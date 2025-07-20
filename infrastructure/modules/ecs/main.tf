@@ -599,3 +599,128 @@ resource "aws_security_group_rule" "allow_alb_to_evidently_ui" {
   security_group_id        = aws_security_group.ecs_sg.id
   source_security_group_id = var.alb_sg_id
 }
+
+######### Grafana ECS Task and Service #########
+
+resource "aws_ecs_task_definition" "grafana" {
+  family                   = "grafana"
+  requires_compatibilities = ["FARGATE"]
+  network_mode            = "awsvpc"
+  cpu                     = "512"
+  memory                  = "1024"
+  execution_role_arn      = aws_iam_role.grafana_task_exec_role.arn
+  task_role_arn           = aws_iam_role.grafana_task_exec_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "grafana"
+      image     = var.grafana_image_uri
+      essential = true
+      portMappings = [
+        {
+          containerPort = 3000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        { name = "GF_SECURITY_ADMIN_USER", value = var.grafana_admin_user },
+        { name = "GF_SECURITY_ADMIN_PASSWORD", value = var.grafana_admin_password },
+        { name = "GF_AUTH_ANONYMOUS_ENABLED", value = "true" },
+        { name = "GF_AUTH_ANONYMOUS_ORG_ROLE", value = "Viewer" },
+        { name = "GF_AUTH_ANONYMOUS_ORG_NAME", value = var.grafana_anon_org_name },
+        { name = "GF_AUTH_ANONYMOUS_ENABLED", value = "true" },
+        { name = "GF_AUTH_ANONYMOUS_ORG_ROLE", value = "Viewer" },
+        { name = "GF_RDS_ENDPOINT", value = var.db_endpoint },
+        { name = "GF_RDS_DBNAME", value = "metrics_db" },
+        { name = "GF_RDS_USER", value = var.db_username },
+        { name = "GF_RDS_PASSWORD", value = var.db_password }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/${var.project_id}-grafana"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "grafana"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_service" "grafana" {
+  name            = "${var.project_id}-grafana-service"
+  cluster         = aws_ecs_cluster.mlops_cluster.id
+  task_definition = aws_ecs_task_definition.grafana.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  force_new_deployment = true
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_sg.id]
+  }
+
+  load_balancer {
+    target_group_arn = var.grafana_target_group_arn
+    container_name   = "grafana"
+    container_port   = 3000
+  }
+}
+
+resource "aws_iam_role" "grafana_task_exec_role" {
+  name = "${var.project_id}-grafana-task-exec-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_policy" "grafana_logs_write" {
+  name = "${var.project_id}-grafana-logs-write"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-grafana:log-stream:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "grafana_logs_write_attachment" {
+  role       = aws_iam_role.grafana_task_exec_role.name
+  policy_arn = aws_iam_policy.grafana_logs_write.arn
+}
+
+resource "aws_cloudwatch_log_group" "grafana_logs" {
+  name              = "/ecs/${var.project_id}-grafana"
+  retention_in_days = 7
+}
+
+resource "aws_security_group_rule" "allow_alb_to_grafana" {
+  type                     = "ingress"
+  from_port                = 3000
+  to_port                  = 3000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_sg.id
+  source_security_group_id = var.alb_sg_id
+}
+
+resource "aws_iam_role_policy_attachment" "grafana_ecr_access_attachment" {
+  role       = aws_iam_role.grafana_task_exec_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}

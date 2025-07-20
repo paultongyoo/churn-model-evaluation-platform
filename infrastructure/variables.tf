@@ -38,3 +38,19 @@ variable "lambda_filter_prefix" {
   type        = string
   default     = "data/input/"
 }
+
+variable "grafana_admin_user" {
+  description = "Grafana admin username"
+  type        = string
+}
+
+variable "grafana_admin_password" {
+  description = "Grafana admin password"
+  type        = string
+}
+
+variable "grafana_anon_org_name" {
+  description = "Name of the anonymous organization in Grafana"
+  type        = string
+  default     = "Anonymous"
+}
