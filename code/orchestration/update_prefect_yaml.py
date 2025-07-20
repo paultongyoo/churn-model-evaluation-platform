@@ -26,12 +26,12 @@ if "build" in config:
                     val["image_name"] = image_name
                     val["tag"] = image_tag
 
-# Update work pool name
-if "deployments" in config:
-    for deployment in config["deployments"]:
-        if isinstance(deployment, dict) and "work_pool" in deployment:
-            if isinstance(deployment["work_pool"], dict):
-                deployment["work_pool"]["name"] = work_pool_name
+# # Update work pool name
+# if "deployments" in config:
+#     for deployment in config["deployments"]:
+#         if isinstance(deployment, dict) and "work_pool" in deployment:
+#             if isinstance(deployment["work_pool"], dict):
+#                 deployment["work_pool"]["name"] = work_pool_name
 
 with open("prefect.yaml", "w", encoding="utf-8") as f:
     yaml.dump(config, f, sort_keys=False)
