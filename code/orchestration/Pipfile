@@ -18,6 +18,7 @@ sqlalchemy = "*"
 evidently = "*"
 matplotlib = "*"
 shap = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "*"

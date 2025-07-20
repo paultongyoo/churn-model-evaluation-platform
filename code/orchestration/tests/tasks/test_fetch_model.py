@@ -28,10 +28,15 @@ class TestFetchModel(unittest.TestCase):
         self.patcher_mlflow.stop()
         self.patcher_logger.stop()
 
-    def test_fetch_model_success(self):
+    @patch("prefect.blocks.system.Secret.load")
+    def test_fetch_model_success(self, mock_secret_load):
         """
         Test that fetch_model retrieves the model correctly.
         """
+
+        mock_secret = MagicMock()
+        mock_secret.get.return_value = "mock-tracking-uri"
+        mock_secret_load.return_value = mock_secret
 
         mock_model = MagicMock()
         mock_model.input_example = {"feature1": "value1", "feature2": "value2"}
@@ -46,11 +51,17 @@ class TestFetchModel(unittest.TestCase):
             model_uri="models:/test_model@latest"
         )
 
-    def test_fetch_model_missing_model(self):
+    @patch("prefect.blocks.system.Secret.load")
+    def test_fetch_model_invalid_model_uri(self, mock_secret_load):
         """
         Test that fetch_model raises expected error type with
         the expected error message when the model is not found.
         """
+
+        mock_secret = MagicMock()
+        mock_secret.get.return_value = "mock-tracking-uri"
+        mock_secret_load.return_value = mock_secret
+
         expected_error = (
             "Failed to fetch model 'missing_model' with alias 'latest' - "
             "Does it exist in the MLFlow registry?'"

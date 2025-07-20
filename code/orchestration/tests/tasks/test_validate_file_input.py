@@ -15,16 +15,10 @@ from pandas.testing import assert_frame_equal
 class TestValidateFileInput(unittest.TestCase):
 
     def setUp(self):
-
-        self.patcher_s3_client = patch("churn_prediction_pipeline.s3_client")
         self.patcher_logger = patch("churn_prediction_pipeline.get_run_logger")
-        self.patcher_pd = patch("churn_prediction_pipeline.pd")
-
-        self.mock_s3_client = self.patcher_s3_client.start()
         self.mock_logger = self.patcher_logger.start()
 
     def tearDown(self):
-        self.patcher_s3_client.stop()
         self.patcher_logger.stop()
 
     @patch("churn_prediction_pipeline.pd")
@@ -43,35 +37,43 @@ class TestValidateFileInput(unittest.TestCase):
             columns=["expected_feature_1", "expected_feature_2"]
         )
 
-        # Set up mock return values
-        self.mock_s3_client.get_object.return_value = {
-            "Body": MagicMock(
-                lambda: "expected_feature_1,expected_feature_2\nvalue1,value2\n"
-            )
-        }
-        mock_pd.read_csv.return_value = pd.DataFrame(
-            {
-                "expected_feature_1": ["any_value_1"],
-                "expected_feature_2": ["any_value_2"],
+        with patch(
+            "churn_prediction_pipeline.create_s3_client"
+        ) as mock_create_s3_client:
+
+            # Mock the S3 client and its get_object method
+            mock_s3_client = MagicMock()
+            mock_create_s3_client.return_value = mock_s3_client
+
+            # Set up mock return values
+            mock_s3_client.get_object.return_value = {
+                "Body": MagicMock(
+                    lambda: "expected_feature_1,expected_feature_2\nvalue1,value2\n"
+                )
             }
-        )
+            mock_pd.read_csv.return_value = pd.DataFrame(
+                {
+                    "expected_feature_1": ["any_value_1"],
+                    "expected_feature_2": ["any_value_2"],
+                }
+            )
 
-        result, inference_df, error_message = validate_file_input.fn(
-            mock_bucket, mock_key, mock_input_example
-        )
+            result, inference_df, error_message = validate_file_input.fn(
+                mock_bucket, mock_key, mock_input_example
+            )
 
-        # Assert that the S3 client and pandas read_csv were called correctly
-        self.mock_s3_client.get_object.assert_called_once_with(
-            Bucket=mock_bucket, Key=mock_key
-        )
-        mock_pd.read_csv.assert_called_once_with(
-            self.mock_s3_client.get_object.return_value["Body"]
-        )
+            # Assert that the S3 client and pandas read_csv were called correctly
+            mock_s3_client.get_object.assert_called_once_with(
+                Bucket=mock_bucket, Key=mock_key
+            )
+            mock_pd.read_csv.assert_called_once_with(
+                mock_s3_client.get_object.return_value["Body"]
+            )
 
-        # Assert that the result is True and no error message is returned
-        self.assertTrue(result)
-        assert_frame_equal(inference_df, mock_pd.read_csv.return_value)
-        self.assertIsNone(error_message)
+            # Assert that the result is True and no error message is returned
+            self.assertTrue(result)
+            assert_frame_equal(inference_df, mock_pd.read_csv.return_value)
+            self.assertIsNone(error_message)
 
     def test_validate_file_input_invalid_csv(self):
         """
@@ -83,17 +85,23 @@ class TestValidateFileInput(unittest.TestCase):
             columns=["expected_feature_1", "expected_feature_2"]
         )
 
-        # Simulate invalid binary data
-        binary_data = b"\xff\xfe\xfa\xfb\xfd"
-        self.mock_s3_client.get_object.return_value = {"Body": BytesIO(binary_data)}
+        with patch(
+            "churn_prediction_pipeline.create_s3_client"
+        ) as mock_create_s3_client:
+            mock_s3_client = MagicMock()
+            mock_create_s3_client.return_value = mock_s3_client
 
-        result, inference_df, error_message = validate_file_input.fn(
-            mock_bucket, mock_key, mock_input_example
-        )
+            # Simulate invalid binary data
+            binary_data = b"\xff\xfe\xfa\xfb\xfd"
+            mock_s3_client.get_object.return_value = {"Body": BytesIO(binary_data)}
 
-        self.assertFalse(result)
-        self.assertIsNone(inference_df)
-        self.assertTrue(error_message.startswith("Error reading CSV file"))
+            result, inference_df, error_message = validate_file_input.fn(
+                mock_bucket, mock_key, mock_input_example
+            )
+
+            self.assertFalse(result)
+            self.assertIsNone(inference_df)
+            self.assertTrue(error_message.startswith("Error reading CSV file"))
 
     @patch("churn_prediction_pipeline.pd")
     def test_validate_file_input_missing_columns(self, mock_pd):
@@ -108,26 +116,41 @@ class TestValidateFileInput(unittest.TestCase):
             columns=["expected_feature_1", "expected_feature_2"]
         )
 
-        self.mock_s3_client.get_object.return_value = {
-            "Body": MagicMock(
-                lambda: "expected_feature_1,expected_feature_2\nvalue1,value2\n"
-            )
-        }
-        mock_pd.read_csv.return_value = pd.DataFrame(
-            {
-                "expected_feature_1": ["any_value_1"]
-                # Removed 'expected_feature_2' to simulate missing column
+        with patch(
+            "churn_prediction_pipeline.create_s3_client"
+        ) as mock_create_s3_client:
+            mock_s3_client = MagicMock()
+            mock_create_s3_client.return_value = mock_s3_client
+
+            # Simulate a CSV with missing columns
+            mock_s3_client.get_object.return_value = {
+                "Body": MagicMock(
+                    lambda: "expected_feature_1,expected_feature_2\nvalue1,value2\n"
+                )
             }
-        )
+            mock_pd.read_csv.return_value = pd.DataFrame(
+                {
+                    "expected_feature_1": ["any_value_1"]
+                    # Removed 'expected_feature_2' to simulate missing column
+                }
+            )
 
-        result, inference_df, error_message = validate_file_input.fn(
-            mock_bucket, mock_key, mock_input_example
-        )
+            result, inference_df, error_message = validate_file_input.fn(
+                mock_bucket, mock_key, mock_input_example
+            )
 
-        self.assertFalse(result)
-        self.assertIsNone(inference_df)
-        self.assertEqual(
-            error_message,
-            f"""Input file {mock_key} does not match expected structure.
-            Expected columns: {mock_input_example.columns.tolist()}""",
-        )
+            self.assertFalse(result)
+            self.assertIsNone(inference_df)
+            print("Output error message:", error_message)
+            print(
+                "Actual message:",
+                f"""Input file {mock_key} does not match expected structure.
+                Expected columns: {mock_input_example.columns.tolist()}""",
+            )
+            self.assertEqual(
+                error_message,
+                (
+                    f"Input file {mock_key} does not match expected structure. "
+                    f"Expected columns: {mock_input_example.columns.tolist()}"
+                ),
+            )

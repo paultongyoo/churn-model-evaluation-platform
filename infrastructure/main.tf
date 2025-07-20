@@ -92,10 +92,12 @@ bash -c " \
 EOT
 
     environment = {
-      DB_USERNAME       = var.db_username,
-      DB_PASSWORD       = var.db_password,
-      DB_ENDPOINT       = module.rds_postgres.endpoint,
-      EVIDENTLY_UI_URL  = "http://${module.alb.alb_dns_name}:8000"
+      DB_USERNAME           = var.db_username,
+      DB_PASSWORD           = var.db_password,
+      DB_ENDPOINT           = module.rds_postgres.endpoint,
+      AWS_REGION            = var.aws_region,
+      MLFLOW_TRACKING_URI   = "http://${module.alb.alb_dns_name}:5000"
+      EVIDENTLY_UI_URL      = "http://${module.alb.alb_dns_name}:8000"
     }
   }
 

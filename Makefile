@@ -1,4 +1,5 @@
 SHELL := /bin/bash
+export PREFECT_API_URL := $(PREFECT_API_URL)
 
 .PHONY: disable-s3-lambda enable-s3-lambda setup test quality commit plan apply destroy
 

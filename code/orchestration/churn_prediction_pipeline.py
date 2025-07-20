@@ -48,12 +48,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-MLFLOW_TRACKING_URI = os.getenv(
-    "MLFLOW_TRACKING_URI"
-)  # Let model lookup fail if not set
-AWS_REGION = "us-east-2"
-s3_client = boto3.client("s3", region_name=AWS_REGION)
-
 FOLDER_INPUT = "data/input"
 FOLDER_PROCESSING = "data/processing"
 FOLDER_PROCESSED = "data/processed"
@@ -81,6 +75,7 @@ def fetch_model(model_name: str, alias: str):
         mlflow.pyfunc.PyFuncModel: The fetched model.
     """
     logger = get_run_logger()
+    MLFLOW_TRACKING_URI = Secret.load("mlflow-tracking-uri").get()
     logger.info("Setting MLflow tracking URI: %s", MLFLOW_TRACKING_URI)
     logger.info("Fetching model '%s' with alias '%s'", model_name, alias)
 
@@ -111,6 +106,8 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
         str: Error message if validation fails, None if successful.
     """
     logger = get_run_logger()
+    s3_client = create_s3_client()
+
     logger.info("Validating S3 key: %s", key)
 
     if not key.endswith(".csv"):
@@ -132,8 +129,10 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
 
     # Validate against the input example
     if not all(col in data.columns for col in input_example.columns):
-        err_msg = f"""Input file {key} does not match expected structure.
-            Expected columns: {input_example.columns.tolist()}"""
+        err_msg = (
+            f"Input file {key} does not match expected structure. "
+            f"Expected columns: {input_example.columns.tolist()}"
+        )
         logger.error(err_msg)
         return False, None, err_msg
 
@@ -201,6 +200,8 @@ def log_predictions(
         predictions_df (pd.DataFrame): The DataFrame containing predictions.
     """
     logger = get_run_logger()
+    s3_client = create_s3_client()
+
     logger.info("Logging predictions to S3...")
 
     # Create final DataFrame with predictions
@@ -332,7 +333,7 @@ def generate_data_report(
 
 
 @task
-def save_report_to_database(session, Base, report_run: Report) -> None:
+def save_report_to_database(report_run: Report) -> None:
     """
     Save the Evidently report run to the database.
     Args:
@@ -381,7 +382,7 @@ def parse_and_save_all_drift_metrics(
 
     drift_metrics = []
 
-    for metric in drift_report.metrics:
+    for metric in drift_report["metrics"]:
         metric_id = metric.get("metric_id")
         simple_metric_name = simplify_metric_name(metric_id)
         value = metric.get("value")
@@ -404,7 +405,7 @@ def parse_and_save_all_drift_metrics(
                         DriftMetric(
                             metric_name=f"{simple_metric_name}[{key}]",
                             value=float(subvalue),
-                            created_at=datetime.timezone.utc(),
+                            created_at=datetime.now(timezone.utc),
                         )
                     )
 
@@ -513,7 +514,7 @@ def connect_to_database(secrets: dict):
 
     DATABASE_URL = (
         f"postgresql+psycopg2://{secrets['username']}:{secrets['password']}"
-        f"@{secrets['endpoint']}:5432/{secrets['database']}"
+        f"@{secrets['endpoint']}/{secrets['database']}"
     )
 
     engine = create_engine(DATABASE_URL)
@@ -530,6 +531,7 @@ def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
     Move the S3 object to a specified folder.
     """
     logger = get_run_logger()
+    s3_client = create_s3_client()
 
     # Move the file to the specified folder
     filename = key.split("/")[-1]
@@ -564,14 +566,25 @@ def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
     return new_key
 
 
+def create_s3_client():
+    """
+    Create an S3 client using the AWS region from Prefect secrets.
+    Returns:
+        boto3.client: The S3 client.
+    """
+    AWS_REGION = Secret.load("aws-region").get()
+    return boto3.client("s3", region_name=AWS_REGION)
+
+
 @flow(name="churn_prediction_pipeline", log_prints=True)
-def churn_prediction_pipeline(bucket: str, key: str):
+def churn_prediction_pipeline(bucket: str, key: str):  # pylint: disable=too-many-locals
     """
     A Prefect flow that orchestrates the churn prediction pipeline.
     It includes tasks for data ingestion, preprocessing, model training,
     evaluation, and potentially retraining the model based on performance.
     """
     latest_s3_key = key  # Initialize with the original key for exception handling
+    s3_client = create_s3_client()
 
     try:
         logger = get_run_logger()
@@ -618,7 +631,8 @@ def churn_prediction_pipeline(bucket: str, key: str):
             predictions_df
         )
 
-        # TODO Write drift report to database
+        save_report_to_database(report_run=drift_report_run)
+
         # TODO If drift exceeds threshold, publish message to SNS topic
 
         logger.info("Churn prediction pipeline completed successfully.")
