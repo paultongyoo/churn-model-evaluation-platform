@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: disable-s3-lambda enable-s3-lambda setup test quality commit plan apply destroy
 
 setup:
@@ -71,5 +73,8 @@ register-model:
 
 process-test-data:
 	@echo "Processing test data..."
-	cd code/orchestration && \
-	python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv
+	bash -c '\
+		source .env && \
+		cd code/orchestration && \
+		python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv \
+	'
