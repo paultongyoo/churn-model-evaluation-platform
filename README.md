@@ -24,7 +24,7 @@
 
 * The labeled customer churn data used to train the model was randomly collected from an Iranian telecom company on 4/8/2020 and made available to download by the UC Irvine Machine Learning Repository at https://archive.ics.uci.edu/dataset/563/iranian+churn+dataset .
 * The `mlops-churn-pipeline` repository contains a `data` folder with several CSV files prefixed with the string `customer_churn_*`.
-* The following files were sourced from the original Iranian Telecom dataset:
+* The following files were split from the original Iranian Telecom dataset:
    * `customer_churn_0.csv`
    * `customer_churn_1.csv`
    * `customer_churn_2_majority_drifted.csv`
