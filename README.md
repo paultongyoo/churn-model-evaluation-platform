@@ -1,5 +1,7 @@
 # Churn Prediction Model Evaluation Pipeline
 
+(For those evaluating this project for my DataTalks.club MLOps Zoomcamp certification, see the "MLOps Zoomcamp Evaluation Criteria" section for abridged explanations of how this project sought to fulfill each criteria.)
+
 ## Problem Statement
 
 * TODO
