@@ -389,6 +389,21 @@ def save_report_to_database(report_run: Report) -> None:
         logger.info("Database session closed.")
 
 
+@task
+def are_majority_columns_drifted(drift_report: dict):
+    """
+    Check if the majority of columns in the drift report are drifted.
+    Args:
+        drift_report (dict): The Evidently drift report dictionary.
+    Returns:
+        bool: True if more than 50% of columns are drifted, False otherwise."""
+    for metric in drift_report["metrics"]:
+        if metric.get("metric_id").startswith("DriftedColumnsCount"):
+            value = metric.get("value")
+            return float(value["share"]) > 0.5
+    return False
+
+
 def parse_and_save_drift_metrics(drift_report: dict, session) -> list[dict]:
     """
     Parse the Evidently drift report to extract drift metrics.
@@ -701,9 +716,10 @@ def churn_prediction_pipeline(bucket: str, key: str):  # pylint: disable=too-man
         churn_model_alerts_topic_arn = Secret.load(
             SECRET_KEY_CHURN_MODEL_ALERTS_TOPIC_ARN
         ).get()
-        if drift_report_run.has_drift:
+        if are_majority_columns_drifted(drift_report_run.dict()):
             alert_message = (
-                f"Churn model drift detected in the latest run. "
+                f"Majority of columns drifted from reference data in the latest run. "
+                f"Filename: {os.path.basename(latest_s3_key)}. "
                 f"Drift metrics: {drift_report_run.dict()}"
             )
             logger.info("Drift detected, sending alert: %s", alert_message)
