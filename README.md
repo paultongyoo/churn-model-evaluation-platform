@@ -50,7 +50,7 @@
     * Uses Grafana `grafana/grafana-enterprise:12.0.2-security-01` image
 * **S3-to-Prefect Lambda Function**
     * Invokes orchestration flow when new files are dropped into S3
-    * Uses AWS
+    * Uses AWS `public.ecr.aws/lambda/python:3.12` image
 
 ## Steps to Setup Pipeline
 
