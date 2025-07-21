@@ -419,6 +419,7 @@ resource "aws_iam_policy" "prefect_worker_additional_permissions" {
           "ecs:StopTask",
           "ecs:TagResource",
           "iam:PassRole",
+          "sns:Publish"
         ],
         Resource = "*"
       }
