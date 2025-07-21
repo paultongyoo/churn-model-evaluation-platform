@@ -54,3 +54,8 @@ variable "grafana_anon_org_name" {
   type        = string
   default     = "Anonymous"
 }
+
+variable "my_email_address" {
+  description = "Email address to receive SNS alerts"
+  type        = string
+}

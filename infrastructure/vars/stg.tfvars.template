@@ -11,3 +11,4 @@ subnet_ids = [  # Must contain at least two PUBLIC subnets from DIFFERENT AZs
   "subnet-5678",
 ]
 my_ip=<Your IP Address>
+my_email_address=<Your Email Address>

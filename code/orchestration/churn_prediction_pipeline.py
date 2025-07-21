@@ -49,6 +49,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+SECRET_KEY_AWS_REGION = "aws-region"
+
 FOLDER_INPUT = "data/input"
 FOLDER_PROCESSING = "data/processing"
 FOLDER_PROCESSED = "data/processed"
@@ -63,6 +65,11 @@ TABLE_NAME_DRIFT_METRICS = "drift_metrics"
 
 EVIDENTLY_PROJECT_NAME = "mlops-churn-pipeline"
 EVIDENTLY_PROJECT_ID_BLOCK_NAME = "evidently-project-id"
+SECRET_KEY_EVIDENTLY_UI_URL = "evidently-ui-url"
+
+SECRET_KEY_GRAFANA_ADMIN_USER = "grafana-admin-user"
+
+SECRET_KEY_CHURN_MODEL_ALERTS_TOPIC_ARN = "churn-model-alerts-topic-arn"
 
 # Define the Data Drift Report model
 Base = declarative_base()
@@ -316,7 +323,7 @@ def generate_data_report(
     )
 
     # Add report to Evidently UI
-    evidently_ui_url = Secret.load("evidently-ui-url").get()
+    evidently_ui_url = Secret.load(SECRET_KEY_EVIDENTLY_UI_URL).get()
     logger.info("Evidently UI URL: %s", evidently_ui_url)
     workspace = RemoteWorkspace(evidently_ui_url)
     evidently_project_id = get_evidently_project_id()
@@ -576,13 +583,30 @@ def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
     return new_key
 
 
+@task
+def send_sns_alert(message: str, topic_arn: str):
+    """
+    Send an alert message to an SNS topic.
+    Args:
+        message (str): The message to send.
+        topic_arn (str): The ARN of the SNS topic to publish to.
+    Returns:
+        dict: The response from the SNS publish operation.
+    """
+    sns = boto3.client("sns")
+    response = sns.publish(
+        TopicArn=topic_arn, Message=message, Subject="🚨 Churn Model Alert"
+    )
+    return response
+
+
 def create_s3_client():
     """
     Create an S3 client using the AWS region from Prefect secrets.
     Returns:
         boto3.client: The S3 client.
     """
-    AWS_REGION = Secret.load("aws-region").get()
+    AWS_REGION = Secret.load(SECRET_KEY_AWS_REGION).get()
     return boto3.client("s3", region_name=AWS_REGION)
 
 
@@ -595,7 +619,7 @@ def grant_grafana_access_to_drift_table(session: Session):
         RuntimeError: If there is an error granting access to the Grafana Admin User.
     """
 
-    grafana_admin_user = Secret.load("grafana-admin-user").get()
+    grafana_admin_user = Secret.load(SECRET_KEY_GRAFANA_ADMIN_USER).get()
     logger = get_run_logger()
     logger.info(
         "Granting Grafana Admin User '%s' access to the drift metrics table...",
@@ -673,7 +697,19 @@ def churn_prediction_pipeline(bucket: str, key: str):  # pylint: disable=too-man
 
         save_report_to_database(report_run=drift_report_run)
 
-        # TODO If drift exceeds threshold, publish message to SNS topic
+        # If drift exceeds threshold, publish message to SNS topic
+        churn_model_alerts_topic_arn = Secret.load(
+            SECRET_KEY_CHURN_MODEL_ALERTS_TOPIC_ARN
+        ).get()
+        if drift_report_run.has_drift:
+            alert_message = (
+                f"Churn model drift detected in the latest run. "
+                f"Drift metrics: {drift_report_run.dict()}"
+            )
+            logger.info("Drift detected, sending alert: %s", alert_message)
+            send_sns_alert(alert_message, churn_model_alerts_topic_arn)
+        else:
+            logger.info("No drift detected in the latest run.")
 
         logger.info("Churn prediction pipeline completed successfully.")
         move_to_folder(bucket, latest_s3_key, FOLDER_PROCESSED)

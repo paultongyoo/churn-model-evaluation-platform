@@ -627,7 +627,6 @@ resource "aws_ecs_task_definition" "grafana" {
         { name = "GF_SECURITY_ADMIN_PASSWORD", value = var.grafana_admin_password },
         { name = "GF_AUTH_ANONYMOUS_ENABLED", value = "true" },
         { name = "GF_AUTH_ANONYMOUS_ORG_ROLE", value = "Viewer" },
-       # { name = "GF_AUTH_ANONYMOUS_ORG_NAME", value = var.grafana_anon_org_name },
         { name = "GF_AUTH_ANONYMOUS_ENABLED", value = "true" },
         { name = "GF_AUTH_ANONYMOUS_ORG_ROLE", value = "Viewer" },
         { name = "GF_RDS_ENDPOINT", value = var.db_endpoint },

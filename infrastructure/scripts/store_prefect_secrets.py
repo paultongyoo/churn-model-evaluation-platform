@@ -19,4 +19,7 @@ Secret(value=os.environ["EVIDENTLY_UI_URL"]).save("evidently-ui-url", overwrite=
 Secret(value=os.environ["GRAFANA_ADMIN_USER"]).save(
     "grafana-admin-user", overwrite=True
 )
+Secret(value=os.environ["CHURN_MODEL_ALERTS_TOPIC_ARN"]).save(
+    "churn-model-alerts-topic-arn", overwrite=True
+)
 print("✅ Prefect secrets successfully stored.")

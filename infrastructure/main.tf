@@ -84,6 +84,13 @@ module "s3_to_prefect_lambda" {
     lambda_filter_prefix = var.lambda_filter_prefix
 }
 
+module "sns" {
+    source = "./modules/sns"
+    project_id = var.project_id
+    my_email_address = var.my_email_address
+    prefect_worker_task_exec_role_arn = module.ecs_stack.prefect_worker_task_exec_role_arn
+}
+
 resource "null_resource" "initialize_services_and_store_secrets" {
   provisioner "local-exec" {
     command = <<EOT
@@ -97,13 +104,14 @@ bash -c " \
 EOT
 
     environment = {
-      DB_USERNAME           = var.db_username,
-      DB_PASSWORD           = var.db_password,
-      DB_ENDPOINT           = module.rds_postgres.endpoint,
-      AWS_REGION            = var.aws_region,
-      MLFLOW_TRACKING_URI   = "http://${module.alb.alb_dns_name}:5000"
-      EVIDENTLY_UI_URL      = "http://${module.alb.alb_dns_name}:8000"
-      GRAFANA_ADMIN_USER    = var.grafana_admin_user
+      DB_USERNAME                   = var.db_username,
+      DB_PASSWORD                   = var.db_password,
+      DB_ENDPOINT                   = module.rds_postgres.endpoint,
+      AWS_REGION                    = var.aws_region,
+      MLFLOW_TRACKING_URI           = "http://${module.alb.alb_dns_name}:5000"
+      EVIDENTLY_UI_URL              = "http://${module.alb.alb_dns_name}:8000"
+      GRAFANA_ADMIN_USER            = var.grafana_admin_user
+      CHURN_MODEL_ALERTS_TOPIC_ARN  = module.sns.churn_model_alerts_topic_arn
     }
   }
 
