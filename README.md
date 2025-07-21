@@ -71,7 +71,7 @@
 1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `mlops-churn-pipeline-tf-state-<some random number>`)
 1.  Clone `mlops-churn-pipeline` repository locally
 1.  Edit root Terraform configuration to store state within S3
-    1.  Edit file: `mlops-churn-pipeline/infrastructure/main.tf`
+    1.  Edit file: `{REPO_DIR}/infrastructure/main.tf`
     1.  Change `terraform.backend.s3.bucket` to the name of the bucket you created
     1.  Change `terraform.backend.s3.region` to your AWS region
 1.  Copy Terraform `stg.template.tfvars` file to new `stg.tfvars` file and define values for each key within:
@@ -89,14 +89,14 @@
 | `my_ip` | IP address that will be granted access to Grafana UI and Postgres DB | `203.0.113.42` |
 | `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `your.name@example.com` |
 
-1.  `cd {REPO_HOME}/code/orchestration` then `pipenv shell`
+1.  `cd {REPO_DIR}/code/orchestration` then `pipenv shell`
 1.  Run `make plan` and review the infrastructure to be created (see diagram above for summary)
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow, and start ECS services
 1.  Click each of the 4 ECS Service URLs to confirm they are running: MLFlow, Prefect Server, Evidently, Grafana
-1.  ` cd {REPO_HOME}` then `make model-registry` to train `XGBoostChurnModel` churn model and upload to MLFlow model registry with `staging` alias.
+1.  ` cd {REPO_DIR}` then `make model-registry` to train `XGBoostChurnModel` churn model and upload to MLFlow model registry with `staging` alias.
     1.  Confirm it was created by visiting the Model Registry with the MLFlow UI
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
-    1. Commit your cloned repo (including `{REPO_HOME}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
+    1. Commit your cloned repo (including `{REPO_DIR}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
     1. Log in your GitHub account, navigate to your committed repo project and create the following Repository Secrets (used by `deploy-prefect.yml`):
         1.  `AWS_ACCOUNT_ID`
         1.  `AWS_ACCESS_KEY_ID`
@@ -125,7 +125,7 @@ MLflow, Prefect, Evidently, and Grafana UI URLs
 
 Clicking on each URL *should* render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
 
-These URLs were also written to the `{REPO_HOME}/.env` file for future retrieval and export to shell environment when needed.
+These URLs were also written to the `{REPO_DIR}/.env` file for future retrieval and export to shell environment when needed.
 
 ```
 MLFLOW_TRACKING_URI=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:5000
@@ -151,10 +151,10 @@ TODO
 
 ## How to Generate Churn Model Evaluation Metrics
 
-1.  Navigate to `{REPO_HOME}` (and run `cd {REPO/HOME}code/orchestration && pipenv shell` if you haven't already)
+1.  Navigate to `{REPO_DIR}` (and run `cd {REPO/HOME}code/orchestration && pipenv shell` if you haven't already)
 2.  You can process the labeled Customer Churn data in one of two ways:
-   1.   Manually upload files from the `{REPO_HOME}/data` folder into the S3 bucket `{PROJECT_ID}/data/input` folder
-   2.   Run `make simulate-file-drops` from `{REPO_HOME}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder to more conveniently plot and review metrics changing over time in Grafana.
+   1.   Manually upload files from the `{REPO_DIR}/data` folder into the S3 bucket `{PROJECT_ID}/data/input` folder
+   2.   Run `make simulate-file-drops` from `{REPO_DIR}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder to more conveniently plot and review metrics changing over time in Grafana.
 3.  Once you drop files into the S3 bucket `{PROJECT_ID}/data/input` folder, you can navigate to 
 
 ## Pipeline S3 File Drop Logging
