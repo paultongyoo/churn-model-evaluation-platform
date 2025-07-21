@@ -92,7 +92,7 @@
     1.  Confirm it was created by visiting the Model Registry with the MLFlow UI
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
     1. Commit your cloned repo (including `{REPO_HOME}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
-    1. Log in your GitHub account, access your committed repo project and create the following Repository Secrets (used by `deploy-prefect.yml`):
+    1. Log in your GitHub account, navigate to your committed repo project and create the following Repository Secrets (used by `deploy-prefect.yml`):
         1.  `AWS_ACCOUNT_ID`
         1.  `AWS_ACCESS_KEY_ID`
         1.  `AWS_SECRET_ACCESS_KEY`
