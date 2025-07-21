@@ -109,6 +109,7 @@
 * TODO
 
 ## DataTalks.club MLOps Zoomcamp Evaluation Criteria
+Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
 
 * Problem description
     * 0 points: The problem is not described
