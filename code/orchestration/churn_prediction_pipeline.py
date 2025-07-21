@@ -465,10 +465,7 @@ def assess_prediction_scores(drift_report: dict, score_threshold=0.70):
                 if float(value) < score_threshold:
                     any_scores_below_threshold = True
                     num_scores_below_threshold += 1
-                    column_name = (
-                        metric.get("metric_id").split("(")[1].split("=")[1].strip(")")
-                    )
-                    scores_below_threshold.append(column_name)
+                    scores_below_threshold.append((score, value))
 
     logger.info(
         (
@@ -742,8 +739,8 @@ def send_scores_alert_email(
         f"Filename: {os.path.basename(latest_s3_key)}.\n\n"
         f"{num_scores_below_threshold} Scores Below Threshold:\n"
     )
-    for col in scores_below_threshold:
-        alert_message += f"- {col}\n"
+    for score, value in scores_below_threshold:
+        alert_message += f"- {score}: {value:.3f}\n"
 
     email_subject = (
         f"Customer Prediction Scores Alert: {num_scores_below_threshold} "
