@@ -84,7 +84,7 @@ class DriftMetric(Base):  # pylint: disable=too-few-public-methods
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def fetch_model(model_name: str, alias: str):
     """
     Fetch the model from MLflow registry.
@@ -197,7 +197,7 @@ def generate_predictions(X: pd.DataFrame, model) -> pd.DataFrame:
     return y_pred
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def log_predictions(
     X: pd.DataFrame,
     y_actual: pd.Series,
@@ -254,7 +254,7 @@ def log_predictions(
     return output_key, predictions_df
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def generate_data_report(
     prediction_df: pd.DataFrame,
 ):  # pylint: disable=too-many-locals
@@ -353,7 +353,7 @@ def generate_data_report(
     return data_report_run, run_add_results
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def save_report_to_database(report_run: Report) -> None:
     """
     Save the Evidently report run to the database.
@@ -427,6 +427,58 @@ def assess_data_drift(drift_report: dict):
         drifted_columns,
     )
     return is_data_drifted, num_cols_drifted, drifted_columns
+
+
+@task
+def assess_prediction_scores(drift_report: dict, score_threshold=0.70):
+    """
+    Assess whether the prediction scores (F1, Precision, Recall, Accuracy)
+    are below a specified threshold.
+    Args:
+        drift_report (dict): The Evidently drift report dictionary.
+        score_threshold (float): The threshold below which scores are considered low.
+    Returns:
+        tuple: A tuple containing:
+            - bool: True if any scores are below the threshold, False otherwise.
+            - int: Number of scores below the threshold.
+            - list: List of column names with scores below the threshold.
+    """
+    logger = get_run_logger()
+    any_scores_below_threshold = False
+    num_scores_below_threshold = 0
+    scores_below_threshold = []
+    score_names = [
+        "F1Score",
+        "Precision",
+        "Recall",
+        "Accuracy",
+    ]
+    for score in score_names:
+        for metric in drift_report["metrics"]:
+            if metric.get("metric_id").startswith(score):
+                value = metric.get("value")
+                if float(value) < score_threshold:
+                    any_scores_below_threshold = True
+                    num_scores_below_threshold += 1
+                    column_name = (
+                        metric.get("metric_id").split("(")[1].split("=")[1].strip(")")
+                    )
+                    scores_below_threshold.append(column_name)
+
+    logger.info(
+        (
+            "Scores assessment: any_scores_below_threshold=%s, "
+            "num_scores_below_threshold=%d, scores_below_threshold=%s"
+        ),
+        any_scores_below_threshold,
+        num_scores_below_threshold,
+        scores_below_threshold,
+    )
+    return (
+        any_scores_below_threshold,
+        num_scores_below_threshold,
+        scores_below_threshold,
+    )
 
 
 def parse_and_save_drift_metrics(drift_report: dict, session) -> list[dict]:
@@ -550,6 +602,7 @@ def load_database_secrets():
         raise RuntimeError(err_msg) from e
 
 
+@task(retries=3, retry_delay_seconds=5)
 def connect_to_database(secrets: dict):
     """
     Connect to the database using the provided secrets.
@@ -582,7 +635,7 @@ def connect_to_database(secrets: dict):
     return session
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
     """
     Move the S3 object to a specified folder.
@@ -624,6 +677,78 @@ def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
 
 
 @task
+def send_drift_alert_email(
+    latest_s3_key: str, num_drifted_cols, drifted_col_names, run_add_results
+):
+    """
+    Send an alert email if a significant number of columns have drifted.
+    Args:
+        latest_s3_key (str): The S3 key of the latest processed file.
+        num_drifted_cols (int): The number of columns that have drifted.
+        drifted_col_names (list): List of names of the drifted columns.
+        run_add_results: The results of adding the report to Evidently UI (contains report URL)
+    """
+    logger = get_run_logger()
+    churn_model_alerts_topic_arn = Secret.load(
+        SECRET_KEY_CHURN_MODEL_ALERTS_TOPIC_ARN
+    ).get()
+
+    alert_message = (
+        f"Majority of columns drifted from reference data in the latest run.\n"
+        f"Filename: {os.path.basename(latest_s3_key)}.\n"
+        f"{num_drifted_cols} Columns Drifted:\n"
+    )
+    for col in drifted_col_names:
+        alert_message += f"- {col}\n"
+
+    email_subject = f"Customer Data Drift Alert: {num_drifted_cols} Columns Drifted"
+    alert_message += (
+        f"\nPlease review the Evidently report at {run_add_results.url}"
+        f" and take necessary actions."
+    )
+    logger.info("Drift detected, sending alert: %s", alert_message)
+    send_sns_alert(email_subject, alert_message, churn_model_alerts_topic_arn)
+
+    logger.info(
+        "Alert sent to SNS topic %s with subject '%s'",
+        churn_model_alerts_topic_arn,
+        email_subject,
+    )
+
+
+@task
+def send_scores_alert_email(
+    latest_s3_key: str, num_scores_below_threshold: int, scores_below_threshold: list
+):
+    """
+    Send an alert email if any prediction scores are below the threshold.
+    Args:
+        latest_s3_key (str): The S3 key of the latest processed file.
+        num_scores_below_threshold (int): The number of scores below the threshold.
+        scores_below_threshold (list): List of names of the columns with low scores.
+    """
+    logger = get_run_logger()
+    churn_model_alerts_topic_arn = Secret.load(
+        SECRET_KEY_CHURN_MODEL_ALERTS_TOPIC_ARN
+    ).get()
+
+    alert_message = (
+        f"Prediction scores below threshold in the latest run.\n"
+        f"Filename: {os.path.basename(latest_s3_key)}.\n"
+        f"{num_scores_below_threshold} Scores Below Threshold:\n"
+    )
+    for col in scores_below_threshold:
+        alert_message += f"- {col}\n"
+
+    email_subject = (
+        f"Customer Prediction Scores Alert: {num_scores_below_threshold} "
+        "Scores Below Threshold"
+    )
+    logger.info("Scores below threshold detected, sending alert: %s", alert_message)
+    send_sns_alert(email_subject, alert_message, churn_model_alerts_topic_arn)
+
+
+@task(retries=3, retry_delay_seconds=5)
 def send_sns_alert(subject: str, message: str, topic_arn: str):
     """
     Send an alert message to an SNS topic.
@@ -656,7 +781,6 @@ def grant_grafana_access_to_drift_table(session: Session):
     Raises:
         RuntimeError: If there is an error granting access to the Grafana Admin User.
     """
-
     grafana_admin_user = Secret.load(SECRET_KEY_GRAFANA_ADMIN_USER).get()
     logger = get_run_logger()
     logger.info(
@@ -735,34 +859,35 @@ def churn_prediction_pipeline(bucket: str, key: str):  # pylint: disable=too-man
 
         save_report_to_database(drift_report_run)
 
-        # If drift exceeds threshold, publish message to SNS topic
-        churn_model_alerts_topic_arn = Secret.load(
-            SECRET_KEY_CHURN_MODEL_ALERTS_TOPIC_ARN
-        ).get()
-
         is_data_drifted, num_drifted_cols, drifted_col_names = assess_data_drift(
             drift_report_run.dict()
         )
         if is_data_drifted:
-            alert_message = (
-                f"Majority of columns drifted from reference data in the latest run.\n"
-                f"Filename: {os.path.basename(latest_s3_key)}.\n"
-                f"{num_drifted_cols} Columns Drifted:\n"
+            send_drift_alert_email(
+                latest_s3_key, num_drifted_cols, drifted_col_names, run_add_results
             )
-            for col in drifted_col_names:
-                alert_message += f"- {col}\n"
-
-            email_subject = (
-                f"Customer Data Drift Alert: {num_drifted_cols} Columns Drifted"
-            )
-            alert_message += (
-                f"\nPlease review the Evidently report at {run_add_results.url}"
-                f" and take necessary actions."
-            )
-            logger.info("Drift detected, sending alert: %s", alert_message)
-            send_sns_alert(email_subject, alert_message, churn_model_alerts_topic_arn)
         else:
             logger.info("No drift detected in the latest run.")
+
+        # Assess prediction scores
+        score_threshold = 0.70  # Define the threshold for low scores
+        (
+            any_scores_below_threshold,
+            num_scores_below_threshold,
+            scores_below_threshold,
+        ) = assess_prediction_scores(drift_report_run.dict(), score_threshold)
+        if any_scores_below_threshold:
+            send_scores_alert_email(
+                latest_s3_key, num_scores_below_threshold, scores_below_threshold
+            )
+            logger.warning(
+                "Some prediction scores are below the threshold of %.2f. "
+                "Consider retraining the model.",
+                score_threshold,
+            )
+            # TODO: Retrain the model if needed
+        else:
+            logger.info("All prediction scores are above the threshold.")
 
         logger.info("Churn prediction pipeline completed successfully.")
         move_to_folder(bucket, latest_s3_key, FOLDER_PROCESSED)
