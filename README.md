@@ -8,7 +8,9 @@
 
 ## Pipeline Target User Roles
 
-* TODO
+* Machine Learning Operations (MLOps) Engineer
+* Machine Learning Engineer
+* Data Scientist
 
 ## Pipeline Flowchart
 
