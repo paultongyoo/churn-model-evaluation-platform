@@ -455,7 +455,12 @@ def assess_prediction_scores(drift_report: dict, score_threshold=0.70):
     ]
     for score in score_names:
         for metric in drift_report["metrics"]:
-            if metric.get("metric_id").startswith(score):
+            if metric.get("metric_id").startswith(f"{score}("):
+                logger.info(
+                    "Checking %s with value %s",
+                    metric.get("metric_id"),
+                    metric.get("value"),
+                )
                 value = metric.get("value")
                 if float(value) < score_threshold:
                     any_scores_below_threshold = True
@@ -694,14 +699,14 @@ def send_drift_alert_email(
     ).get()
 
     alert_message = (
-        f"Majority of columns drifted from reference data in the latest run.\n"
-        f"Filename: {os.path.basename(latest_s3_key)}.\n"
-        f"{num_drifted_cols} Columns Drifted:\n"
+        f"Majority of columns drifted from reference data in the latest run.\n\n"
+        f"Filename: {os.path.basename(latest_s3_key)}.\n\n"
+        f"{num_drifted_cols} Column(s) Drifted:\n"
     )
     for col in drifted_col_names:
         alert_message += f"- {col}\n"
 
-    email_subject = f"Customer Data Drift Alert: {num_drifted_cols} Columns Drifted"
+    email_subject = f"Customer Data Drift Alert: {num_drifted_cols} Column(s) Drifted"
     alert_message += (
         f"\nPlease review the Evidently report at {run_add_results.url}"
         f" and take necessary actions."
@@ -733,8 +738,8 @@ def send_scores_alert_email(
     ).get()
 
     alert_message = (
-        f"Prediction scores below threshold in the latest run.\n"
-        f"Filename: {os.path.basename(latest_s3_key)}.\n"
+        f"Prediction scores below threshold in the latest run.\n\n"
+        f"Filename: {os.path.basename(latest_s3_key)}.\n\n"
         f"{num_scores_below_threshold} Scores Below Threshold:\n"
     )
     for col in scores_below_threshold:
