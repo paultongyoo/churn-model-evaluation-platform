@@ -126,7 +126,7 @@ PREFECT_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws
 GRAFANA_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
 ```
 
-The following sections summarize the features of each tool made available in this project.
+The following sections give a brief overview of the tool features made available in this project.
 
 ### MLFlow Tracking Server & Model Registry
 TODO
