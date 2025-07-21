@@ -71,7 +71,7 @@
 1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `mlops-churn-pipeline-tf-state-<some random number>`)
 1.  Clone `mlops-churn-pipeline` repository locally
 1.  Edit root Terraform configuration to store state within S3
-    1.  Edit `mlops-churn-pipeline/infrastructure/main.tf`
+    1.  Edit file: `mlops-churn-pipeline/infrastructure/main.tf`
     1.  Change `terraform.backend.s3.bucket` to the name of the bucket you created
     1.  Change `terraform.backend.s3.region` to your AWS region
 1.  Copy Terraform `stg.template.tfvars` file to new `stg.tfvars` file and define values for each key within:
