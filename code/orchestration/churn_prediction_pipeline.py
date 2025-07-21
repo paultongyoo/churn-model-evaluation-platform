@@ -265,6 +265,7 @@ def generate_data_report(
         prediction_df (pd.DataFrame): The DataFrame containing predictions.
     Returns:
         Evidently Report Run: The drift report run.
+        run_add_results: The results of adding the report to Evidently UI (contains report URL)
     """
     logger = get_run_logger()
     logger.info("Generating data report...")
@@ -341,7 +342,7 @@ def generate_data_report(
         logger.info("Creating new Evidently project: %s", EVIDENTLY_PROJECT_NAME)
         project = workspace.create_project(EVIDENTLY_PROJECT_NAME)
         save_evidently_project_id(project.id)
-    workspace.add_run(project.id, data_report_run)
+    run_add_results = workspace.add_run(project.id, data_report_run)
 
     logger.info("Data report generated successfully.")
     logger.info("View the report at: %s", evidently_ui_url)
@@ -349,7 +350,7 @@ def generate_data_report(
         "Data Drift and Classification evaluation results: %s", data_report_run.dict()
     )
 
-    return data_report_run
+    return data_report_run, run_add_results
 
 
 @task
@@ -390,18 +391,42 @@ def save_report_to_database(report_run: Report) -> None:
 
 
 @task
-def are_majority_columns_drifted(drift_report: dict):
+def assess_data_drift(drift_report: dict):
     """
-    Check if the majority of columns in the drift report are drifted.
+    Assess whether the majority of the dataset's columns have drifted and
+    returns the .
     Args:
         drift_report (dict): The Evidently drift report dictionary.
     Returns:
-        bool: True if more than 50% of columns are drifted, False otherwise."""
+        tuple: A tuple containing:
+            - bool: True if data drift exceeds threshold, False otherwise.
+            - int: Number of columns that drifted.
+            - list: List of drifted column names.
+    """
+    logger = get_run_logger()
+    is_data_drifted = False
+    num_cols_drifted = 0
+    drifted_columns = []
     for metric in drift_report["metrics"]:
         if metric.get("metric_id").startswith("DriftedColumnsCount"):
             value = metric.get("value")
-            return float(value["share"]) > 0.5
-    return False
+            is_data_drifted = float(value["share"]) > 0.5
+            num_cols_drifted = int(value["count"])
+        elif metric.get("metric_id").startswith("ValueDrift"):
+            value = metric.get("value")
+            if float(value) < 0.05:
+                column_name = (
+                    metric.get("metric_id").split("(")[1].split("=")[1].strip(")")
+                )
+                drifted_columns.append(column_name)
+
+    logger.info(
+        "Data drift assessment: is_data_drifted=%s, num_cols_drifted=%d, drifted_columns=%s",
+        is_data_drifted,
+        num_cols_drifted,
+        drifted_columns,
+    )
+    return is_data_drifted, num_cols_drifted, drifted_columns
 
 
 def parse_and_save_drift_metrics(drift_report: dict, session) -> list[dict]:
@@ -599,7 +624,7 @@ def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
 
 
 @task
-def send_sns_alert(message: str, topic_arn: str):
+def send_sns_alert(subject: str, message: str, topic_arn: str):
     """
     Send an alert message to an SNS topic.
     Args:
@@ -609,9 +634,7 @@ def send_sns_alert(message: str, topic_arn: str):
         dict: The response from the SNS publish operation.
     """
     sns = boto3.client("sns")
-    response = sns.publish(
-        TopicArn=topic_arn, Message=message, Subject="🚨 Churn Model Alert"
-    )
+    response = sns.publish(TopicArn=topic_arn, Message=message, Subject=f"🚨 {subject}")
     return response
 
 
@@ -708,22 +731,36 @@ def churn_prediction_pipeline(bucket: str, key: str):  # pylint: disable=too-man
             X, y, y_pred, bucket, latest_s3_key
         )
 
-        drift_report_run = generate_data_report(predictions_df)
+        drift_report_run, run_add_results = generate_data_report(predictions_df)
 
-        save_report_to_database(report_run=drift_report_run)
+        save_report_to_database(drift_report_run)
 
         # If drift exceeds threshold, publish message to SNS topic
         churn_model_alerts_topic_arn = Secret.load(
             SECRET_KEY_CHURN_MODEL_ALERTS_TOPIC_ARN
         ).get()
-        if are_majority_columns_drifted(drift_report_run.dict()):
+
+        is_data_drifted, num_drifted_cols, drifted_col_names = assess_data_drift(
+            drift_report_run.dict()
+        )
+        if is_data_drifted:
             alert_message = (
-                f"Majority of columns drifted from reference data in the latest run. "
-                f"Filename: {os.path.basename(latest_s3_key)}. "
-                f"Drift metrics: {drift_report_run.dict()}"
+                f"Majority of columns drifted from reference data in the latest run.\n"
+                f"Filename: {os.path.basename(latest_s3_key)}.\n"
+                f"{num_drifted_cols} Columns Drifted:\n"
+            )
+            for col in drifted_col_names:
+                alert_message += f"- {col}\n"
+
+            email_subject = (
+                f"Customer Data Drift Alert: {num_drifted_cols} Columns Drifted"
+            )
+            alert_message += (
+                f"\nPlease review the Evidently report at {run_add_results.url}"
+                f" and take necessary actions."
             )
             logger.info("Drift detected, sending alert: %s", alert_message)
-            send_sns_alert(alert_message, churn_model_alerts_topic_arn)
+            send_sns_alert(email_subject, alert_message, churn_model_alerts_topic_arn)
         else:
             logger.info("No drift detected in the latest run.")
 
