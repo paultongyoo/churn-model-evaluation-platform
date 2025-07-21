@@ -44,7 +44,7 @@
 ## Prerequisites
 
 * [AWS Account](https://aws.amazon.com/)
-    * AWS Account required to run the pipeline to the cloud as a user
+    * AWS Account required to deploy the pipeline to the cloud and run it as a user
     * AWS Account NOT required to run unit and integration tests
 * AWS User with the following [Identity & Access Management(IAM) Permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html):
     * TBD
