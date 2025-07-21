@@ -90,6 +90,10 @@
         1.  `AWS_SECRET_ACCESS_KEY`
         1.  `AWS_REGION`
     1.  Nagivate to GitHub Project Actions tab, select the workflow `Build and Deploy Prefect Flow to ECR`, and verify it completes successfully.
+2.  Confirm your email subscription to the pipeline SNS topic
+  3.  Navigate to your email inbox and look for an email subject titled `AWS Notification - Subscription Confirmation`.
+  4.  Open the email and click the `Confirm Subscription` link within.
+  5.  You should subsequently see a green message relaying your subscription has been confirmed.
 
 ## Steps to Run the Pipeline and evaluate the Customer Churn model
 
