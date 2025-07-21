@@ -114,7 +114,7 @@ MLflow, Prefect, Evidently, and Grafana UI URLs
 📈 Grafana UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
 ```
 
-Clicking on each *should* render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
+Clicking on each URL *should* render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
 
 These URLs were also written to the `{REPO_HOME}/.env` file for future retrieval and export to shell environment when needed.
 
