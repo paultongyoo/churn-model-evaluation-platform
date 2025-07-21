@@ -70,7 +70,7 @@ enable-lambda:
 register-model:
 	@echo "Registering model in MLflow..."
 	cd code/orchestration/modeling && \
-	python churn_training.py
+	python churn_model_training.py
 
 process-test-data:
 	@echo "Processing test data..."
