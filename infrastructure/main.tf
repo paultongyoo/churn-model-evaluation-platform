@@ -1,9 +1,9 @@
 terraform {
     required_version = ">= 1.8"
     backend "s3" {
-        bucket = "mlops-churn-pipeline-tf-state"
+        bucket = "mlops-churn-pipeline-tf-state"    # Change this to your S3 bucket name
         key     = "mlops-churn-pipeline.tfstate"
-        region  = "us-east-2"
+        region  = "us-east-2"                       # Change this to your AWS region
         encrypt = true
     }
     required_providers {
