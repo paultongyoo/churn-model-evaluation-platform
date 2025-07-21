@@ -79,3 +79,7 @@ process-test-data:
 		cd code/orchestration && \
 		python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv \
 	'
+
+simulate-file-drops:
+	@echo "Simulating file drops in S3 bucket..."
+	python upload_simulation_script.py
