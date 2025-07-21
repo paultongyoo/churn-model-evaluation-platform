@@ -4,15 +4,12 @@ import sys
 
 import yaml
 
-if len(sys.argv) != 4:
-    print(
-        "Usage: python update_prefect_yaml.py <IMAGE_NAME> <IMAGE_TAG> <WORK_POOL_NAME>"
-    )
+if len(sys.argv) != 3:
+    print("Usage: python update_prefect_yaml.py <IMAGE_NAME> <IMAGE_TAG>")
     sys.exit(1)
 
 image_name = sys.argv[1]
 image_tag = sys.argv[2]
-work_pool_name = sys.argv[3]
 
 with open("prefect.yaml", encoding="utf-8") as f:
     config = yaml.safe_load(f)
