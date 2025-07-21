@@ -99,12 +99,27 @@
   4.  Open the email and click the `Confirm Subscription` link within.
   5.  You should subsequently see a green message relaying your subscription has been confirmed.
 
-## Steps to Run the Pipeline and evaluate the Customer Churn model
+## Summary of Pipeline Services Created
+
+### MLFlow Tracking Server & Model Registry
+TODO
+
+### Prefect Orchestration Server and Worker Service
+TODO
+
+### Evidently Non-Time-Series Dashboard and Reports UI
+TODO
+
+### Grafana Time-Series Dashboard UI
+TODO
+
+## How to Generate Churn Model Evaluation Metrics
 
 1.  Navigate to `{REPO_HOME}` (and run `cd {REPO/HOME}code/orchestration && pipenv shell` if you haven't already)
 2.  You can process the labeled Customer Churn data in one of two ways:
    1.   Manually upload files from the `{REPO_HOME}/data` folder into the S3 bucket `{PROJECT_ID}/data/input` folder
    2.   Run `make simulate-file-drops` from `{REPO_HOME}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder to more conveniently plot and review metrics changing over time in Grafana.
+3.  Once you drop files into the S3 bucket `{PROJECT_ID}/data/input` folder, you can navigate to 
 
 ## Pipeline Logs
 
