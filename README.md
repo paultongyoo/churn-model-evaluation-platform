@@ -42,6 +42,7 @@
     1.  Change `terraform.backend.s3.bucket` to the name of the bucket you created
     1.  Change `terraform.backend.s3.region` to your AWS region
 1.  Copy Terraform `stg.template.tfvars` file to new `stg.tfvars` file and define values for each key within:
+
 | **Key Name** | **Purpose** | **Example Value** |
 | ------------ | ----------- | ----------------- |
 | `project_id` | Used as name for many AWS resources created by Terraform to avoid naming collisions, including the S3 bucket while files will be dropped and generated.  Choose something unique to avoid S3 bucket naming collisions. | `mlops-churn-pipeline-1349094` |
@@ -51,10 +52,10 @@
 | `db_password` | Password for Postgres database. Use best practices and avoid spaces. | `Th1s1sAStr0ng#Pwd!` |
 | `grafana_admin_user` | Username for Grafana account used to **edit** data drift and model prediction scores over time.  | `grafana_FTW` |
 | `grafana_admin_password` | Password for Grafana account | `Grafana4Lyfe!123` |
-| `grafana_anon_org_name` |
-| `subnet_ids`  |
-| `my_ip` |
-| `my_email_address` |
+| `subnet_ids`  | AWS Subnet IDs: **Must be public subnet IDs to allow Postgres RDS instance to be accessed by ECS services | `["subnet-123abc456def78901", "subnet-234bcd567efg89012"]` |
+| `my_ip` | IP address that will be granted access to Grafana UI and Postgres DB | `203.0.113.42` |
+| `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `	your.name@example.com` |
+
 1.  `cd {REPO_HOME}/code/orchestration` then `pipenv shell`
 1.  Run `make plan` and review the infrastructure to be created (see diagram above for summary)
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow, and start ECS services
