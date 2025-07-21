@@ -50,7 +50,7 @@
 * [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/) installed
 * [Terraform](https://developer.hashicorp.com/terraform/install) installed
 * GitHub Account
-  * At this time, deploying repo to your GitHub account and running GitHub Actions workflow is the only way to deploy Prefect flow to Prefect Server
+  * At this time, committing repo to your GitHub account and running GitHub Actions workflow is the only way to deploy Prefect flow to Prefect Server (without manual effort to circumvent)
 
 ## Docker Local Image Storage Space Requirements
 
