@@ -40,15 +40,15 @@
 
 ## Prerequisites
 
-* AWS Account
+* [AWS Account](https://aws.amazon.com/)
     * AWS Account required to run the pipeline to the cloud as a user
     * AWS Account NOT required to run unit and integration tests
-* AWS User with the following Permissions:
+* AWS User with the following [Identity & Access Management(IAM) Permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html):
     * TBD
 * AWS CLI installed with `aws configure` run to store credentials locally
-* Docker installed and Docker Engine running
+* [Docker](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
 * Pip and Pipenv installed
-* Terraform installed
+* [Terraform](https://developer.hashicorp.com/terraform/install) installed
 
 ## Docker Local Image Storage Space Requirements
 
