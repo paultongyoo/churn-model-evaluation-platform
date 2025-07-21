@@ -101,6 +101,33 @@
 
 ## Summary of Pipeline Services Created
 
+Once the Terraform `make apply` command completes successfully, you should see output similar to the following that provides you URLs to each of the 4 tools created:
+```
+🎉 All systems go! 🎉
+
+MLflow, Prefect, Evidently, and Grafana UI URLs
+-----------------------------------------------
+
+🧪 MLflow UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:5000
+⚙️ Prefect UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200
+📈 Evidently UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8000
+📈 Grafana UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
+```
+
+Clicking on each *should* render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
+
+These URLs were also written to the `{REPO_HOME}/.env` file for future retrieval and export to shell environment when needed.
+
+```
+MLFLOW_TRACKING_URI=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:5000
+PREFECT_API_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200/api
+EVIDENTLY_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8000
+PREFECT_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200
+GRAFANA_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
+```
+
+The following sections summarize the features of each tool made available in this project.
+
 ### MLFlow Tracking Server & Model Registry
 TODO
 
