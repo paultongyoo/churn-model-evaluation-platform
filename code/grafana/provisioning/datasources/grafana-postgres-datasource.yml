@@ -5,12 +5,12 @@ datasources:
     type: postgres
     access: proxy
     isDefault: true
-    url: ${GF_RDS_ENDPOINT}:5432
+    url: ${GF_RDS_ENDPOINT}
     database: ${GF_RDS_DBNAME}
     user: ${GF_RDS_USER}
     secureJsonData:
       password: ${GF_RDS_PASSWORD}
     jsonData:
-      sslmode: disable
+      sslmode: require
       postgresVersion: 1200
       timescaledb: false

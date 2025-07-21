@@ -92,7 +92,7 @@ resource "aws_lb_target_group" "evidently_ui" {
 
 resource "aws_lb_target_group" "grafana" {
   name        = "${var.project_id}-grafana"
-  port        = 8000
+  port        = 3000
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"

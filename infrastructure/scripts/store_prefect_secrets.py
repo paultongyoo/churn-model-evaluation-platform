@@ -16,4 +16,7 @@ Secret(value=os.environ["MLFLOW_TRACKING_URI"]).save(
     "mlflow-tracking-uri", overwrite=True
 )
 Secret(value=os.environ["EVIDENTLY_UI_URL"]).save("evidently-ui-url", overwrite=True)
+Secret(value=os.environ["GRAFANA_ADMIN_USER"]).save(
+    "grafana-admin-user", overwrite=True
+)
 print("✅ Prefect secrets successfully stored.")

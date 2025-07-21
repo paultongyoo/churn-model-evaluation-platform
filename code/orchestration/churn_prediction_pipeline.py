@@ -44,6 +44,7 @@ from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import create_engine
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -62,6 +63,18 @@ TABLE_NAME_DRIFT_METRICS = "drift_metrics"
 
 EVIDENTLY_PROJECT_NAME = "mlops-churn-pipeline"
 EVIDENTLY_PROJECT_ID_BLOCK_NAME = "evidently-project-id"
+
+# Define the Data Drift Report model
+Base = declarative_base()
+
+
+class DriftMetric(Base):  # pylint: disable=too-few-public-methods
+    __tablename__ = TABLE_NAME_DRIFT_METRICS
+
+    id = Column(Integer, primary_key=True)
+    metric_name = Column(String, nullable=False)
+    value = Column(Float, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 
 @task
@@ -338,17 +351,27 @@ def save_report_to_database(report_run: Report) -> None:
     Save the Evidently report run to the database.
     Args:
         report_run (Report): The Evidently report run to save.
+    Returns:
+        session: SQLAlchemy session for database interaction.
+    Raises:
+        RuntimeError: If there is an error saving the report to the database.
     """
     logger = get_run_logger()
     logger.info("Saving Evidently report run to database...")
     try:
+        # Connect to the database
         secrets = load_database_secrets()
-        session, Base = connect_to_database(secrets)
+        session = connect_to_database(secrets)
+        logger.info("Connected to database successfully.")
 
-        # Parse the report run to extract relevant metrics
-        report_dict = report_run.dict()
-        parse_and_save_all_drift_metrics(report_dict, session, Base)
-        logger.info("Evidently report metrics saved successfully.")
+        # Parse the drift metrics from the report run
+        drift_report = report_run.dict()
+        parse_and_save_drift_metrics(drift_report, session)
+
+        # Grant Grafana Admin User access to the drift metrics table
+        grant_grafana_access_to_drift_table(session)
+
+        logger.info("Saved %s drift metrics to DB.", len(drift_report["metrics"]))
     except Exception as e:
         session.rollback()
         err_msg = f"Failed to save Evidently report run to database: {e}"
@@ -356,30 +379,17 @@ def save_report_to_database(report_run: Report) -> None:
         raise RuntimeError(err_msg) from e
     finally:
         session.close()
+        logger.info("Database session closed.")
 
 
-def parse_and_save_all_drift_metrics(
-    drift_report: dict, session: Session, Base
-) -> None:
+def parse_and_save_drift_metrics(drift_report: dict, session) -> list[dict]:
     """
-    Parse the Evidently drift report and save the metrics to the database.
+    Parse the Evidently drift report to extract drift metrics.
     Args:
         drift_report (dict): The Evidently drift report dictionary.
-        session (Session): SQLAlchemy session for database interaction.
-        Base: SQLAlchemy declarative base for ORM mapping.
+    Returns:
+        list[dict]: A list of dictionaries containing drift metrics.
     """
-
-    # Define the Data Drift Report model
-    class DriftMetric(Base):  # pylint: disable=too-few-public-methods
-        __tablename__ = TABLE_NAME_DRIFT_METRICS
-
-        id = Column(Integer, primary_key=True)
-        metric_name = Column(String, nullable=False)
-        value = Column(Float, nullable=False)
-        created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-
-    Base.metadata.create_all(session.bind)
-
     drift_metrics = []
 
     for metric in drift_report["metrics"]:
@@ -500,7 +510,6 @@ def connect_to_database(secrets: dict):
         secrets (dict): A dictionary containing the database credentials.
     Returns:
         session: SQLAlchemy session object for database interaction.
-        Base: SQLAlchemy declarative base for ORM mapping.
     """
     logger = get_run_logger()
     logger.info("Connecting to the database...")
@@ -520,12 +529,13 @@ def connect_to_database(secrets: dict):
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(bind=engine)
     session = SessionLocal()
-    Base = declarative_base()
+    Base.metadata.create_all(engine)
 
     logger.info("Database connection established successfully.")
-    return session, Base
+    return session
 
 
+@task
 def move_to_folder(bucket: str, key: str, folder: str, message: str = ""):
     """
     Move the S3 object to a specified folder.
@@ -574,6 +584,38 @@ def create_s3_client():
     """
     AWS_REGION = Secret.load("aws-region").get()
     return boto3.client("s3", region_name=AWS_REGION)
+
+
+def grant_grafana_access_to_drift_table(session: Session):
+    """
+    Grant Grafana Admin User access to the drift metrics table.
+    Args:
+        session (Session): SQLAlchemy session for database interaction.
+    Raises:
+        RuntimeError: If there is an error granting access to the Grafana Admin User.
+    """
+
+    grafana_admin_user = Secret.load("grafana-admin-user").get()
+    logger = get_run_logger()
+    logger.info(
+        "Granting Grafana Admin User '%s' access to the drift metrics table...",
+        grafana_admin_user,
+    )
+    try:
+        grant_sql = (
+            f"GRANT SELECT ON TABLE {TABLE_NAME_DRIFT_METRICS} TO {grafana_admin_user};"
+        )
+        session.execute(text(grant_sql))
+        session.commit()
+        logger.info("Access granted successfully.")
+    except Exception as e:
+        err_msg = (
+            f"Failed to grant access to Grafana Admin User '{grafana_admin_user}' "
+            f"for table {TABLE_NAME_DRIFT_METRICS}: {e}"
+        )
+        logger.error(err_msg)
+        session.rollback()
+        raise RuntimeError(err_msg) from e
 
 
 @flow(name="churn_prediction_pipeline", log_prints=True)
@@ -627,9 +669,7 @@ def churn_prediction_pipeline(bucket: str, key: str):  # pylint: disable=too-man
             X, y, y_pred, bucket, latest_s3_key
         )
 
-        drift_report_run = generate_data_report(  # pylint: disable=unused-variable
-            predictions_df
-        )
+        drift_report_run = generate_data_report(predictions_df)
 
         save_report_to_database(report_run=drift_report_run)
 

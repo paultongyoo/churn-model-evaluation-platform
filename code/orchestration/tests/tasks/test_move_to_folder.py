@@ -44,7 +44,7 @@ class TestMoveToFolder(unittest.TestCase):
             mock_s3_client.delete_object.return_value = {}
             mock_create_s3_client.return_value = mock_s3_client
 
-            new_key = move_to_folder(mock_bucket, mock_key, mock_folder)
+            new_key = move_to_folder.fn(mock_bucket, mock_key, mock_folder)
 
             # Assert that the new key is constructed correctly
             expected_new_key = f"{mock_folder}/test-file.csv"

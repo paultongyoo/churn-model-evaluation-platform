@@ -103,6 +103,7 @@ EOT
       AWS_REGION            = var.aws_region,
       MLFLOW_TRACKING_URI   = "http://${module.alb.alb_dns_name}:5000"
       EVIDENTLY_UI_URL      = "http://${module.alb.alb_dns_name}:8000"
+      GRAFANA_ADMIN_USER    = var.grafana_admin_user
     }
   }
 
