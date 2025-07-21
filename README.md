@@ -108,7 +108,7 @@
   4.  Open the email and click the `Confirm Subscription` link within.
   5.  You should subsequently see a green message relaying your subscription has been confirmed.
 
-## Summary of Pipeline Services Created
+## Summary of Pipeline ECS Services Created
 
 Once the Terraform `make apply` command completes successfully, you should see output similar to the following that provides you URLs to each of the 4 tools created:
 ```
@@ -123,7 +123,9 @@ MLflow, Prefect, Evidently, and Grafana UI URLs
 📈 Grafana UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
 ```
 
-Clicking on each URL *should* render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
+Clicking on each URL should render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
+
+If any of the URLs return an error (e.g. 503 Service Unavailable), log into the AWS Elastic Container Service (ECS) console and confirm an ECS Task is in Running state for each of the 4 services:
 
 These URLs were also written to the `{REPO_DIR}/.env` file for future retrieval and export to shell environment when needed.
 
@@ -215,3 +217,5 @@ TODO
 #### Target: There's a CI/CD pipeline (2 points)
 TODO
 
+## Future Considerations
+TODO
