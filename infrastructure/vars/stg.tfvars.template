@@ -5,7 +5,6 @@ db_username=<Postgres DB Username>
 db_password=<Postgres DB Password>
 grafana_admin_user=<Grafana Admin Username>
 grafana_admin_password=<Grafana Admin Password>
-grafana_anon_org_name=<Grafana Org Name>
 subnet_ids = [  # Must contain at least two PUBLIC subnets from DIFFERENT AZs
   "subnet-1234",
   "subnet-5678",
