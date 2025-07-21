@@ -87,7 +87,7 @@
 | `grafana_admin_password` | Password for Grafana account | `Grafana4Lyfe!123` |
 | `subnet_ids`  | AWS Subnet IDs: **Must be public subnet IDs to allow Postgres RDS instance to be accessed by ECS services** | `["subnet-123abc456def78901", "subnet-234bcd567efg89012"]` |
 | `my_ip` | IP address that will be granted access to Grafana UI and Postgres DB | `203.0.113.42` |
-| `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `	your.name@example.com` |
+| `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `your.name@example.com` |
 
 1.  `cd {REPO_HOME}/code/orchestration` then `pipenv shell`
 1.  Run `make plan` and review the infrastructure to be created (see diagram above for summary)
