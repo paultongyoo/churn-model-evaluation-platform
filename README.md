@@ -157,7 +157,11 @@ TODO
    2.   Run `make simulate-file-drops` from `{REPO_HOME}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder to more conveniently plot and review metrics changing over time in Grafana.
 3.  Once you drop files into the S3 bucket `{PROJECT_ID}/data/input` folder, you can navigate to 
 
-## Pipeline Logs
+## Pipeline S3 File Drop Logging
+
+* TODO
+
+## Makefile Targets
 
 * TODO
 
