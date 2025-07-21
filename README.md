@@ -47,7 +47,7 @@
     * TBD
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store credentials locally
 * [Docker](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
-* Pip and Pipenv installed
+* [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/) installed
 * [Terraform](https://developer.hashicorp.com/terraform/install) installed
 
 ## Docker Local Image Storage Space Requirements
