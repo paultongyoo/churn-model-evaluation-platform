@@ -54,7 +54,7 @@
     * Invokes orchestration flow when new files are dropped into S3
     * Uses AWS `public.ecr.aws/lambda/python:3.12` image
 
-## Steps to Setup Pipeline
+## How to Set Up Pipeline
 
 1.  Install prerequisites (see list above)
 1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `mlops-churn-pipeline-tf-state-<some random number>`)
