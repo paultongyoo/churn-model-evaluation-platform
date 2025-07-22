@@ -286,12 +286,16 @@ This project consists mainly of the following folders and files:
 │   ├── prefect-run-detail.png
 │   ├── prefect-runs.png
 │   └── prefect-work-pools.png
+├── .gitignore
+├── .pre-commit-config.template.yaml
+├── .python-version
 ├── Makefile
 ├── README.md
 ├── folder-structure.txt
 ├── pyproject.toml
 ├── pytest.ini
 └── upload_simulation_script.py
+
 
 </pre>
 ## Installation Prerequisites
