@@ -59,7 +59,7 @@ flowchart TD
     E[Evaluate Model on Training Set]
     F[Evaluate Model on Holdout Set]
     G[Is Model Performance Sufficient?]
-    H[Deploy Model to Registry with 'staging' Alias]
+    H[Deploy Model to MLFlow Registry with 'staging' Alias]
     A --> B --> C --> D --> E --> F --> G;
     G --> |Yes| H;
     G --> |No| B;
@@ -73,12 +73,12 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[Drop New Customer Churn Data into S3]
-    B[Load Model by 'staging' Alias from Registry]
+    B[Load Model by 'staging' Alias from MLFlow Registry]
     C[Validate File Input]
     D[Prepare Data, reusing Training Logic]
     E[Generate Predictions]
     F[Append Predictions to File Input]
-    G[Generate Data Drift and Prediction Performance Report]
+    G[Generate Evidently Data Drift and Prediction Performance Report]
     H[Save Report to Database]
     I[Did Drift Exceed Threshold?]
     J[Send Drift Email Alert]
