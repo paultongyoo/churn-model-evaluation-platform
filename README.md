@@ -303,8 +303,7 @@ This project consists mainly of the following folders and files:
 * [AWS Account](https://aws.amazon.com/)
     * AWS Account required to deploy the pipeline to the cloud and run it as a user
     * AWS Account NOT required to run unit and integration tests
-* AWS User with the following [Identity & Access Management (IAM) Permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html):
-    * TBD
+* AWS User with the [Required IAM Permissions](#required-iam-permissions) policies
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store AWS credentials locally
 * [Docker](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
 * [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/) 
@@ -313,6 +312,21 @@ This project consists mainly of the following folders and files:
 * [Pre-commit](https://pre-commit.com/#install) 
 * GitHub Account
   * At this time, committing repo to your GitHub account and running GitHub Actions workflow is the only way to deploy Prefect flow to Prefect Server (without manual effort to circumvent)
+ 
+### Required IAM Permissions
+
+The following IAM Permissions policies were used when creating this Platform.  **Please note that this list is *overly permissive* and may be updated in the future.**
+
+* **AWS Managed Policies**
+	* `AmazonEC2ContainerRegistryFullAccess`
+	* `AmazonEC2FullAccess`
+ 	* `AmazonECS_FullAccess`
+  	* `AmazonRDSFullAccess`
+  	* `AmazonS3FullAccess`
+  	* `AmazonSNSFullAccess`
+  	* `AmazonLambda_FullAccess`
+  	* `CloudWatchLogsFullAccess`
+	* `IAMFullAccess`
 
 ## Docker Local Image Storage Space Requirements
 
