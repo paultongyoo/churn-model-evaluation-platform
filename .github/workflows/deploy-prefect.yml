@@ -45,7 +45,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Run tests
+    - name: Run Unit and Integration Tests
       working-directory: ./code/orchestration
       run: PYTHONPATH=code pipenv run pytest -v --maxfail=1 --disable-warnings --import-mode=importlib
 
@@ -75,6 +75,6 @@ jobs:
 
     # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
     # to ECS Prefect Server.  Not recommended for production environments!
-    - name: Deploy to Prefect Server
+    - name: Deploy Pipeline to Prefect Server
       working-directory: ./code/orchestration
       run: prefect --no-prompt deploy --all --pool $WORK_POOL_NAME
