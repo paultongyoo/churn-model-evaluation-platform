@@ -7,7 +7,6 @@
 1. [Problem Statement](#problem-statement)
 2. [Customer Churn Data Source](#customer-churn-data-source)
 4. [Pipeline Flowchart](#pipeline-flowchart)
-5. ["Non-Production Use" Disclaimer](#non-production-use-disclaimer)
 6. [Pipeline Infrastructure Diagram](#pipeline-infrastructure-diagram)
 7. [Project Folders & Files](#project-folders--files)
 8. [Prerequisites](#prerequisites)
@@ -56,10 +55,6 @@ flowchart TD
     D --> E;
     E --> A;
 ```
-
-## "Non-Production Use" Disclaimer
-
-* TODO
 
 ## Pipeline Infrastructure Diagram
 
