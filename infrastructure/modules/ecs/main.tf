@@ -311,7 +311,7 @@ resource "aws_iam_role" "prefect_worker_task_exec_role" {
 }
 
 resource "aws_ecs_task_definition" "prefect_worker" {
-  family                   = "mlops-prefect-worker"
+  family                   = "prefect-worker"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "512"
   memory                   = "1024"
