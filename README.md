@@ -411,6 +411,23 @@ TODO
    1.  Navigate to the Evidently UI to view detailed data drift metrics and prediction scores for each file
    2.  Navigate to the Grafana UI and view the precreated **"Customer Churn Model Evaluation"** dashboard to view how the drift metrics and prediction scores have behaved over time
 
+## Data Drift & Prediction Score Email Alerts
+
+The pipeline will send an email to the address configured within `stg.tfvars` in each of the following scenarios:
+
+### Data Drift Alert
+Sent if Evidently finds more than 50% of the new customer data set columns have drifted from the reference data set:
+![Data Drift Email Alert Example](readme-assets/email-alert-data-drift.png)
+
+### Prediction Score Alert
+Sent if Evidently reports any of the observed prediction scores drop below 70%:
+* F1 Score
+* Precision
+* Recall
+* Accuracy
+
+Screenshot TBD
+
 ## Makefile Targets
 
 * TODO
