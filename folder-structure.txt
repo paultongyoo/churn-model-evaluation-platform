@@ -51,7 +51,7 @@
 │   ├── customer_churn_synthetic_1.csv
 │   ├── customer_churn_synthetic_2.csv
 │   ├── customer_churn_synthetic_3.csv
-│   ├── customer_churn_synthetic_4.csv
+│   ├── customer_churn_synthetic_4_scores_below_threshold.csv
 │   ├── customer_churn_synthetic_5.csv
 │   └── customer_churn_synthetic_6.csv
 ├── infrastructure
@@ -91,7 +91,28 @@
 │   ├── main.tf
 │   └── variables.tf
 ├── readme-assets
-│   └── pipeline_ecs_tasks.png
+│   ├── email-alert-data-drift.png
+│   ├── email-alert-scores-below-threshold.png
+│   ├── evidently-confusion-matrix-by-label.png
+│   ├── evidently-confusion-matrix.png
+│   ├── evidently-data-drift-detailed.png
+│   ├── evidently-data-drift-summary.png
+│   ├── evidently-model-performance.png
+│   ├── grafana-drift-summary-metrics.png
+│   ├── grafana-latest-prediction-scores.png
+│   ├── grafana-metric-drift-p-values.png
+│   ├── mlflow-artifacts.png
+│   ├── mlflow-confusion-matrix.png
+│   ├── mlflow-experiments.png
+│   ├── mlflow-model-details.png
+│   ├── mlflow-model-registry.png
+│   ├── pipeline_ecs_tasks.png
+│   ├── prefect-dashboard.png
+│   ├── prefect-deployments.png
+│   ├── prefect-flows.png
+│   ├── prefect-run-detail.png
+│   ├── prefect-runs.png
+│   └── prefect-work-pools.png
 ├── Makefile
 ├── README.md
 ├── folder-structure.txt
