@@ -20,7 +20,7 @@
     - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
     - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
     - [Grafana Time-Series Dashboard UI](#grafana-time-series-dashboard-ui)
-11. [How to Generate Churn Model Evaluation Metrics](#how-to-generate-churn-model-evaluation-metrics)
+11. [How to Upload Data and Evaluate the Model](#how-to-upload-data-and-evaluate-the-model)
 12. [Makefile Targets](#makefile-targets)
 13. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
 14. [Future Considerations](#future-considerations)
@@ -329,13 +329,15 @@ TODO
 ### Grafana Time-Series Dashboard UI
 TODO
 
-## How to Generate Churn Model Evaluation Metrics
+## How to Upload Data and Evaluate the Model
 
 1.  Navigate to `{REPO_DIR}` (and run `cd {REPO/HOME}code/orchestration && pipenv shell` if you haven't already)
 2.  You can process the labeled Customer Churn data in one of two ways:
    1.   Manually upload files from the `{REPO_DIR}/data` folder into the S3 bucket `{PROJECT_ID}/data/input` folder
    2.   Run `make simulate-file-drops` from `{REPO_DIR}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder to more conveniently plot and review metrics changing over time in Grafana.
-3.  Once you drop files into the S3 bucket `{PROJECT_ID}/data/input` folder, you can navigate to 
+3.  Once you drop files into the S3 bucket `{PROJECT_ID}/data/input` folder, you can evaluate their data in two ways:
+   1.  Navigate to the Evidently UI to view detailed data drift metrics and prediction scores for each file
+   2.  Navigate to the Grafana UI and view the precreated **"Customer Churn Model Evaluation"** dashboard to view how the drift metrics and prediction scores have behaved over time
 
 ## Makefile Targets
 
