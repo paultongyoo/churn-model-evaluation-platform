@@ -304,7 +304,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
     1.  Edit file: `{REPO_DIR}/infrastructure/main.tf`
     1.  Change `terraform.backend.s3.bucket` to the name of the bucket you created
     1.  Change `terraform.backend.s3.region` to your AWS region
-1.  Copy Terraform `stg.template.tfvars` file to new `stg.tfvars` file and define values for each key within:
+1.  Copy Terraform `infrastructure/vars/stg.template.tfvars` file to new `infrastructure/vars/stg.tfvars` file and define values for each key within:
 
 | **Key Name** | **Purpose** | **Example Value** |
 | ------------ | ----------- | ----------------- |
@@ -319,8 +319,9 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 | `my_ip` | IP address that will be granted access to Grafana UI and Postgres DB | `203.0.113.42` |
 | `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `your.name@example.com` |
 
-1.  `cd {REPO_DIR}/code/orchestration` then `pipenv shell`
-2.  `cd {REPO_DIR}`
+1.  `cd {REPO_DIR}/infrastructure` then `terraform init`.  If successful, this command will populate the Terraform State S3 bucket you created in Step 2 with the necessary files to capture the state of your infrastructure across Terraform command invocations.
+2.  `cd {REPO_DIR}/code/orchestration` then `pipenv shell`
+3.  `cd {REPO_DIR}`
 1.  Run `make plan` and review the infrastructure to be created (see [Platform Infrastructure Diagram](#platform-infrastructure-diagram)
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow, and start ECS services
 1.  Click each of the 4 ECS Service URLs to confirm they are running: MLFlow, Prefect Server, Evidently, Grafana
