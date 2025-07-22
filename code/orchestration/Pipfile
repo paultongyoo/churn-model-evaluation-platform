@@ -19,6 +19,7 @@ evidently = "*"
 matplotlib = "*"
 shap = "*"
 psycopg2-binary = "*"
+testcontainers = "*"
 
 [dev-packages]
 pytest = "*"

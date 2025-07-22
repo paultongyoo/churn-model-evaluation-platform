@@ -114,7 +114,9 @@ def fetch_model(model_name: str, alias: str):
 
 
 @task
-def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> bool:
+def validate_file_input(
+    bucket: str, key: str, input_example: pd.DataFrame, endpoint_url=None
+) -> bool:
     """
     Validate the S3 key to ensure it points to a valid input file.
     Args:
@@ -126,7 +128,7 @@ def validate_file_input(bucket: str, key: str, input_example: pd.DataFrame) -> b
         str: Error message if validation fails, None if successful.
     """
     logger = get_run_logger()
-    s3_client = create_s3_client()
+    s3_client = create_s3_client(endpoint_url)
 
     logger.info("Validating S3 key: %s", key)
 
@@ -765,14 +767,16 @@ def send_sns_alert(subject: str, message: str, topic_arn: str):
     return response
 
 
-def create_s3_client():
+def create_s3_client(endpoint_url: str = None):
     """
     Create an S3 client using the AWS region from Prefect secrets.
+    Args:
+        endpoint_url (str): Optional S3 endpoint URL to use.  Used for local testing.
     Returns:
         boto3.client: The S3 client.
     """
     AWS_REGION = Secret.load(SECRET_KEY_AWS_REGION).get()
-    return boto3.client("s3", region_name=AWS_REGION)
+    return boto3.client("s3", region_name=AWS_REGION, endpoint_url=endpoint_url)
 
 
 def grant_grafana_access_to_drift_table(session: Session):
