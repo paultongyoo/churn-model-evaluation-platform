@@ -129,7 +129,7 @@ This project consists mainly of the following folders and files:
          * Contains model training and registry deployment logic:
             * `churn_model_training.ipynb` for model EDA, hyperparameter tuning, and model training
             * `churn_model_training.py` for extracting training logic to reuse in Prefect pipeline
-      * `tests/`: 
+      * `tests/`
          * `unit/`
             * Contains unit tests using `unittest.MagicMock` to mock all dependencies
          * `integration/`
