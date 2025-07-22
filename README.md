@@ -111,6 +111,47 @@ s3://mlops-churn-pipeline
 
 ## Project Folders & Files
 
+This project consists mainly of the following folders and files:
+* `code/grafana/`
+  * Contains Dockerfile that packages Grafana Enterprise image with:
+     * `grafana-postgres-datasource.yml`: Postgres Data Source configuration 
+     * `churn-model-evaluation.json`: Pre-created Data Drift and Prediction Score Evaluation Dashboard 
+* `code/orchestration/`
+   * Contains Dockerfile that packages Prefect Flow pipeline consisting of:
+      * `churn_prediction_pipeline.py`: Contains main Prefect flow and tasks
+      * `modeling/` subfolder
+         * Contains model training and registry deployment logic:
+            * `churn_model_training.ipynb` for model EDA, hyperparameter tuning, and model training
+            * `churn_model_training.py` for extracting training logic to reuse in Prefect pipeline
+      * `tests/` subfolder: contains pipeline unit and integration tests
+         * `unit/` subfolder
+            * Contains tests using `unittest.MagicMock` to mock all dependencies
+         * `integration/` subfolder
+            * Contains tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent
+* `code/s3_to_prefect_lambda/`
+   * `lambda_function.py`: Contains code to call Prefect Server Deployment API for each file dropped into [S3 File Drop `input` Folder](#s3-file-drop-folder-structure)
+* `data/`
+   * These files were split from the original data set: 
+      * `customer_churn_0.csv`: File used to drain model
+      * `customer_churn_1.csv`
+      * `customer_churn_2_majority_drifted.csv`: File that exhibits data drift exceeding threshold (email notification will be sent)
+   * `customer_churn_synthetic_*.csv`: Generated using [Gretel.ai](https://gretel.ai)
+* `terraform/`
+   * Contains Infrastructure-as-Code (IaC) and scripts to configure or destroy 80+ AWS resources from single command
+      * `modules/`: Configures the following AWS Services:
+         * `alb/`: [AWS Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/application-load-balancer/)
+         * `ecr/`: [AWS Elastic Container Registry](https://aws.amazon.com/ecr/)
+         * `ecs/`: [AWS Elastic Container Service](https://aws.amazon.com/ecs/)
+         * `rds-postgres/`: [AWS Relational Database Service](https://aws.amazon.com/rds/)
+         * `s3/`: [AWS Simple Storage Service](https://aws.amazon.com/s3/)
+         * `s3-to-prefect-lambda/`: [AWS Lambda](https://aws.amazon.com/lambda/)
+         * `sns/`: [AWS Simple Notification Service](https://aws.amazon.com/sns/)
+      * `scripts/`
+         * `store_prefect_secrets.py`: Stores generated ALB endpoints and SNS topic ARN into Prefect Server for use by pipeline
+         * `wait-for-services.sh`: Used to wait for [Platform ECS Services](#platform-ecs-services) to become available via ALB before returning UI URLs to user
+      * `vars/`
+         * `stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see [How to Set Up Platform](#how-to-set-up-platform))
+
 <pre>
 mlops-churn-pipeline
 ├── code
