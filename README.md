@@ -28,7 +28,9 @@
 
 ## Problem Statement
 
-* TODO
+* Companies develop churn prediction models to help them proactively retain valuable customers, which is often more cost-effective than acquiring new ones.
+* After being released for production use, the predictions of these models risk becoming less accurate over time as customer makeup and behaviors change.
+* This project addresses this problem by providing Data Scientists, Machine Learning Engineers, and Machine Learning Operations Engineers a pipeline for continuously training, deploying, and evaluating churn models to optimize their performance as customers evolve.
 
 ## Customer Churn Data Source
 
@@ -66,9 +68,9 @@
 <pre>
 s3://mlops-churn-pipeline
 └── data
-    ├── errored
-    ├── input
-    ├── logs
+    ├── errored      # Customer churn files that failed to process successfully
+    ├── input        # Customer churn files uploaded here
+    ├── logs         # Log file 
     ├── processed
     └── processing
 </pre>
