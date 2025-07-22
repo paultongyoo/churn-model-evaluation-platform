@@ -375,10 +375,20 @@ PREFECT_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws
 GRAFANA_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
 ```
 
-The following sections give a brief overview of the tool features made available in this project.
+The following sections give a brief overview of the tool features made available in this project:
 
 ### MLFlow Tracking Server & Model Registry
-TODO
+* List model experiment runs that track model metrics and parameters used
+* Captures details of each experiment run, including model type and training dataset used
+* Automatically creates images to aid evaluation (e.g. confusion matrix, SHAP summary plot)
+* Store models in Model Registry for future use (e.g. loaded by Model Evaluation Pipeline on file drop)
+  
+![MLFlow Experiments](readme-assets/mlflow-experiments.png) <br>
+![MLFlow Model Details](readme-assets/mlflow-model-details.png)
+![MLFlow Artifacts](readme-assets/mlflow-artifacts.png)
+![MLFlow Confusion Matrix](readme-assets/mlflow-confusion-matrix.png)
+![MLFlow Registry](readme-assets/mlflow-model-registry.png)
+
 
 ### Prefect Orchestration Server and Worker Service
 TODO
