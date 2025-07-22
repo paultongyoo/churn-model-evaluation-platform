@@ -297,14 +297,20 @@ The following sections give a brief overview of the tool features made available
 Translates Python scripts into robust, scalable, observable orchestrations.
 
 ![Prefect Dashboard](readme-assets/prefect-dashboard.png)
-![Prefect Dashboard](readme-assets/prefect-runs.png)
-![Prefect Dashboard](readme-assets/prefect-run-detail.png)
-![Prefect Dashboard](readme-assets/prefect-flows.png)
-![Prefect Dashboard](readme-assets/prefect-deployments.png)
-![Prefect Dashboard](readme-assets/prefect-work-pools.png)
+![Prefect Runs](readme-assets/prefect-runs.png)
+![Prefect Run Detail](readme-assets/prefect-run-detail.png)
+![Prefect Flows](readme-assets/prefect-flows.png)
+![Prefect Deployments](readme-assets/prefect-deployments.png)
+![Prefect Work Pools](readme-assets/prefect-work-pools.png)
 
 ### Evidently Non-Time-Series Dashboard and Reports UI
-TODO
+
+Provides detailed data drift and model performance metrics for individual file drops.
+
+![Evidently Data Drift Summary](readme-assets/evidently-data-drift-summary.png)
+![Evidently Data Drift Detailed](readme-assets/evidently-data-drift-detailed.png)
+![Evidently Model Performance](readme-assets/evidently-model-performance.png)
+![Evidently Confusion Matrix](readme-assets/evidently-confusion-matrix.png)
 
 ### Grafana Time-Series Dashboard UI
 TODO
