@@ -119,14 +119,14 @@ This project consists mainly of the following folders and files:
 * `code/orchestration/`
    * Contains Dockerfile that packages Prefect Flow pipeline consisting of:
       * `churn_prediction_pipeline.py`: Contains main Prefect flow and tasks
-      * `modeling/` subfolder
+      * `modeling/`
          * Contains model training and registry deployment logic:
             * `churn_model_training.ipynb` for model EDA, hyperparameter tuning, and model training
             * `churn_model_training.py` for extracting training logic to reuse in Prefect pipeline
       * `tests/` subfolder: contains pipeline unit and integration tests
          * `unit/` subfolder
             * Contains tests using `unittest.MagicMock` to mock all dependencies
-         * `integration/` subfolder
+         * `integration/`
             * Contains tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent
 * `code/s3_to_prefect_lambda/`
    * `lambda_function.py`: Contains code to call Prefect Server Deployment API for each file dropped into [S3 File Drop `input` Folder](#s3-file-drop-folder-structure)
@@ -151,6 +151,13 @@ This project consists mainly of the following folders and files:
          * `wait-for-services.sh`: Used to wait for [Platform ECS Services](#platform-ecs-services) to become available via ALB before returning UI URLs to user
       * `vars/`
          * `stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see [How to Set Up Platform](#how-to-set-up-platform))
+* `readme-assets/`
+   * Screenshots for this readme
+* `Makefile`
+   * Contains several targets to accelerate platform setup, development, and testing (see [Makefile](#makefile) section
+* `upload_simulation_script.py`
+   * Script that helps generate metrics over time for viewing in Grafana UI
+   * Uploads the non-training data files into S3 File Drop Input folder 30 seconds apart
 
 <pre>
 mlops-churn-pipeline
