@@ -22,9 +22,10 @@
     - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
     - [Grafana Time-Series Dashboard UI](#grafana-time-series-dashboard-ui)
 12. [How to Upload Data and Evaluate the Model](#how-to-upload-data-and-evaluate-the-model)
-13. [Makefile Targets](#makefile-targets)
-14. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
-15. [Future Considerations](#future-considerations)
+13. [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-email-alerts)
+14. [Makefile Targets](#makefile-targets)
+15. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+16. [Future Considerations](#future-considerations)
 
 
 ## Problem Statement
