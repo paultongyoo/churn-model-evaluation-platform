@@ -155,6 +155,10 @@ This project consists mainly of the following folders and files:
          * `stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see [How to Set Up Platform](#how-to-set-up-platform))
 * `readme-assets/`
    * Screenshots for this readme
+* `.env`
+   * Contains the URLs for:
+      * MLFlow, Prefect, Evidently, and Grafana
+      * Prefect Server API
 * `Makefile`
    * Contains several targets to accelerate platform setup, development, and testing (see [Makefile Targets](#makefile-targets) section
 * `upload_simulation_script.py`
