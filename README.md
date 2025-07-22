@@ -68,7 +68,7 @@
 ## Project Folders & Files
 
 <pre>
-.
+mlops-churn-pipeline
 ├── code
 │   ├── grafana
 │   │   ├── dashboards
