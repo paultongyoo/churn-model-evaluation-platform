@@ -24,11 +24,13 @@
 12. [How to Upload Data](#how-to-upload-data)
 13. [How to Evaluate Data Drift & Model](#how-to-evaluate-data-drift--model)
 14. [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-email-alerts)
-15. [Unit Test Strategy & Examples](#unit-test-strategy--examples)
-16. [Integration Test Strategy & Examples](#integration-test-strategy--examples)
+15. [Unit Test Examples](#unit-test-examples)
+16. [Integration Test Examples](#integration-test-examples)
 17. [Pre-Commit Hooks](#pre-commit-hooks)
 18. [Makefile Targets](#makefile-targets)
-19. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+19. [CI/CD Implementation](#ci-cd-implementation)
+20. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+
 
 ## Problem Statement
 
@@ -357,11 +359,11 @@ Sent if Evidently reports any of the observed prediction scores drop below 70%:
 
 ![Data Drift Email Alert Example](readme-assets/email-alert-scores-below-threshold.png)
 
-## Unit Test Strategy & Examples
+## Unit Test Examples
 
 TODO
 
-## Integration Test Strategy & Examples
+## Integration Test Examples
 
 TODO
 
@@ -396,7 +398,11 @@ The following table lists the `make` targets available to accelerate platform de
 | `disable-lambda` | Used to facilitate local dev/testing: Disables notification of the `s3_to_prefect` Lambda function so files aren't automatically picked up by the deployed service.  Lets you run the pipeline locally for development and debugging. |
 | `enable-lambda` | Re-enables the `s3_to_prefect` Lambda notification to resume pipeline instantiaton on S3 file drop |
 | `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLFlow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
-| `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.  
+| `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.
+
+## CI/CD Implementation
+
+TODO
 
 ## DataTalks.club MLOps Zoomcamp Evaluation Criteria
 Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
@@ -432,16 +438,16 @@ See [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-e
 
 ### Best practices
 #### Target: There are unit tests (1 point)
-TODO
+See [Unit Test Strategy & Examples](#unit-test-strategy--examples) section for summary of unit tests that were implemented.
 
 #### Target: There is an integration test (1 point)
-TODO
+See [Integration Test Strategy & Examples](#integration-test-strategy--examples) section for summary of integration tests that were implemented.
 
 #### Target: Linter and/or code formatter are used (1 point)
 See [Pre-Commit Hooks](#pre-commit-hooks) section to see which linter and code formatters were used.
 
 #### Target: There's a Makefile (1 point)
-TODO
+See [Makefile Targets](#makefile-targets) section for list of `Makefile` targets that were implemented.
 
 #### Target: There are pre-commit hooks (1 point)
 See [Pre-Commit Hooks](#pre-commit-hooks) section to see which hooks were used.
