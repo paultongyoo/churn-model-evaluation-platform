@@ -12,10 +12,10 @@
 4. [Platform Infrastructure Diagram](#platform-infrastructure-diagram)
 5. [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)
 6. [Project Folders & Files](#project-folders--files)
-7. [Prerequisites](#prerequisites)
+7. [Installation Prerequisites](#installation-prerequisites)
 8. [Docker Local Image Storage Space Requirements](#docker-local-image-storage-space-requirements)
 9. [Library Dependencies & Version Numbers](#library-dependencies--version-numbers)
-10. [How to Set Up Platform](#how-to-set-up-platform)
+10. [How to Install Platform](#how-to-install-platform)
 11. [Platform ECS Services](#platform-ecs-services)
     - [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
     - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
@@ -169,7 +169,7 @@ This project consists mainly of the following folders and files:
    * Script that helps generate metrics over time for viewing in Grafana UI
    * Uploads the non-training data files into S3 File Drop Input folder 30 seconds apart
 
-## Prerequisites
+## Installation Prerequisites
 
 * [AWS Account](https://aws.amazon.com/)
     * AWS Account required to deploy the pipeline to the cloud and run it as a user
@@ -202,7 +202,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 * `code/orchestration/`
 * `code/s3_to_prefect_lambda/`
 
-## How to Set Up Platform
+## How to Install Platform
 
 1.  Install the [prerequisites](#prerequisites)
 1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `mlops-churn-pipeline-tf-state-<some random number>`)
