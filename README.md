@@ -61,6 +61,10 @@
 
 * TODO
 
+## S3 File Drop Folder Sturcture
+
+
+
 ## Project Folders & Files
 
 <pre>
