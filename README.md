@@ -14,7 +14,7 @@
 8. [Prerequisites](#prerequisites)
 9. [Docker Local Image Storage Space Requirements](#docker-local-image-storage-space-requirements)
 10. [How to Set Up Pipeline](#how-to-set-up-pipeline)
-11. [Summary of Pipeline ECS Services Created](#summary-of-pipeline-ecs-services-created)
+11. [Pipeline ECS Services](#pipeline-ecs-services)
     - [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
     - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
     - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
@@ -237,7 +237,7 @@
   4.  Open the email and click the `Confirm Subscription` link within.
   5.  You should subsequently see a green message relaying your subscription has been confirmed.
 
-## Summary of Pipeline ECS Services Created
+## Pipeline ECS Services
 
 Once the Terraform `make apply` command completes successfully, you should see output similar to the following that provides you URLs to each of the 4 tools created:
 ```
