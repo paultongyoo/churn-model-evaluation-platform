@@ -37,7 +37,7 @@
 
 * TODO
 
-## Project Folder Structure
+## Project Folders & Files
 
 <pre>
   .
