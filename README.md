@@ -9,21 +9,22 @@
 3. [Platform Processes](#platform-processes)
    - [Model Training and Registry Deployment](#model-training-and-registry-deployment)
    - [Model Inference, Reporting, and Evaluation](#model-inference-reporting-and-evaluation)
-4. [Pipeline Infrastructure Diagram](#pipeline-infrastructure-diagram)
+4. [Platform Infrastructure Diagram](#platform-infrastructure-diagram)
 5. [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)
 6. [Project Folders & Files](#project-folders--files)
 7. [Prerequisites](#prerequisites)
 8. [Docker Local Image Storage Space Requirements](#docker-local-image-storage-space-requirements)
-9. [How to Set Up Platform](#how-to-set-up-platform)
-10. [Platform ECS Services](#platform-ecs-services)
+9. [Library Dependencies & Version Numbers](#library-dependencies--version-numbers)
+10. [How to Set Up Platform](#how-to-set-up-platform)
+11. [Platform ECS Services](#platform-ecs-services)
     - [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
     - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
     - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
     - [Grafana Time-Series Dashboard UI](#grafana-time-series-dashboard-ui)
-11. [How to Upload Data and Evaluate the Model](#how-to-upload-data-and-evaluate-the-model)
-12. [Makefile Targets](#makefile-targets)
-13. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
-14. [Future Considerations](#future-considerations)
+12. [How to Upload Data and Evaluate the Model](#how-to-upload-data-and-evaluate-the-model)
+13. [Makefile Targets](#makefile-targets)
+14. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+15. [Future Considerations](#future-considerations)
 
 
 ## Problem Statement
@@ -286,6 +287,13 @@ mlops-churn-pipeline
 * **S3-to-Prefect Lambda Function**
     * Invokes orchestration flow when new files are dropped into S3
     * Uses AWS `public.ecr.aws/lambda/python:3.12` image
+
+## Library Dependencies & Version Numbers
+
+See the `Pipfile` and `Pipfile.lock` files within the following folders for the full lists of library dependencies and version numbers used:
+
+* `code/orchestration/`
+* `code/s3_to_prefect_lambda/`
 
 ## How to Set Up Platform
 
