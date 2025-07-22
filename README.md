@@ -40,54 +40,52 @@
 ## Project Folders & Files
 
 <pre>
-  .
-├── Makefile
-├── README.md
+.
 ├── code
-│   ├── __init__.py
 │   ├── grafana
-│   │   ├── Dockerfile
-│   │   ├── custom.ini
 │   │   ├── dashboards
 │   │   │   └── churn-model-evaluation.json
-│   │   └── provisioning
-│   │       ├── dashboards
-│   │       │   └── default.yml
-│   │       └── datasources
-│   │           └── grafana-postgres-datasource.yml
-│   ├── orchestration
+│   │   ├── provisioning
+│   │   │   ├── dashboards
+│   │   │   │   └── default.yml
+│   │   │   └── datasources
+│   │   │       └── grafana-postgres-datasource.yml
 │   │   ├── Dockerfile
-│   │   ├── Pipfile
-│   │   ├── Pipfile.lock
-│   │   ├── __init__.py
-│   │   ├── churn_prediction_pipeline.py
+│   │   └── custom.ini
+│   ├── orchestration
 │   │   ├── modeling
 │   │   │   ├── __init__.py
 │   │   │   ├── churn_model_training.ipynb
 │   │   │   ├── churn_model_training.py
 │   │   │   └── setup.py
-│   │   ├── prefect.yaml
 │   │   ├── tests
-│   │   │   ├── __init__.py
 │   │   │   ├── integration
 │   │   │   │   ├── __init__.py
 │   │   │   │   └── test_validate_file_input.py
-│   │   │   └── unit
-│   │   │       ├── __init__.py
-│   │   │       ├── test_fetch_model.py
-│   │   │       ├── test_generate_predictions.py
-│   │   │       ├── test_move_to_folder.py
-│   │   │       ├── test_prepare_dataset.py
-│   │   │       └── test_validate_file_input.py
+│   │   │   ├── unit
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── test_fetch_model.py
+│   │   │   │   ├── test_generate_predictions.py
+│   │   │   │   ├── test_move_to_folder.py
+│   │   │   │   ├── test_prepare_dataset.py
+│   │   │   │   └── test_validate_file_input.py
+│   │   │   └── __init__.py
+│   │   ├── Dockerfile
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   │   ├── __init__.py
+│   │   ├── churn_prediction_pipeline.py
+│   │   ├── prefect.yaml
 │   │   └── update_prefect_yaml.py
-│   └── s3_to_prefect_lambda
-│       ├── Dockerfile
-│       ├── Pipfile
-│       ├── Pipfile.lock
-│       ├── __init__.py
-│       ├── lambda_function.py
-│       └── tests
-│           └── test_lambda_handler.py
+│   ├── s3_to_prefect_lambda
+│   │   ├── tests
+│   │   │   └── test_lambda_handler.py
+│   │   ├── Dockerfile
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   │   ├── __init__.py
+│   │   └── lambda_function.py
+│   └── __init__.py
 ├── data
 │   ├── customer_churn_0.csv
 │   ├── customer_churn_1.csv
@@ -98,19 +96,15 @@
 │   ├── customer_churn_synthetic_4.csv
 │   ├── customer_churn_synthetic_5.csv
 │   └── customer_churn_synthetic_6.csv
-├── folder-structure.txt
 ├── infrastructure
-│   ├── main.tf
 │   ├── modules
 │   │   ├── alb
 │   │   │   ├── main.tf
 │   │   │   ├── outputs.tf
 │   │   │   └── variables.tf
 │   │   ├── ecr
-│   │   │   ├── grafana_image_tag.txt
 │   │   │   ├── main.tf
 │   │   │   ├── outputs.tf
-│   │   │   ├── s3_to_prefect_lambda_image_tag.txt
 │   │   │   └── variables.tf
 │   │   ├── ecs
 │   │   │   ├── main.tf
@@ -134,16 +128,19 @@
 │   ├── scripts
 │   │   ├── store_prefect_secrets.py
 │   │   └── wait-for-services.sh
-│   ├── variables.tf
-│   └── vars
-│       └── stg.tfvars.template
-├── pyproject.toml
-├── pytest.ini
+│   ├── vars
+│   │   └── stg.tfvars.template
+│   ├── main.tf
+│   └── variables.tf
 ├── readme-assets
 │   └── pipeline_ecs_tasks.png
+├── Makefile
+├── README.md
+├── folder-structure.txt
+├── pyproject.toml
+├── pytest.ini
 └── upload_simulation_script.py
 
-</pre>
 
 ## Prerequisites
 
