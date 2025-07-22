@@ -113,6 +113,9 @@
 │   ├── prefect-run-detail.png
 │   ├── prefect-runs.png
 │   └── prefect-work-pools.png
+├── .gitignore
+├── .pre-commit-config.template.yaml
+├── .python-version
 ├── Makefile
 ├── README.md
 ├── folder-structure.txt
