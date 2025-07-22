@@ -9,6 +9,7 @@
 3. [Pipeline Target User Roles & Use Cases](#pipeline-target-user-roles-use-cases)
 4. [Pipeline Flowchart](#pipeline-flowchart)
 5. ["Non-Production Use" Disclaimer](#non-production-use-disclaimer)
+6. [Pipeline Infrastructure Diagram](#pipeline-infrastructure-diagram)
 
 ## Problem Statement
 
