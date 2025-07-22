@@ -67,7 +67,7 @@
 
 ## How to Set Up Pipeline
 
-1.  Install prerequisites (see list above)
+1.  Install the [prerequisites](#prerequisites)
 1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `mlops-churn-pipeline-tf-state-<some random number>`)
 1.  Clone `mlops-churn-pipeline` repository locally
 1.  Edit root Terraform configuration to store state within S3
