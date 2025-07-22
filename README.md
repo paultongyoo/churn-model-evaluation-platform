@@ -43,7 +43,19 @@
 
 ## Pipeline Flowchart
 
-<pre> ```mermaid flowchart TD A[Train Churn Model using past labeled Customer Churn Data<br/>("Reference Data")] B[Deploy Model to Model Registry] C[Drop new labeled Customer Churn Data<br/>("Inference Data") into S3] D[Assess Data Drift<br/>between Reference and Inference Datasets] E[Evaluate Model Scores:<br/>F1, Precision, Recall, Accuracy] A --> B --> C --> D --> E ``` </pre>
+```mermaid
+flowchart TD
+    A[Train Churn Model]
+    B[Deploy Model to Model Registry]
+    C[Predict New Customer Churn Data]
+    D[Assess Data Drift between Reference and New Datasets]
+    E[Evaluate Model Scores:<br/>F1, Precision, Recall, Accuracy]
+    A --> B;
+    B --> C;
+    C --> D;
+    D --> E;
+    E --> A;
+```
 
 ## "Non-Production Use" Disclaimer
 
