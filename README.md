@@ -154,7 +154,7 @@ This project consists mainly of the following folders and files:
 * `readme-assets/`
    * Screenshots for this readme
 * `Makefile`
-   * Contains several targets to accelerate platform setup, development, and testing (see [Makefile](#makefile) section
+   * Contains several targets to accelerate platform setup, development, and testing (see [Makefile Targets](#makefile-targets) section
 * `upload_simulation_script.py`
    * Script that helps generate metrics over time for viewing in Grafana UI
    * Uploads the non-training data files into S3 File Drop Input folder 30 seconds apart
