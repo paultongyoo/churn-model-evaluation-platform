@@ -175,9 +175,10 @@ This project consists mainly of the following folders and files:
     * TBD
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store AWS credentials locally
 * [Docker](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
-* [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/) installed
-* [Terraform](https://developer.hashicorp.com/terraform/install) installed
-* [Prefect](https://docs.prefect.io/v3/get-started/install) installed
+* [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/) 
+* [Terraform](https://developer.hashicorp.com/terraform/install) 
+* [Prefect](https://docs.prefect.io/v3/get-started/install) 
+* [Pre-commit](https://pre-commit.com/#install) 
 * GitHub Account
   * At this time, committing repo to your GitHub account and running GitHub Actions workflow is the only way to deploy Prefect flow to Prefect Server (without manual effort to circumvent)
 
@@ -355,9 +356,38 @@ Sent if Evidently reports any of the observed prediction scores drop below 70%:
 
 ![Data Drift Email Alert Example](readme-assets/email-alert-scores-below-threshold.png)
 
+## Pre-Commit Hooks
+
+The following hooks are used to maintain notebook and module code quality and execute tests prior to commiting files to Git:
+
+* `nbqa-pylint`
+* `nbqa-flake8`
+* `nbqa-black`
+* `nbqa-isort`
+* `trailing-whitespace`
+* `end-of-file-fixer`
+* `check-yaml`
+* `check-added-large-files`
+* `isort`
+* `black`
+* `pylint`
+* `pytest-check`
+
 ## Makefile Targets
 
-* TODO
+The following table lists the `make` targets available to accelerate platform deployment, development, and testing:
+| Target Name | Purpose |
+| ------------| ------- |
+| `test` | Runs all unit and integration tests defined within `code/orchestration` and `code/s3_to_prefect_lambda` folders |
+| `quality` | Runs `pre-commit run --all-files`.  See [Pre-Commit Hooks](#pre-commit-hooks) |
+| `commit` | Stages all changed files, prompts user for commit message, and attempts to commit the files (barring pre-commit errors) |
+| `plan` | Runs `terraform plan --var-file=vars/stg.tfvars` from `infrastructure` directory |
+| `apply` | Runs `terraform apply --var-file=vars/stg.tfvars --auto-approve` and outputs emoji-filled message with UI URLs upon successful deploy and ECS Task activation |
+| `destroy` | Runs `terraform destroy -var-file=vars/stg.tfvars --auto-approve` |
+| `disable-lambda` | Used to facilitate local dev/testing: Disables notification of the `s3_to_prefect` Lambda function so files aren't automatically picked up by the deployed service.  Lets you run the pipeline locally for development and debugging. |
+| `enable-lambda` | Re-enables the `s3_to_prefect` Lambda notification to resume pipeline instantiaton on S3 file drop |
+| `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLFlow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
+| `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.  
 
 ## DataTalks.club MLOps Zoomcamp Evaluation Criteria
 Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
