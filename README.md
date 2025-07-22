@@ -61,9 +61,17 @@
 
 * TODO
 
-## S3 File Drop Folder Sturcture
+## S3 File Drop Folder Structure
 
-
+<pre>
+s3://mlops-churn-pipeline
+├── data
+│   ├── errored
+│   ├── input
+│   ├── logs
+│   ├── processed
+│   ├── processing
+</pre>
 
 ## Project Folders & Files
 
