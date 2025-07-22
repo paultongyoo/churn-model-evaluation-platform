@@ -311,6 +311,7 @@ Provides detailed data drift and model performance metrics for individual file d
 ![Evidently Data Drift Detailed](readme-assets/evidently-data-drift-detailed.png)
 ![Evidently Model Performance](readme-assets/evidently-model-performance.png)
 ![Evidently Confusion Matrix](readme-assets/evidently-confusion-matrix.png)
+![Evidently Confusion Matrix By Label](readme-assets/evidently-confusion-matrix-by-label.png)
 
 ### Grafana Time-Series Dashboard UI
 TODO
