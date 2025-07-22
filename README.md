@@ -46,7 +46,7 @@
 * [AWS Account](https://aws.amazon.com/)
     * AWS Account required to deploy the pipeline to the cloud and run it as a user
     * AWS Account NOT required to run unit and integration tests
-* AWS User with the following [Identity & Access Management(IAM) Permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html):
+* AWS User with the following [Identity & Access Management (IAM) Permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html):
     * TBD
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store AWS credentials locally
 * [Docker](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
