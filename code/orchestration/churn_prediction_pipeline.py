@@ -737,9 +737,9 @@ def send_scores_alert_email(
     ).get()
 
     alert_message = (
-        f"Prediction scores below threshold in the latest run.\n\n"
+        f"Predictions scored below threshold in the latest run.\n\n"
         f"Filename: {os.path.basename(latest_s3_key)}.\n\n"
-        f"{num_scores_below_threshold} Scores Below Threshold:\n"
+        f"{num_scores_below_threshold} Score(s) Below Threshold:\n"
     )
     for score, value in scores_below_threshold:
         alert_message += f"- {score}: {value:.3f}\n"
