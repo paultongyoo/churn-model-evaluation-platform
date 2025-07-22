@@ -129,11 +129,11 @@ This project consists mainly of the following folders and files:
          * Contains model training and registry deployment logic:
             * `churn_model_training.ipynb` for model EDA, hyperparameter tuning, and model training
             * `churn_model_training.py` for extracting training logic to reuse in Prefect pipeline
-      * `tests/` subfolder: contains pipeline unit and integration tests
-         * `unit/` subfolder
-            * Contains tests using `unittest.MagicMock` to mock all dependencies
+      * `tests/`: 
+         * `unit/`
+            * Contains unit tests using `unittest.MagicMock` to mock all dependencies
          * `integration/`
-            * Contains tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent
+            * Contains integration tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent
 * `code/s3_to_prefect_lambda/`
 	* Contains Dockerfile that packages `lambda_function.py` and its dependencies for notifying Prefect pipeline of new file drops
 * `data/`
