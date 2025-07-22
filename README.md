@@ -323,8 +323,8 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 1.  Run `make plan` and review the infrastructure to be created (see diagram above for summary)
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow, and start ECS services
 1.  Click each of the 4 ECS Service URLs to confirm they are running: MLFlow, Prefect Server, Evidently, Grafana
-1.  ` cd {REPO_DIR}` then `make model-registry` to train `XGBoostChurnModel` churn model and upload to MLFlow model registry with `staging` alias.
-    1.  Confirm it was created by visiting the Model Registry with the MLFlow UI
+1.  Run `make register-model` to train `XGBoostChurnModel` churn model and upload it to the MLFlow Model Registry with `staging` alias.
+    1.  Confirm it was created by visiting the Model Registry within the MLFlow UI
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
     1. Commit your cloned repo (including `{REPO_DIR}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
     1. Log in your GitHub account, navigate to your committed repo project and create the following Repository Secrets (used by `deploy-prefect.yml`):
