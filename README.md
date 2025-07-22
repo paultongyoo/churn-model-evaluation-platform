@@ -133,7 +133,7 @@ This project consists mainly of the following folders and files:
          * `integration/`
             * Contains tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent
 * `code/s3_to_prefect_lambda/`
-   * `lambda_function.py`: Contains code to call Prefect Server Deployment API for each file dropped into [S3 File Drop `input` Folder](#s3-file-drop-folder-structure)
+	* Contains Dockerfile that packages `lambda_function.py` and its dependencies for notifying Prefect pipeline of new file drops:	
 * `data/`
    * These files were split from the original data set: 
       * `customer_churn_0.csv`: File used to drain model
@@ -395,23 +395,23 @@ Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
 
 ### Problem description
 #### Target: The problem is well described and it's clear what the problem the project solves
-TODO
+See [Problem Statement](#problem-statement) section.
 
 ### Cloud
 #### Target: The project is developed on the cloud and IaC tools are used for provisioning the infrastructure
-TODO
+See [Project Folders & Files](#project-folders--files) section for summary of Terraform files used to create AWS infrastructure.
 
 ### Experiment tracking and model registry
 #### Target: Both experiment tracking and model registry are used
-TODO
+See [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry) section for screenshots of experiments tracked and model stored in registry.
 
 ### Workflow orchestration
 #### Target: Fully deployed workflow 
-TODO
+See [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service) section for screenshots of fully deployed workflow within Prefect UI and examples of worflow executions ("runs").
 
 ### Model deployment
 #### Target: The model deployment code is containerized and could be deployed to cloud or special tools for model deployment are used
-TODO
+See the `orchestration` and `s3_to_prefect_lambda` folders of [Project Folders & Files](#project-folders--files) to see how the model deployment code was containerized and deployed to the cloud.
 
 ### Model monitoring
 #### Target: Comprehensive model monitoring that sends alerts or runs a conditional workflow (e.g. retraining, generating debugging dashboard, switching to a different model) if the defined metrics threshold is violated
