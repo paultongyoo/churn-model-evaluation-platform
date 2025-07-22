@@ -453,4 +453,4 @@ See [Makefile Targets](#makefile-targets) section for list of `Makefile` targets
 See [Pre-Commit Hooks](#pre-commit-hooks) section to see which hooks were used.
 
 #### Target: There's a CI/CD pipeline (2 points)
-TODO
+See [CI-CD Implementation](#ci-cd-implementation) section for summary of how CI/CD was implemented.
