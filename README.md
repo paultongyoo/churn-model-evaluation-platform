@@ -140,7 +140,7 @@
 ├── pyproject.toml
 ├── pytest.ini
 └── upload_simulation_script.py
-
+</pre>
 
 ## Prerequisites
 
