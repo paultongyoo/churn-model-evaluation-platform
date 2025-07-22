@@ -24,11 +24,11 @@
 12. [How to Upload Data](#how-to-upload-data)
 13. [How to Evaluate Data Drift & Model](#how-to-evaluate-data-drift--model)
 14. [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-email-alerts)
-15. [Pre-Commit Hooks](#pre-commit-hooks)
-16. [Makefile Targets](#makefile-targets)
-17. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
-18. [Future Considerations](#future-considerations)
-
+15. [Unit Test Strategy & Examples](#unit-test-strategy--examples)
+16. [Integration Test Strategy & Examples](#integration-test-strategy--examples)
+17. [Pre-Commit Hooks](#pre-commit-hooks)
+18. [Makefile Targets](#makefile-targets)
+19. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
 
 ## Problem Statement
 
@@ -438,16 +438,13 @@ TODO
 TODO
 
 #### Target: Linter and/or code formatter are used (1 point)
-TODO
+See [Pre-Commit Hooks](#pre-commit-hooks) section to see which linter and code formatters were used.
 
 #### Target: There's a Makefile (1 point)
 TODO
 
 #### Target: There are pre-commit hooks (1 point)
-TODO
+See [Pre-Commit Hooks](#pre-commit-hooks) section to see which hooks were used.
 
 #### Target: There's a CI/CD pipeline (2 points)
-TODO
-
-## Future Considerations
 TODO
