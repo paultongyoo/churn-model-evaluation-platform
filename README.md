@@ -28,7 +28,7 @@
 16. [Integration Test Examples](#integration-test-examples)
 17. [Pre-Commit Hooks](#pre-commit-hooks)
 18. [Makefile Targets](#makefile-targets)
-19. [CI/CD Implementation](#ci-cd-implementation)
+19. [CI-CD Implementation](#ci-cd-implementation)
 20. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
 
 
@@ -400,7 +400,7 @@ The following table lists the `make` targets available to accelerate platform de
 | `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLFlow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
 | `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.
 
-## CI/CD Implementation
+## CI-CD Implementation
 
 TODO
 
