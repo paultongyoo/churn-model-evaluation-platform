@@ -6,10 +6,25 @@
 
 1. [Problem Statement](#problem-statement)
 2. [Customer Churn Data Source](#customer-churn-data-source)
-3. [Pipeline Target User Roles & Use Cases](#pipeline-target-user-roles-use-cases)
+3. [Pipeline Target User Roles & Use Cases](#pipeline-target-user-roles--use-cases)
 4. [Pipeline Flowchart](#pipeline-flowchart)
 5. ["Non-Production Use" Disclaimer](#non-production-use-disclaimer)
 6. [Pipeline Infrastructure Diagram](#pipeline-infrastructure-diagram)
+7. [Project Folders & Files](#project-folders--files)
+8. [Prerequisites](#prerequisites)
+9. [Docker Local Image Storage Space Requirements](#docker-local-image-storage-space-requirements)
+10. [How to Set Up Pipeline](#how-to-set-up-pipeline)
+11. [Summary of Pipeline ECS Services Created](#summary-of-pipeline-ecs-services-created)
+    - [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
+    - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
+    - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
+    - [Grafana Time-Series Dashboard UI](#grafana-time-series-dashboard-ui)
+12. [How to Generate Churn Model Evaluation Metrics](#how-to-generate-churn-model-evaluation-metrics)
+13. [Pipeline S3 File Drop Logging](#pipeline-s3-file-drop-logging)
+14. [Makefile Targets](#makefile-targets)
+15. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+16. [Future Considerations](#future-considerations)
+
 
 ## Problem Statement
 
