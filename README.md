@@ -314,7 +314,12 @@ Provides detailed data drift and model performance metrics for individual file d
 ![Evidently Confusion Matrix By Label](readme-assets/evidently-confusion-matrix-by-label.png)
 
 ### Grafana Time-Series Dashboard UI
-TODO
+
+Provides a pre-created dashboard plotting model data drift and performance metrics over time.
+
+![Grafana Latest Prediction Scores](readme-assets/grafana-latest-prediction-scores.png)
+![Grafana Drift Summary Metrics](readme-assets/grafana-drift-summary-metrics.png)
+![Grafana Metric Drift p-Values](readme-assets/grafana-metric-drift-p-values.png)
 
 ## How to Upload Data and Evaluate the Model
 
