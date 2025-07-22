@@ -315,7 +315,7 @@ This project consists mainly of the following folders and files:
  
 ### Required IAM Permissions
 
-The following IAM Permissions policies were used when creating this Platform.  **Please note that this list is *overly permissive* and may be updated in the future.**
+The following IAM Permissions policies were used when creating this Platform.  **Please note that this list is *overly-permissive* and may be updated in the future.**
 
 * **AWS Managed Policies**
 	* `AmazonEC2ContainerRegistryFullAccess`
