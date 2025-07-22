@@ -266,11 +266,10 @@ MLflow, Prefect, Evidently, and Grafana UI URLs
 
 Clicking on each URL should render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
 
-If any of the URLs return an error (e.g. 503 Service Unavailable), log into the AWS Elastic Container Service (ECS) console and confirm an ECS Task is in Running state for each of the 4 services (see Figure 1).
+If any of the URLs return an error (e.g. 503 Service Unavailable), log into the AWS Elastic Container Service (ECS) console and confirm an ECS Task is in Running state for each of the 4 services (see screenshot below).
 
 
-![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png) <br>
-**Figure 1:** ECS Tasks created for MLFlow, Prefect Server, Prefect Worker Service, Evidently, and Grafana
+![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png) 
 
 These URLs were also written to the `{REPO_DIR}/.env` file for future retrieval and export to shell environment when needed.
 
