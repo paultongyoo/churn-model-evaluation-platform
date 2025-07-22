@@ -72,22 +72,23 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Load Model by 'staging' Alias from Registry]
-    B[Validate File Input]
-    C[Prepare Data, reusing Training Logic]
-    D[Generate Predictions]
-    E[Append Predictions to File Input]
-    F[Generate Data Drift and Prediction Performance Report]
-    G[Save Report to Database]
-    H[Did Drift Exceed Threshold?]
-    I[Send Drift Email Alert]
-    J[Did Prediction Performance Drop Below Threshold?]
-    K[Send Prediction Score Email Alert]
-    L[Evaluate Detailed Drift and Performance Report in Evidently UI]
-    M[Evaluate Drift and Performance Over Time in Grafana UI]
-    A-->B-->C-->D-->E-->F-->G-->H-->J-->L-->M;
-    H--> |Yes| I;
-    J--> |Yes| K;
+    A[Drop New Customer Churn Data into S3]
+    B[Load Model by 'staging' Alias from Registry]
+    C[Validate File Input]
+    D[Prepare Data, reusing Training Logic]
+    E[Generate Predictions]
+    F[Append Predictions to File Input]
+    G[Generate Data Drift and Prediction Performance Report]
+    H[Save Report to Database]
+    I[Did Drift Exceed Threshold?]
+    J[Send Drift Email Alert]
+    K[Did Prediction Performance Drop Below Threshold?]
+    L[Send Prediction Score Email Alert]
+    M[Evaluate Detailed Drift and Performance Report in Evidently UI]
+    N[Evaluate Drift and Performance Over Time in Grafana UI]
+    A-->B-->C-->D-->E-->F-->G-->H-->I-->K-->M-->N;
+    I--> |Yes| J;
+    K--> |Yes| L;
 ```
 
 ## Pipeline Infrastructure Diagram
