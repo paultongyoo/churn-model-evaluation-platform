@@ -39,7 +39,111 @@
 
 ## Project Folder Structure
 
-* TODO
+<pre>
+  .
+├── Makefile
+├── README.md
+├── code
+│   ├── __init__.py
+│   ├── grafana
+│   │   ├── Dockerfile
+│   │   ├── custom.ini
+│   │   ├── dashboards
+│   │   │   └── churn-model-evaluation.json
+│   │   └── provisioning
+│   │       ├── dashboards
+│   │       │   └── default.yml
+│   │       └── datasources
+│   │           └── grafana-postgres-datasource.yml
+│   ├── orchestration
+│   │   ├── Dockerfile
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   │   ├── __init__.py
+│   │   ├── churn_prediction_pipeline.py
+│   │   ├── modeling
+│   │   │   ├── __init__.py
+│   │   │   ├── churn_model_training.ipynb
+│   │   │   ├── churn_model_training.py
+│   │   │   └── setup.py
+│   │   ├── prefect.yaml
+│   │   ├── tests
+│   │   │   ├── __init__.py
+│   │   │   ├── integration
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── test_validate_file_input.py
+│   │   │   └── unit
+│   │   │       ├── __init__.py
+│   │   │       ├── test_fetch_model.py
+│   │   │       ├── test_generate_predictions.py
+│   │   │       ├── test_move_to_folder.py
+│   │   │       ├── test_prepare_dataset.py
+│   │   │       └── test_validate_file_input.py
+│   │   └── update_prefect_yaml.py
+│   └── s3_to_prefect_lambda
+│       ├── Dockerfile
+│       ├── Pipfile
+│       ├── Pipfile.lock
+│       ├── __init__.py
+│       ├── lambda_function.py
+│       └── tests
+│           └── test_lambda_handler.py
+├── data
+│   ├── customer_churn_0.csv
+│   ├── customer_churn_1.csv
+│   ├── customer_churn_2_majority_drifted.csv
+│   ├── customer_churn_synthetic_1.csv
+│   ├── customer_churn_synthetic_2.csv
+│   ├── customer_churn_synthetic_3.csv
+│   ├── customer_churn_synthetic_4.csv
+│   ├── customer_churn_synthetic_5.csv
+│   └── customer_churn_synthetic_6.csv
+├── folder-structure.txt
+├── infrastructure
+│   ├── main.tf
+│   ├── modules
+│   │   ├── alb
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── ecr
+│   │   │   ├── grafana_image_tag.txt
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   ├── s3_to_prefect_lambda_image_tag.txt
+│   │   │   └── variables.tf
+│   │   ├── ecs
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── rds-postgres
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── s3
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── s3-to-prefect-lambda
+│   │   │   ├── main.tf
+│   │   │   └── variables.tf
+│   │   └── sns
+│   │       ├── main.tf
+│   │       ├── outputs.tf
+│   │       └── variables.tf
+│   ├── scripts
+│   │   ├── store_prefect_secrets.py
+│   │   └── wait-for-services.sh
+│   ├── variables.tf
+│   └── vars
+│       └── stg.tfvars.template
+├── pyproject.toml
+├── pytest.ini
+├── readme-assets
+│   └── pipeline_ecs_tasks.png
+└── upload_simulation_script.py
+
+</pre>
 
 ## Prerequisites
 
