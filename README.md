@@ -321,7 +321,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 
 1.  `cd {REPO_DIR}/code/orchestration` then `pipenv shell`
 2.  `cd {REPO_DIR}`
-1.  Run `make plan` and review the infrastructure to be created (see diagram above for summary)
+1.  Run `make plan` and review the infrastructure to be created (see [Platform Infrastructure Diagram](#platform-infrastructure-diagram)
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow, and start ECS services
 1.  Click each of the 4 ECS Service URLs to confirm they are running: MLFlow, Prefect Server, Evidently, Grafana
 1.  Run `make register-model` to train `XGBoostChurnModel` churn model and upload it to the MLFlow Model Registry with `staging` alias.
