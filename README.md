@@ -28,9 +28,9 @@
 
 ## Problem Statement
 
-* Companies develop churn prediction models to help them proactively retain valuable customers, which is often more cost-effective than acquiring new ones.
-* After being released for production use, the predictions of these models risk becoming less accurate over time as customer makeup and behaviors change.
-* This project addresses this problem by providing Data Scientists, Machine Learning Engineers, and Machine Learning Operations Engineers a pipeline for continuously training, deploying, and evaluating churn models to optimize their performance as customers evolve.
+* Companies rely on churn prediction models to proactively retain valuable customers--an effort that is typically more cost-effective than acquiring new ones.
+* However, once deployed, these models risk losing accuracy over time as customer behavior and demographics shift.
+* This project addresses this challenge by providing Data Scientists, Machine Learning Engineers, and Machine Learning Operations Engineers a pipeline to continuously train, deploy, and evaluate churn models, enabling teams to detect drift, maintain model quality, and adapt to changing customer dynamics.
 
 ## Customer Churn Data Source
 
