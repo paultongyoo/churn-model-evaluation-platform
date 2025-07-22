@@ -497,7 +497,7 @@ resource "null_resource" "write_work_pool_name_to_github_action_yml" {
 ######### Evidently UI ECS Task and Service #########
 
 resource "aws_ecs_task_definition" "evidently_ui" {
-  family                   = "evidently-ui"
+  family                   = "evidently"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "512"
@@ -519,7 +519,7 @@ resource "aws_ecs_task_definition" "evidently_ui" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/${var.project_id}-evidently-ui",
+          "awslogs-group"         = "/ecs/${var.project_id}-evidently",
           "awslogs-region"        = var.aws_region,
           "awslogs-stream-prefix" = "ecs"
         }
@@ -529,7 +529,7 @@ resource "aws_ecs_task_definition" "evidently_ui" {
 }
 
 resource "aws_ecs_service" "evidently_ui" {
-  name            = "${var.project_id}-evidently-ui-service"
+  name            = "${var.project_id}-evidently-service"
   cluster         = aws_ecs_cluster.mlops_cluster.id
   task_definition = aws_ecs_task_definition.evidently_ui.arn
   desired_count   = 1
@@ -550,7 +550,7 @@ resource "aws_ecs_service" "evidently_ui" {
 }
 
 resource "aws_iam_role" "evidently_ui_task_exec_role" {
-  name = "${var.project_id}-evidently-ui-task-exec-role"
+  name = "${var.project_id}-evidently-task-exec-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -565,7 +565,7 @@ resource "aws_iam_role" "evidently_ui_task_exec_role" {
 }
 
 resource "aws_iam_policy" "evidently_ui_logs_write" {
-  name = "${var.project_id}-evidently-ui-logs-write"
+  name = "${var.project_id}-evidently-logs-write"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -576,7 +576,7 @@ resource "aws_iam_policy" "evidently_ui_logs_write" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-evidently-ui:log-stream:*"
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-evidently:log-stream:*"
       }
     ]
   })
@@ -588,7 +588,7 @@ resource "aws_iam_role_policy_attachment" "evidently_ui_logs_write_attachment" {
 }
 
 resource "aws_cloudwatch_log_group" "evidently_ui_logs" {
-  name              = "/ecs/${var.project_id}-evidently-ui"
+  name              = "/ecs/${var.project_id}-evidently"
   retention_in_days = 7
 }
 

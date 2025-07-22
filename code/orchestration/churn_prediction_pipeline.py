@@ -65,7 +65,7 @@ TABLE_NAME_DRIFT_METRICS = "drift_metrics"
 
 EVIDENTLY_PROJECT_NAME = "mlops-churn-pipeline"
 EVIDENTLY_PROJECT_ID_BLOCK_NAME = "evidently-project-id"
-SECRET_KEY_EVIDENTLY_UI_URL = "evidently-ui-url"
+SECRET_KEY_EVIDENTLY_UI_URL = "evidently-url"
 
 SECRET_KEY_GRAFANA_ADMIN_USER = "grafana-admin-user"
 
