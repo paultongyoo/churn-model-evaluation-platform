@@ -161,109 +161,6 @@ This project consists mainly of the following folders and files:
    * Script that helps generate metrics over time for viewing in Grafana UI
    * Uploads the non-training data files into S3 File Drop Input folder 30 seconds apart
 
-<pre>
-mlops-churn-pipeline
-├── code
-│   ├── grafana
-│   │   ├── dashboards
-│   │   │   └── churn-model-evaluation.json
-│   │   ├── provisioning
-│   │   │   ├── dashboards
-│   │   │   │   └── default.yml
-│   │   │   └── datasources
-│   │   │       └── grafana-postgres-datasource.yml
-│   │   ├── Dockerfile
-│   │   └── custom.ini
-│   ├── orchestration
-│   │   ├── modeling
-│   │   │   ├── __init__.py
-│   │   │   ├── churn_model_training.ipynb
-│   │   │   ├── churn_model_training.py
-│   │   │   └── setup.py
-│   │   ├── tests
-│   │   │   ├── integration
-│   │   │   │   ├── __init__.py
-│   │   │   │   └── test_validate_file_input.py
-│   │   │   ├── unit
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── test_fetch_model.py
-│   │   │   │   ├── test_generate_predictions.py
-│   │   │   │   ├── test_move_to_folder.py
-│   │   │   │   ├── test_prepare_dataset.py
-│   │   │   │   └── test_validate_file_input.py
-│   │   │   └── __init__.py
-│   │   ├── Dockerfile
-│   │   ├── Pipfile
-│   │   ├── Pipfile.lock
-│   │   ├── __init__.py
-│   │   ├── churn_prediction_pipeline.py
-│   │   ├── prefect.yaml
-│   │   └── update_prefect_yaml.py
-│   ├── s3_to_prefect_lambda
-│   │   ├── tests
-│   │   │   └── test_lambda_handler.py
-│   │   ├── Dockerfile
-│   │   ├── Pipfile
-│   │   ├── Pipfile.lock
-│   │   ├── __init__.py
-│   │   └── lambda_function.py
-│   └── __init__.py
-├── data
-│   ├── customer_churn_0.csv
-│   ├── customer_churn_1.csv
-│   ├── customer_churn_2_majority_drifted.csv
-│   ├── customer_churn_synthetic_1.csv
-│   ├── customer_churn_synthetic_2.csv
-│   ├── customer_churn_synthetic_3.csv
-│   ├── customer_churn_synthetic_4.csv
-│   ├── customer_churn_synthetic_5.csv
-│   └── customer_churn_synthetic_6.csv
-├── infrastructure
-│   ├── modules
-│   │   ├── alb
-│   │   │   ├── main.tf
-│   │   │   ├── outputs.tf
-│   │   │   └── variables.tf
-│   │   ├── ecr
-│   │   │   ├── main.tf
-│   │   │   ├── outputs.tf
-│   │   │   └── variables.tf
-│   │   ├── ecs
-│   │   │   ├── main.tf
-│   │   │   ├── outputs.tf
-│   │   │   └── variables.tf
-│   │   ├── rds-postgres
-│   │   │   ├── main.tf
-│   │   │   ├── outputs.tf
-│   │   │   └── variables.tf
-│   │   ├── s3
-│   │   │   ├── main.tf
-│   │   │   ├── outputs.tf
-│   │   │   └── variables.tf
-│   │   ├── s3-to-prefect-lambda
-│   │   │   ├── main.tf
-│   │   │   └── variables.tf
-│   │   └── sns
-│   │       ├── main.tf
-│   │       ├── outputs.tf
-│   │       └── variables.tf
-│   ├── scripts
-│   │   ├── store_prefect_secrets.py
-│   │   └── wait-for-services.sh
-│   ├── vars
-│   │   └── stg.tfvars.template
-│   ├── main.tf
-│   └── variables.tf
-├── readme-assets
-│   └── pipeline_ecs_tasks.png
-├── Makefile
-├── README.md
-├── folder-structure.txt
-├── pyproject.toml
-├── pytest.ini
-└── upload_simulation_script.py
-</pre>
-
 ## Prerequisites
 
 * [AWS Account](https://aws.amazon.com/)
@@ -393,8 +290,14 @@ The following sections give a brief overview of the tool features made available
 
 ### Prefect Orchestration Server and Worker Service
 
-* Translates Python script into robust, scalable, observable orchestration
-* 
+Translates Python scripts into robust, scalable, observable orchestrations.
+
+![Prefect Dashboard](readme-assets/prefect-dashboard.png)
+![Prefect Dashboard](readme-assets/prefect-runs.png)
+![Prefect Dashboard](readme-assets/prefect-run-detail.png)
+![Prefect Dashboard](readme-assets/prefect-flows.png)
+![Prefect Dashboard](readme-assets/prefect-deployments.png)
+![Prefect Dashboard](readme-assets/prefect-work-pools.png)
 
 ### Evidently Non-Time-Series Dashboard and Reports UI
 TODO
