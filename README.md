@@ -320,6 +320,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 | `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `your.name@example.com` |
 
 1.  `cd {REPO_DIR}/code/orchestration` then `pipenv shell`
+2.  `cd {REPO_DIR}`
 1.  Run `make plan` and review the infrastructure to be created (see diagram above for summary)
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow, and start ECS services
 1.  Click each of the 4 ECS Service URLs to confirm they are running: MLFlow, Prefect Server, Evidently, Grafana
