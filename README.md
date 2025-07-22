@@ -209,8 +209,6 @@ This project consists mainly of the following folders and files:
 │   │   ├── prefect.yaml
 │   │   └── update_prefect_yaml.py
 │   ├── s3_to_prefect_lambda
-│   │   ├── tests
-│   │   │   └── test_lambda_handler.py
 │   │   ├── Dockerfile
 │   │   ├── Pipfile
 │   │   ├── Pipfile.lock
