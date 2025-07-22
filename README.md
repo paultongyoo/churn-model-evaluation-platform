@@ -65,12 +65,12 @@
 
 <pre>
 s3://mlops-churn-pipeline
-├── data
-│   ├── errored
-│   ├── input
-│   ├── logs
-│   ├── processed
-│   ├── processing
+└── data
+    ├── errored
+    ├── input
+    ├── logs
+    ├── processed
+    └── processing
 </pre>
 
 ## Project Folders & Files
