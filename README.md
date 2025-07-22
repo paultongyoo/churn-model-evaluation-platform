@@ -357,6 +357,14 @@ Sent if Evidently reports any of the observed prediction scores drop below 70%:
 
 ![Data Drift Email Alert Example](readme-assets/email-alert-scores-below-threshold.png)
 
+## Unit Test Strategy & Examples
+
+TODO
+
+## Integration Test Strategy & Examples
+
+TODO
+
 ## Pre-Commit Hooks
 
 The following hooks are used to maintain notebook and module code quality and execute tests prior to commiting files to Git:
@@ -415,11 +423,12 @@ See the `orchestration` and `s3_to_prefect_lambda` folders of [Project Folders &
 
 ### Model monitoring
 #### Target: Comprehensive model monitoring that sends alerts or runs a conditional workflow (e.g. retraining, generating debugging dashboard, switching to a different model) if the defined metrics threshold is violated
-TODO
+See [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-email-alerts) section for examples of email alerts that are sent when new customer data files exhibit the majority of their columns drifting from reference data or when the model prediction scores drop below pre-defined threshold.
 
 ### Reproducibility
 #### Target: Instructions are clear, it's easy to run the code, and it works. The versions for all the dependencies are specified.
-TODO
+* See [How to Set Up Platform](#how-to-set-up-platform) section for instructions on how to set up the platform.
+* See [Library Dependencies & Version Numbers](#library-dependencies--version-numbers) section for instructions on how to determine libraries used and their verision numbers.
 
 ### Best practices
 #### Target: There are unit tests (1 point)
