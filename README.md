@@ -100,11 +100,11 @@ flowchart TD
 <pre>
 s3://mlops-churn-pipeline
 └── data
-    ├── errored      # Customer churn files that failed to process successfully
     ├── input        # Customer churn files uploaded here
-    ├── logs         # Log file 
-    ├── processed
-    └── processing
+    ├── processing   # File moved here during processing
+    ├── logs         # Log file created for each dropped file
+    ├── processed    # File moved here on successful processing
+    └── errored      # File moved here if error occurred during processing
 </pre>
 
 ## Project Folders & Files
