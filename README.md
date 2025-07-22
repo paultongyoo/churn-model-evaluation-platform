@@ -6,6 +6,7 @@
 
 1. [Problem Statement](#problem-statement)
 2. [Customer Churn Data Source](#customer-churn-data-source)
+3. [Pipeline Target User Roles & Use Cases](#pipeline-target-user-roles-use-cases)
 
 ## Problem Statement
 
