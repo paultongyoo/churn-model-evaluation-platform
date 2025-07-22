@@ -13,3 +13,4 @@ __pycache__/
 .terraform.lock.hcl
 *.egg-info
 .pre-commit-config.yaml
+build/
