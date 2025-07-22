@@ -427,7 +427,7 @@ Sent if Evidently reports any of the observed prediction scores drop below 70%:
 * Recall
 * Accuracy
 
-Screenshot TBD
+![Data Drift Email Alert Example](readme-assets/email-alert-scores-below-threshold.png)
 
 ## Makefile Targets
 
