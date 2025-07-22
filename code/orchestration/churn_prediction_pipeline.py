@@ -746,7 +746,7 @@ def send_scores_alert_email(
 
     email_subject = (
         f"Customer Prediction Scores Alert: {num_scores_below_threshold} "
-        "Scores Below Threshold"
+        "Score(s) Below Threshold"
     )
     logger.info("Scores below threshold detected, sending alert: %s", alert_message)
     send_sns_alert(email_subject, alert_message, churn_model_alerts_topic_arn)
