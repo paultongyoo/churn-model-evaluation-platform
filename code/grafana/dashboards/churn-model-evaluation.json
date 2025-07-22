@@ -862,7 +862,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<div style=\"text-align: center\"><h1>Drift Summary Scores</h1></div>",
+        "content": "<div style=\"text-align: center\"><h1>Drift Summary Metrics</h1></div>",
         "mode": "html"
       },
       "pluginVersion": "12.0.1+security-01",
