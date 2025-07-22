@@ -315,18 +315,17 @@ This project consists mainly of the following folders and files:
  
 ### Required IAM Permissions
 
-The following IAM Permissions policies were used when creating this Platform.  **Please note that this list is *overly-permissive* and may be updated in the future.**
+A user with the following AWS Managed Permissions policies was used when creating this Platform.  **Please note that this list is *overly-permissive* and may be updated in the future.**
 
-* **AWS Managed Policies**
-	* `AmazonEC2ContainerRegistryFullAccess`
-	* `AmazonEC2FullAccess`
- 	* `AmazonECS_FullAccess`
-  	* `AmazonRDSFullAccess`
-  	* `AmazonS3FullAccess`
-  	* `AmazonSNSFullAccess`
-  	* `AmazonLambda_FullAccess`
-  	* `CloudWatchLogsFullAccess`
-	* `IAMFullAccess`
+* `AmazonEC2ContainerRegistryFullAccess`
+* `AmazonEC2FullAccess`
+* `AmazonECS_FullAccess`
+* `AmazonRDSFullAccess`
+* `AmazonS3FullAccess`
+* `AmazonSNSFullAccess`
+* `AmazonLambda_FullAccess`
+* `CloudWatchLogsFullAccess`
+* `IAMFullAccess`
 
 ## Docker Local Image Storage Space Requirements
 
