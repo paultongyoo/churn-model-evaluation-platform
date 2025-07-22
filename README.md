@@ -24,9 +24,10 @@
 12. [How to Upload Data](#how-to-upload-data)
 13. [How to Evaluate Data Drift & Model](#how-to-evaluate-data-drift--model)
 14. [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-email-alerts)
-15. [Makefile Targets](#makefile-targets)
-16. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
-17. [Future Considerations](#future-considerations)
+15. [Pre-Commit Hooks](#pre-commit-hooks)
+16. [Makefile Targets](#makefile-targets)
+17. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+18. [Future Considerations](#future-considerations)
 
 
 ## Problem Statement
