@@ -1,4 +1,4 @@
-# Churn Prediction Model Evaluation Pipeline
+# Churn Prediction Model Evaluation Platform
 
 (For those evaluating this project for the [DataTalks.club MLOps Zoomcamp certification](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for abridged explanations of how this project fulfills each criteria.)
 
@@ -28,7 +28,7 @@
 
 * Companies rely on churn prediction models to proactively retain valuable customers--an effort that is typically more cost-effective than acquiring new ones.
 * However, once deployed, these models risk losing accuracy over time as customer behavior and demographics shift.
-* This project addresses this challenge by providing Data Scientists, Machine Learning Engineers, and Machine Learning Operations Engineers a pipeline to continuously train, deploy, and evaluate churn models, enabling teams to detect drift, maintain model quality, and adapt to changing customer dynamics.
+* This project addresses this challenge by providing Data Scientists, Machine Learning Engineers, and Machine Learning Operations Engineers a platform to continuously train, deploy, and evaluate churn models, enabling teams to detect drift, maintain model quality, and adapt to changing customer dynamics.
 
 ## Customer Churn Data Source
 
