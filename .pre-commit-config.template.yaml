@@ -105,8 +105,7 @@ repos:
         pass_filenames: false
         always_run: true
         args: [
-          "code/orchestration/tests/",
-          "code/s3_to_prefect_lambda/tests/"
+          "code/orchestration/tests/"
         ]
         additional_dependencies:
         - pytest
