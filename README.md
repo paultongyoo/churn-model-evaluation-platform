@@ -136,6 +136,7 @@ This project consists mainly of the following folders and files:
             * Contains integration tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent
 * `code/s3_to_prefect_lambda/`
 	* Contains Dockerfile that packages `lambda_function.py` and its dependencies for notifying Prefect pipeline of new file drops
+ 	* Invoked by S3 Bucket Notification configured by Terraform `s3-to-prefect-lambda` module
 * `data/`
    * These files were split from the original data set: 
       * `customer_churn_0.csv`: File used to drain model
