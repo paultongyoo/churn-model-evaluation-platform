@@ -52,10 +52,10 @@
 
 ### Model Training and Registry Deployment 
 
-The following process is implemented with two files inside the `code/orchestration/modeling` folder:
-* **Jupyter Notebook:** `code/orchestration/modeling/churn_model_training.ipynb`
+The following process is implemented with two files inside the `code/orchestration/modeling/` folder:
+* **Jupyter Notebook:** `churn_model_training.ipynb`
 	* Main location for EDA, hyperparameter tuning, and calling upon the `modeling.churn_model_training` module below
-* **Python Module:** `code/orchestration/modeling/churn_model_training.py`
+* **Python Module:** `churn_model_training.py`
 	* Contains functions used in both Jupyter Notebook and in Prefect Flow `churn_prediction_pipeline.py` (see [Model Inference, Reporting, and Evaluation](#model-inference-reporting-and-evaluation) section below)
 
 ```mermaid
