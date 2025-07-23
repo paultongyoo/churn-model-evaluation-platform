@@ -81,7 +81,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[Drop New Customer<br/>Churn Data into S3]
-    B[Load Model by 'staging' Alias from MLFlow Registry]
+    B[Load Model with 'staging' Alias from MLFlow Registry]
     C[Validate File Input]
     D[Prepare Data, reusing Training Logic]
     E[Generate Predictions]
