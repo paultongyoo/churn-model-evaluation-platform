@@ -526,7 +526,7 @@ The `unittest.TestCase`, `unittest.mock.Patch`, and `unittest.mock.MagicMock` cl
 
 Example integration tests can be found within the `code/orchestration/tests/integration/` folder for the `validate_file_input` @task function of `churn_prediction_pipeline.py`.
 
-In order to integration test the function is correctly reading files from S3, the `testcontainers.localstack` library was used to dynamically create a LocalStack container that served as a mock S3 endpoint for the `s3_client` calls made by the `validate_file_input` function.
+In order to integration test the function is correctly reading files from S3, the [`testcontainers.localstack` module](https://testcontainers-python.readthedocs.io/en/latest/modules/localstack/README.html) was used to dynamically create a LocalStack container that served as a mock S3 endpoint for the `s3_client` calls made by the `validate_file_input` function.
 
 <pre>
 ├── code
