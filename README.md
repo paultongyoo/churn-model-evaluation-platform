@@ -577,7 +577,7 @@ GitHub Actions was used to execute the following Continuous integration and Cont
 
 ```mermaid
 flowchart TD
-    A[Commit changes to `code/orchestration/` tree]
+    A[Commit changes to code/orchestration/ tree]
     B[Manually invoke workflow from GitHub UI]
     C[Initialize ubuntu-latest Runner VM]
     D[Checkout code]
