@@ -334,6 +334,8 @@ A user with the following AWS Managed Permissions policies was used when creatin
 * **S3-to-Prefect Lambda Function**
     * Invokes orchestration flow when new files are dropped into S3
     * Uses AWS `public.ecr.aws/lambda/python:3.12` image
+ 
+Don't forget to delete these images when finished with this platform!
 
 ## Library Dependencies & Version Numbers
 
