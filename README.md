@@ -583,18 +583,18 @@ flowchart TD
     D[Checkout code]
     E[Set up Python]
     F[Install Pipenv]
-    G[Install `code/orchestration/` Pipfile dependencies]
+    G[Install code/orchestration/ Pipfile dependencies]
     H[Configure AWS credentials]
-	I[Run Unit and Integration Tests]
-	J[Login to Amazon ECR]
-	K[Construct Prefect Flow Docker Image Name & Tag]
-	L[Inject Docker Image Name & Tag into Prefect Flow YAML]
-	M[Display YAML in GitHub Actions log for verification]
-	N[Install Prefect]
-	O[Build Docker Container & Deploy to Prefect Server]
-	A-->C;
-	B-->C;
-	C-->D-->E-->F-->G-->H-->I-->J-->K-->L-->M-->N-->O;
+    I[Run Unit and Integration Tests]
+    J[Login to Amazon ECR]
+    K[Construct Prefect Flow Docker Image Name & Tag]
+    L[Inject Docker Image Name & Tag into Prefect Flow YAML]
+    M[Display YAML in GitHub Actions log for verification]
+    N[Install Prefect]
+    O[Build Docker Container & Deploy to Prefect Server]
+    A-->C;
+    B-->C;
+    C-->D-->E-->F-->G-->H-->I-->J-->K-->L-->M-->N-->O;
 ```
 
 ## DataTalks.club MLOps Zoomcamp Evaluation Criteria
