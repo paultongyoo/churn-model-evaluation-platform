@@ -111,8 +111,8 @@ s3://mlops-churn-pipeline
     ├── input        # Customer churn files uploaded here
     ├── processing   # File moved here during processing
     ├── logs         # Log file created for each dropped file
-    ├── processed    # File moved here on successful processing
-    └── errored      # File moved here if error occurred during processing
+    ├── processed    # Files moved here on successful processing
+    └── errored      # Files moved here if error occurred during processing
 </pre>
 
 ## Project Folders & Files
