@@ -298,6 +298,7 @@ This project consists mainly of the following folders and files:
 </pre>
 ## Installation Prerequisites
 
+* Python 3.10.13
 * [AWS Account](https://aws.amazon.com/)
     * AWS Account required to deploy the pipeline to the cloud and run it as a user
     * AWS Account NOT required to run unit and integration tests
