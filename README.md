@@ -585,13 +585,13 @@ flowchart TD
     F[Install Pipenv]
     G[Install code/orchestration/ Pipfile dependencies]
     H[Configure AWS credentials]
-    I[Run Unit and Integration Tests]
-    J[Login to Amazon ECR]
-    K[Construct Prefect Flow Docker Image Name & Tag]
-    L[Inject Docker Image Name & Tag into Prefect Flow YAML]
+    I[Run unit and integration tests]
+    J[Log in to Amazon ECR]
+    K[Construct Prefect Flow Docker image name & tag]
+    L[Inject Docker image name & tag into Prefect Flow YAML]
     M[Display YAML in GitHub Actions log for verification]
     N[Install Prefect]
-    O[Build Docker Container & Deploy to Prefect Server]
+    O[Build Docker container & deploy to Prefect Server]
     A-->C;
     B-->C;
     C-->D-->E-->F-->G-->H-->I-->J-->K-->L-->M-->N-->O;
