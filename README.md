@@ -606,7 +606,8 @@ See [Problem Statement](#problem-statement) section.
 
 ### Cloud
 #### Target: The project is developed on the cloud and IaC tools are used for provisioning the infrastructure
-See [Project Folders & Files](#project-folders--files) section for summary of Terraform files used to create AWS infrastructure.
+* See [Project Folders & Files](#project-folders--files) section for summary of Terraform files used to create AWS infrastructure.
+* See [Platform Infrastructure Diagram](#platform-infrastructure-diagram) for diagram of cloud resources created and collaborations for each.
 
 ### Experiment tracking and model registry
 #### Target: Both experiment tracking and model registry are used
