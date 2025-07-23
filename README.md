@@ -109,7 +109,7 @@ flowchart TD
 s3://mlops-churn-pipeline
 └── data
     ├── input        # Customer churn files uploaded here
-    ├── processing   # File moved here during processing
+    ├── processing   # Files moved here during processing
     ├── logs         # Log file created for each dropped file
     ├── processed    # Files moved here on successful processing
     └── errored      # Files moved here if error occurred during processing
