@@ -355,7 +355,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 
 | **Key Name** | **Purpose** | **Example Value** |
 | ------------ | ----------- | ----------------- |
-| `project_id` | Used as name for many AWS resources created by Terraform to avoid naming collisions, including the S3 bucket while files will be dropped and generated.  Choose something unique to avoid S3 bucket naming collisions. | `mlops-churn-pipeline-1349094` |
+| `project_id` | Used as prefix for many AWS resources, including the S3 bucket while files will be dropped and generated.  **Must be a valid S3 name (e.g. unique, no underscores).  Must be 20 characters or less to prevent exceeding resource naming character limits.**   | `mlops-churn-pipeline` |
 | `vpc_id` | Your AWS VPC ID | `vpc-0a1b2c3d4e5f6g7h8` |
 | `aws_region` | Your AWS Region | `us-east-2` |
 | `db_username` | Username for Postgres database used to store MLflow, Prefect, and Evidently Metrics.  Must conform to Postgres rules (e.g. lowercase, numbers, underscores only) | `my_super_secure_db_name` |
