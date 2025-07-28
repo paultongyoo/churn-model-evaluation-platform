@@ -472,10 +472,10 @@ See [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-e
 
 ### Best practices
 #### Target: There are unit tests (1 point)
-See [Unit Test Strategy & Examples](#unit-test-strategy--examples) section for summary of unit tests that were implemented.
+See [Unit Test Examples](#unit-test-examples) section for summary of unit tests that were implemented.
 
 #### Target: There is an integration test (1 point)
-See [Integration Test Strategy & Examples](#integration-test-strategy--examples) section for summary of integration tests that were implemented.
+See [Integration Test Examples](#integration-test-examples) section for summary of integration tests that were implemented.
 
 #### Target: Linter and/or code formatter are used (1 point)
 See [Pre-Commit Hooks](#pre-commit-hooks) section to see which linter and code formatters were used.
