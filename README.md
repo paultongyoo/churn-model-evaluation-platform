@@ -118,57 +118,17 @@ s3://mlops-churn-pipeline
 ## Project Folders & Files
 
 This project consists mainly of the following folders and files:
-* `code/grafana/`
-  * Contains Dockerfile that packages Grafana Enterprise image with:
-     * `grafana-postgres-datasource.yml`: Postgres Data Source configuration 
-     * `churn-model-evaluation.json`: Pre-created Data Drift and Prediction Score Evaluation Dashboard 
-* `code/orchestration/`
-   * Contains Dockerfile that packages Prefect Flow pipeline consisting of:
-      * `churn_prediction_pipeline.py`: Contains main Prefect flow and tasks
-      * `modeling/`
-         * Contains model training and registry deployment logic:
-            * `churn_model_training.ipynb` for model EDA, hyperparameter tuning, and model training
-            * `churn_model_training.py` for extracting training logic to reuse in Prefect pipeline
-      * `tests/`
-         * `unit/`
-            * Contains unit tests using `unittest.MagicMock` to mock all dependencies
-         * `integration/`
-            * Contains integration tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent
-* `code/s3_to_prefect_lambda/`
-	* Contains Dockerfile that packages `lambda_function.py` and its dependencies for notifying Prefect pipeline of new file drops
- 	* Invoked by S3 Bucket Notification configured by Terraform `s3-to-prefect-lambda` module
-* `data/`
-   * These files were split from the original data set: 
-      * `customer_churn_0.csv`: File used to drain model
-      * `customer_churn_1.csv`
-      * `customer_churn_2_majority_drifted.csv`: File that exhibits data drift exceeding threshold (email notification will be sent)
-   * `customer_churn_synthetic_*.csv`: Generated using [Gretel.ai](https://gretel.ai)
-* `terraform/`
-   * Contains Infrastructure-as-Code (IaC) and scripts to configure or destroy 80+ AWS resources from single command
-      * `modules/`: Configures the following AWS Services:
-         * `alb/`: [AWS Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/application-load-balancer/)
-         * `ecr/`: [AWS Elastic Container Registry](https://aws.amazon.com/ecr/)
-         * `ecs/`: [AWS Elastic Container Service](https://aws.amazon.com/ecs/)
-         * `rds-postgres/`: [AWS Relational Database Service](https://aws.amazon.com/rds/)
-         * `s3/`: [AWS Simple Storage Service](https://aws.amazon.com/s3/)
-         * `s3-to-prefect-lambda/`: [AWS Lambda](https://aws.amazon.com/lambda/)
-         * `sns/`: [AWS Simple Notification Service](https://aws.amazon.com/sns/)
-      * `scripts/`
-         * `store_prefect_secrets.py`: Stores generated ALB endpoints and SNS topic ARN into Prefect Server for use by pipeline
-         * `wait-for-services.sh`: Used to wait for [Platform ECS Services](#platform-ecs-services) to become available via ALB before returning UI URLs to user
-      * `vars/`
-         * `stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see [How to Set Up Platform](#how-to-set-up-platform))
-* `readme-assets/`
-   * Screenshots for this readme
-* `.env`
-   * Contains the URLs for:
-      * MLFlow, Prefect, Evidently, and Grafana
-      * Prefect Server API
-* `Makefile`
-   * Contains several targets to accelerate platform setup, development, and testing (see [Makefile Targets](#makefile-targets) section
-* `upload_simulation_script.py`
-   * Script that helps generate metrics over time for viewing in Grafana UI
-   * Uploads the non-training data files into S3 File Drop Input folder 30 seconds apart
+| Folder/File | Purpose |
+|-------------|---------|
+| `code/grafana/` | <ul><li>Contains Dockerfile that packages Grafana Enterprise image with:<ul><li>`grafana-postgres-datasource.yml`: Postgres Data Source configuration</li><li>`churn-model-evaluation.json`: Pre-created Data Drift and Prediction Score Evaluation Dashboard</li></ul></li></ul> |
+| `code/orchestration/` | <ul><li>Contains Dockerfile that packages Prefect Flow pipeline consisting of:<ul><li>`churn_prediction_pipeline.py`: Contains main Prefect flow and tasks</li><li>`modeling/`<ul><li>Contains model training and registry deployment logic:<ul><li>`churn_model_training.ipynb` for model EDA, hyperparameter tuning, and model training</li><li>`churn_model_training.py` for extracting training logic to reuse in Prefect pipeline</li></ul></li></ul></li><li>`tests/`<ul><li>`unit/`<ul><li>Contains unit tests using `unittest.MagicMock` to mock all dependencies</li></ul></li><li>`integration/`<ul><li>Contains integration tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent</li></ul></li></ul></li></ul></li></ul> |
+| `code/s3_to_prefect_lambda/` | <ul><li>Contains Dockerfile that packages `lambda_function.py` and its dependencies for notifying Prefect pipeline of new file drops</li><li>Invoked by S3 Bucket Notification configured by Terraform `s3-to-prefect-lambda` module</li></ul> |
+| `data/` | <ul><li>These files were split from the original data set:<ul><li>`customer_churn_0.csv`: File used to drain model</li><li>`customer_churn_1.csv`</li><li>`customer_churn_2_majority_drifted.csv`: File that exhibits data drift exceeding threshold (email notification will be sent)</li></ul></li><li>`customer_churn_synthetic_*.csv`: Generated using <a href="https://gretel.ai">Gretel.ai</a></li></ul> |
+| `terraform/` | <ul><li>Contains Infrastructure-as-Code (IaC) and scripts to configure or destroy 80+ AWS resources from single command<ul><li>`modules/`: Configures the following AWS Services:<ul><li>`alb/`: <a href="https://aws.amazon.com/elasticloadbalancing/application-load-balancer/">AWS Application Load Balancer</a></li><li>`ecr/`: <a href="https://aws.amazon.com/ecr/">AWS Elastic Container Registry</a></li><li>`ecs/`: <a href="https://aws.amazon.com/ecs/">AWS Elastic Container Service</a></li><li>`rds-postgres/`: <a href="https://aws.amazon.com/rds/">AWS Relational Database Service</a></li><li>`s3/`: <a href="https://aws.amazon.com/s3/">AWS Simple Storage Service</a></li><li>`s3-to-prefect-lambda/`: <a href="https://aws.amazon.com/lambda/">AWS Lambda</a></li><li>`sns/`: <a href="https://aws.amazon.com/sns/">AWS Simple Notification Service</a></li></ul></li><li>`scripts/`<ul><li>`store_prefect_secrets.py`: Stores generated ALB endpoints and SNS topic ARN into Prefect Server for use by pipeline</li><li>`wait-for-services.sh`: Used to wait for <a href="#platform-ecs-services">Platform ECS Services</a> to become available via ALB before returning UI URLs to user</li></ul></li><li>`vars/`<ul><li>`stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see <a href="#how-to-set-up-platform">How to Set Up Platform</a>)</li></ul></li></ul></li></ul> |
+| `readme-assets/` | <ul><li>Screenshots for this readme</li></ul> |
+| `.env` | <ul><li>Contains the URLs for:<ul><li>MLFlow, Prefect, Evidently, and Grafana</li><li>Prefect Server API</li></ul></li></ul> |
+| `Makefile` | <ul><li>Contains several targets to accelerate platform setup, development, and testing (see <a href="#makefile-targets">Makefile Targets</a> section)</li></ul> |
+| `upload_simulation_script.py` | <ul><li>Script that helps generate metrics over time for viewing in Grafana UI</li><li>Uploads the non-training data files into S3 File Drop Input folder 30 seconds apart</li></ul> |
 
 ### Full Project Folder Tree
 The full project folder tree contents can be viewed [here](folder-structure.txt).
