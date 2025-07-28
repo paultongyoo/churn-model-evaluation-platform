@@ -51,6 +51,8 @@
 
 ## Platform Processes
 
+Two independent processes were enabled by this project, joined by the MLFlow Model Registry:
+
 ### Model Training and Registry Deployment 
 
 The following process is implemented with two files inside the `code/orchestration/modeling/` folder:
@@ -76,7 +78,7 @@ flowchart TD
 
 ### Model Inference, Reporting, and Evaluation
 
-* The following pipeline is orchestrated by a Prefect Flow implemented by `code/orchestration/churn_prediction_pipeline.py`.
+* The following process is orchestrated by the Prefect Flow `code/orchestration/churn_prediction_pipeline.py`.
 * It is invoked for each file dropped into the S3 File Drop Folder `input` folder (see [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)).
 
 ```mermaid
