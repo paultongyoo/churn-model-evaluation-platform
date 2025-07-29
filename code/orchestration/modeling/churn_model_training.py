@@ -107,11 +107,15 @@ def evaluate_model(model, data_X, data_y, dataset_name, promote_model=False):
     """
 
     with mlflow.start_run():
+        print("\nStarting MLflow Experiment Run...")
         mlflow.set_tag("dataset", dataset_name)
 
         y_pred = model.predict(data_X)
 
-        print(f"\nLogging {dataset_name} model to MLflow...")
+        print("Logging model params...")
+        mlflow.log_params(model.get_params())
+
+        print(f"Logging {dataset_name} model...")
         logged_result = mlflow.xgboost.log_model(
             model,
             name=MODEL_NAME,
@@ -128,6 +132,7 @@ def evaluate_model(model, data_X, data_y, dataset_name, promote_model=False):
             "log_model_explanations": True,  # Log individual prediction explanations
         }
 
+        print("Executing MLflow model evaluation...")
         eval_data = data_X.copy()
         eval_data[TARGET_COLUMN] = data_y
         result = mlflow.models.evaluate(
@@ -143,13 +148,21 @@ def evaluate_model(model, data_X, data_y, dataset_name, promote_model=False):
         print(f"Precision Score: {result.metrics['precision_score']:.3f}")
         print(f"Recall Score: {result.metrics['recall_score']:.3f}")
         print(f"Accuracy: {result.metrics['accuracy_score']:.3f}")
-        print()
+        print("\nSee experiment run artifacts in MLflow UI for the following plots:")
+        print("* Calibration Curve")
+        print("* Confusion Matrix")
+        print("* Lift Curve")
+        print("* Precision/Recall Curve")
+        print("* Receiver Operating Characteristic (ROC) Curve")
+        print("* SHAP Beeswarm")
+        print("* SHAP Feature Importance")
+        print("* SHAP Summary\n")
 
         if promote_model:
             print(
                 (
                     "Attaching reference data artifact to model and "
-                    f"applying promotinon alias '{MODEL_ALIAS}'..."
+                    f"applying promotion alias '{MODEL_ALIAS}'..."
                 )
             )
 
