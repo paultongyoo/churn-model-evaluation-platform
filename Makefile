@@ -69,6 +69,11 @@ register-model:
 	cd code/orchestration/modeling && \
 	python churn_model_training.py
 
+register-model-nopromote:
+	@echo "Generating models without promoting them for pipeline use in MLflow..."
+	cd code/orchestration/modeling && \
+	python churn_model_training.py --nopromote
+
 process-test-data:
 	@echo "Processing test data..."
 	bash -c '\

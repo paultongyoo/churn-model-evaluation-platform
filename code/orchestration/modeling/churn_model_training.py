@@ -8,6 +8,7 @@ The tuned model is aliased in the MLflow registry for easy retrieval
 in the pipeline.
 """
 
+import argparse
 import os
 from pathlib import Path
 
@@ -98,10 +99,11 @@ def train_model(data_X, data_y, params):
     return model
 
 
-def evaluate_model(model, data_X, data_y, dataset_name, log_model=False):
+def evaluate_model(model, data_X, data_y, dataset_name, promote_model=False):
     """
     Evaluates the trained model on the provided dataset and logs the results to MLflow.
-    If log_model is True, the model and training data are logged to MLflow.
+    If promote_model is True, the model training data is attached to the model version
+    and promotion alias applied to allow the model to be used in downstream pipelines.
     """
 
     with mlflow.start_run():
@@ -143,7 +145,13 @@ def evaluate_model(model, data_X, data_y, dataset_name, log_model=False):
         print(f"Accuracy: {result.metrics['accuracy_score']:.3f}")
         print()
 
-        if log_model:
+        if promote_model:
+            print(
+                (
+                    "Attaching reference data artifact to model and "
+                    f"applying promotinon alias '{MODEL_ALIAS}'..."
+                )
+            )
 
             # Log the training data to MLflow and then delete it
             print("Logging reference data with model...")
@@ -162,6 +170,8 @@ def evaluate_model(model, data_X, data_y, dataset_name, log_model=False):
             MlflowClient().set_registered_model_alias(
                 MODEL_NAME, MODEL_ALIAS, logged_result.registered_model_version
             )
+        else:
+            print("Skipping promotion of model to MLflow registry.\n")
 
 
 def tune_model_with_cv(data_X, data_y):
@@ -211,6 +221,17 @@ def tune_model_with_cv(data_X, data_y):
 
 
 if __name__ == "__main__":
+
+    # Look for parameter to decide whether to deploy model to registry
+    should_promote_model = True
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--nopromote", action="store_true", help="If set, skip promotion step"
+    )
+    args = parser.parse_args()
+    if args.nopromote is True:
+        print("'nopromote' arg passed - Will skip promoting model in MLflow registry.")
+        should_promote_model = False
 
     df = pd.read_csv(CUSTOMER_CHURN_DATASET)
 
@@ -263,4 +284,5 @@ if __name__ == "__main__":
     evaluate_model(clf, X_train, y_train, "X_train")
 
     # Next evaluate tuned model on test data to check for variance
-    evaluate_model(clf, X_test, y_test, "X_test", log_model=True)
+    # Only promote model in registry if flag is set
+    evaluate_model(clf, X_test, y_test, "X_test", promote_model=should_promote_model)
