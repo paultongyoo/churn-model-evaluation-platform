@@ -53,7 +53,7 @@
 
 Two independent processes were enabled by this project, joined by the MLFlow Model Registry:
 
-### Model Training and Registry Deployment 
+### Model Training and Registry Deployment
 
 The following process is implemented with two files inside the `code/orchestration/modeling/` folder:
 * **Jupyter Notebook:** `churn_model_training.ipynb`
@@ -154,13 +154,13 @@ The full project folder tree contents can be viewed [here](folder-structure.txt)
 * AWS User with the [Required IAM Permissions](#required-iam-permissions) policies
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store AWS credentials locally
 * [Docker](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
-* [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/) 
-* [Terraform](https://developer.hashicorp.com/terraform/install) 
-* [Prefect](https://docs.prefect.io/v3/get-started/install) 
-* [Pre-commit](https://pre-commit.com/#install) 
+* [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/)
+* [Terraform](https://developer.hashicorp.com/terraform/install)
+* [Prefect](https://docs.prefect.io/v3/get-started/install)
+* [Pre-commit](https://pre-commit.com/#install)
 * GitHub Account
   * At this time, committing repo to your GitHub account and running GitHub Actions workflow is the only way to deploy Prefect flow to Prefect Server (without manual effort to circumvent)
- 
+
 ### Required IAM Permissions
 
 A user with the following AWS Managed Permissions policies was used when creating this Platform.  **Please note that this list is *overly-permissive* and may be updated in the future.**
@@ -261,7 +261,7 @@ Clicking on each URL should render each tool's UI successfully in your browser (
 If any of the URLs return an error (e.g. 503 Service Unavailable), log into the AWS Elastic Container Service (ECS) console and confirm an ECS Task is in Running state for each of the 4 services (see screenshot below).
 
 
-![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png) 
+![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png)
 
 These URLs were also written to the `{REPO_DIR}/.env` file for future retrieval and export to shell environment when needed.
 
@@ -280,7 +280,7 @@ The following sections give a brief overview of the tool features made available
 * Captures details of each experiment run, including model type and training dataset used
 * Automatically creates images to aid evaluation (e.g. confusion matrix, SHAP summary plot)
 * Store models in Model Registry for future use (e.g. loaded by Model Evaluation Pipeline on file drop)
-  
+
 ![MLFlow Experiments](readme-assets/mlflow-experiments.png) <br>
 ![MLFlow Model Details](readme-assets/mlflow-model-details.png)
 ![MLFlow Artifacts](readme-assets/mlflow-artifacts.png)
@@ -317,14 +317,14 @@ Provides a pre-created dashboard plotting model data drift and performance metri
 ![Grafana Drift Summary Metrics](readme-assets/grafana-drift-summary-metrics.png)
 ![Grafana Metric Drift p-Values](readme-assets/grafana-metric-drift-p-values.png)
 
-## How to Upload Data 
+## How to Upload Data
 
 1. Navigate to `{REPO_DIR}` (and run `cd {REPO/HOME}code/orchestration && pipenv shell` if you haven't already)
 2. You can process the labeled Customer Churn data in one of two ways:
 
    1. Use `upload_simulation_script.py` script to upload non-training data files 30-seconds apart to [S3 File Drop `input` Folder](#s3-file-drop-folder-structure)
 
-      i. Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match what you configured in `stg.tfvars`  
+      i. Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match what you configured in `stg.tfvars`
       ii. Run `make simulate-file-drops` from `{REPO_DIR}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder
 
    2. Manually upload files from the `{REPO_DIR}/data` folder into the S3 bucket `{PROJECT_ID}/data/input` folder
@@ -466,7 +466,7 @@ See [Problem Statement](#problem-statement) section.
 See [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry) section for screenshots of experiments tracked and model stored in registry.
 
 ### Workflow orchestration
-#### Target: Fully deployed workflow 
+#### Target: Fully deployed workflow
 See [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service) section for screenshots of fully deployed workflow within Prefect UI and examples of worflow executions ("runs").
 
 ### Model deployment
