@@ -19,7 +19,7 @@ jobs:
     env:
       ECR_REPO_NAME: mlops-pipe-2343-prefect
       WORK_POOL_NAME: mlops-pipe-2343-pool
-      PREFECT_API_URL: http://mlops-pipe-2343-alb-287031769.us-east-2.elb.amazonaws.com:4200/api
+      PREFECT_API_URL: http://mlops-pipe-2343-alb-260297667.us-east-2.elb.amazonaws.com:4200/api
 
     steps:
     - name: Checkout code
