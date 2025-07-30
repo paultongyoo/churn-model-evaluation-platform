@@ -76,6 +76,9 @@ resource "null_resource" "create_additional_dbs" {
       echo "Creating mlflow_db..."
       PGPASSWORD='${var.db_password}' psql -h ${aws_db_instance.postgres.address} -U ${var.db_username} -d postgres -c "CREATE DATABASE mlflow_db;"
 
+      echo "Creating optuna_db..."
+      PGPASSWORD='${var.db_password}' psql -h ${aws_db_instance.postgres.address} -U ${var.db_username} -d postgres -c "CREATE DATABASE optuna_db;"
+
       echo "Creating prefect_db..."
       PGPASSWORD='${var.db_password}' psql -h ${aws_db_instance.postgres.address} -U ${var.db_username} -d postgres -c "CREATE DATABASE prefect_db;"
 

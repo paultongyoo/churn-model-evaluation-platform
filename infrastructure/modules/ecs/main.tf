@@ -16,10 +16,23 @@ resource "aws_security_group" "ecs_sg" {
   }
 }
 
+resource "aws_ecs_cluster" "mlops_cluster" {
+  name = "${var.project_id}-cluster"
+}
+
 resource "aws_security_group_rule" "allow_alb_to_mlflow" {
   type                     = "ingress"
   from_port                = 5000
   to_port                  = 5000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_sg.id
+  source_security_group_id = var.alb_sg_id
+}
+
+resource "aws_security_group_rule" "allow_alb_to_optuna" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
   protocol                 = "tcp"
   security_group_id        = aws_security_group.ecs_sg.id
   source_security_group_id = var.alb_sg_id
@@ -108,10 +121,6 @@ resource "aws_cloudwatch_log_group" "mlflow_logs" {
   retention_in_days = 7
 }
 
-resource "aws_ecs_cluster" "mlops_cluster" {
-  name = "${var.project_id}-cluster"
-}
-
 resource "aws_ecs_task_definition" "mlflow" {
   family                   = "mlflow"
   network_mode             = "awsvpc"
@@ -173,6 +182,115 @@ resource "aws_ecs_service" "mlflow" {
   }
 }
 
+######### Optuna Dashboard ECS Task and Service #########
+
+resource "aws_iam_role" "optuna_task_exec_role" {
+  name = "${var.project_id}-optuna-task-exec-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_policy" "optuna_logs_write" {
+  name = "${var.project_id}-optuna-logs-write"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/ecs/${var.project_id}-optuna:log-stream:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "optuna_logs_write_attachment" {
+  role       = aws_iam_role.optuna_task_exec_role.name
+  policy_arn = aws_iam_policy.optuna_logs_write.arn
+}
+
+resource "aws_cloudwatch_log_group" "optuna_logs" {
+  name              = "/ecs/${var.project_id}-optuna"
+  retention_in_days = 7
+}
+
+
+resource "aws_ecs_task_definition" "optuna" {
+  family                   = "optuna"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = aws_iam_role.optuna_task_exec_role.arn
+  task_role_arn            = aws_iam_role.optuna_task_exec_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "optuna"
+      image     = "ghcr.io/optuna/optuna-dashboard:v0.15.1"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 8080
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project_id}-optuna",
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+      entryPoint = ["/bin/bash", "-c"]
+      command = [
+        <<-EOF
+          python -c "import optuna; \
+      study_name='default_study'; \
+      storage='postgresql+psycopg2://${var.db_username}:${var.db_password}@${var.db_endpoint}/optuna_db'; \
+      optuna.create_study(study_name=study_name, load_if_exists=True, storage=storage, direction='minimize'); \
+      print('✅ Optuna database initialized successfully.')" && \
+          optuna-dashboard --host 0.0.0.0 --port 8080 postgresql+psycopg2://${var.db_username}:${var.db_password}@${var.db_endpoint}/optuna_db
+        EOF
+      ]
+    }
+  ])
+}
+
+resource "aws_ecs_service" "optuna" {
+  name            = "${var.project_id}-optuna-service"
+  cluster         = aws_ecs_cluster.mlops_cluster.id
+  task_definition = aws_ecs_task_definition.optuna.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  force_new_deployment = true
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_sg.id]
+  }
+
+  load_balancer {
+    target_group_arn = var.optuna_target_group_arn
+    container_name   = "optuna"
+    container_port   = 8080
+  }
+}
 
 ######### Prefect Server ECS Task and Service #########
 

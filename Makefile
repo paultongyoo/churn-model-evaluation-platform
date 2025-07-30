@@ -39,12 +39,13 @@ apply:
 	@echo ""; \
 	echo "🎉 All systems go! 🎉"; \
 	echo ""; \
-	echo "MLflow, Prefect, Evidently, and Grafana UI URLs"; \
-	echo "-----------------------------------------------"; \
-	export $$(grep -E '^MLFLOW_TRACKING_URI=|^PREFECT_API_URL=|^EVIDENTLY_UI_URL=|^GRAFANA_UI_URL=' .env | xargs); \
+	echo "MLflow, Optuna, Prefect, Evidently, and Grafana UI URLs"; \
+	echo "-------------------------------------------------------"; \
+	export $$(grep -E '^MLFLOW_TRACKING_URI=|^OPTUNA_UI_URL=|^PREFECT_API_URL=|^EVIDENTLY_UI_URL=|^GRAFANA_UI_URL=' .env | xargs); \
 	PREFECT_UI_URL=$$(echo $$PREFECT_API_URL | sed 's:/api$$::'); \
 	echo ""; \
 	echo "🧪 MLflow UI: $$MLFLOW_TRACKING_URI"; \
+	echo "🔍 Optuna UI: $$OPTUNA_UI_URL"; \
 	echo "⚙️ Prefect UI: $$PREFECT_UI_URL"; \
 	echo "📈 Evidently UI: $$EVIDENTLY_UI_URL"; \
 	echo "📈 Grafana UI: $$GRAFANA_UI_URL"; \
@@ -73,6 +74,15 @@ register-model-nopromote:
 	@echo "Generating models without promoting them for pipeline use in MLflow..."
 	cd code/orchestration/modeling && \
 	python churn_model_training.py --nopromote
+
+optuna-dashboard:
+	@if [ -f code/orchestration/modeling/db.sqlite3 ]; then \
+		echo "Launching Optuna dashboard..."; \
+		cd code/orchestration/modeling && optuna-dashboard sqlite:///db.sqlite3; \
+	else \
+		echo "Error: db.sqlite3 not found."; \
+		echo "Please modify churn_model_training.py to run the tune_model_with_cv function first."; \
+	fi
 
 process-test-data:
 	@echo "Processing test data..."

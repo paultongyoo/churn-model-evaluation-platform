@@ -10,6 +10,10 @@ output "mlflow_target_group_arn" {
   value = aws_lb_target_group.mlflow.arn
 }
 
+output "optuna_target_group_arn" {
+  value = aws_lb_target_group.optuna.arn
+}
+
 output "prefect_target_group_arn" {
   value = aws_lb_target_group.prefect.arn
 }

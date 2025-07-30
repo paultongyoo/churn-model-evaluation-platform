@@ -55,6 +55,7 @@ module "ecs_stack" {
     alb_sg_id = module.alb.alb_sg_id
     prefect_target_group_arn = module.alb.prefect_target_group_arn
     mlflow_target_group_arn = module.alb.mlflow_target_group_arn
+    optuna_target_group_arn = module.alb.optuna_target_group_arn
     evidently_ui_target_group_arn = module.alb.evidently_ui_target_group_arn
     grafana_target_group_arn = module.alb.grafana_target_group_arn
     bucket_arn = module.s3_bucket.bucket_arn

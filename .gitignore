@@ -14,3 +14,4 @@ __pycache__/
 *.egg-info
 .pre-commit-config.yaml
 build/
+db.sqlite3

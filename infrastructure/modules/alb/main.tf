@@ -49,6 +49,14 @@ resource "aws_security_group" "alb_sg" {
     description = "Allows my IP access to Grafana UI"
   }
 
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["${var.my_ip}/32"]
+    description = "Allows my IP access to Optuna UI"
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -65,10 +73,18 @@ resource "aws_lb" "main" {
   subnets            = var.subnet_ids
 }
 
-# Target groups for MLflow and Prefect
+# Target Groups
 resource "aws_lb_target_group" "mlflow" {
   name        = "${var.project_id}-mlflow-tg"
   port        = 5000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+}
+
+resource "aws_lb_target_group" "optuna" {
+  name        = "${var.project_id}-optuna-tg"
+  port        = 8080
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -107,6 +123,17 @@ resource "aws_lb_listener" "mlflow" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.mlflow.arn
+  }
+}
+
+resource "aws_lb_listener" "optuna" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = 8080
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.optuna.arn
   }
 }
 

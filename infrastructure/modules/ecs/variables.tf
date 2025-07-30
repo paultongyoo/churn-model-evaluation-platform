@@ -53,6 +53,11 @@ variable "mlflow_target_group_arn" {
   type        = string
 }
 
+variable "optuna_target_group_arn" {
+  description = "ARN of the Optuna target group"
+  type        = string
+}
+
 variable "evidently_ui_target_group_arn" {
   description = "ARN of the Evidently UI target group"
   type        = string
