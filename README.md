@@ -140,10 +140,10 @@ The full project folder tree contents can be viewed [here](folder-structure.txt)
 
 | Security Limitation | Future Improvement |
 | ------------------- | ------------------ |
-| The IAM policy used is intentionally broad to reduce setup complexity. | Replace with least-privilege policies tailored to each service role.  | 
-| All deployments currently assume public subnet usage to simplify RDS access from ECS and local machines. | Migrate to private subnets with NAT Gateway and use bastion or VPN access for local clients.  | 
+| The IAM policy used is intentionally broad to reduce setup complexity. | Replace with least-privilege policies tailored to each service role.  |
+| All deployments currently assume public subnet usage to simplify RDS access from ECS and local machines. | Migrate to private subnets with NAT Gateway and use bastion or VPN access for local clients.  |
 | The Prefect API ALB endpoint is publicly accessible to enable GitHub Actions deployment. | Restrict access to GitHub Actions IP ranges using ingress rules or CloudFront. |
-| The MLFlow ALB endpoint is publicly accessible to allow ECS Workers to reach the Model Registry.  | Limit access to internal ECS security groups only.  | 
+| The MLFlow ALB endpoint is publicly accessible to allow ECS Workers to reach the Model Registry.  | Limit access to internal ECS security groups only.  |
 
 ## Installation Prerequisites
 
@@ -184,7 +184,7 @@ A user with the following AWS Managed Permissions policies was used when creatin
 * **S3-to-Prefect Lambda Function**
     * Invokes orchestration flow when new files are dropped into S3
     * Uses AWS `public.ecr.aws/lambda/python:3.12` image
- 
+
 After deployment, remove these local Docker images to conserve space.
 
 ## Library Dependencies & Version Numbers
@@ -214,7 +214,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 | `db_password` | Password for Postgres database. Use best practices and avoid spaces. | `Th1s1sAStr0ng#Pwd!` |
 | `grafana_admin_user` | Username for Grafana account used to **edit** data drift and model prediction scores over time.  | `grafana_FTW` |
 | `grafana_admin_password` | Password for Grafana account | `Grafana4Lyfe!123` |
-| `subnet_ids`  | AWS Subnet IDs: **Must be *public* subnet IDs to allow Postgres RDS instance to be accessed by ECS services (and optionally your IP address)** | `["subnet-123abc456def78901", "subnet-234bcd567efg89012"]` |
+| `subnet_ids`  | AWS Subnet IDs: **Must be *public* subnet IDs from *different Availability Zones* to allow Postgres RDS instance to be accessed by ECS services (and optionally your IP address)** | `["subnet-123abc456def78901", "subnet-234bcd567efg89012"]` |
 | `my_ip` | IP address that will be granted access to Grafana UI and Postgres DB | `203.0.113.42` |
 | `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `your.name@example.com` |
 
@@ -420,7 +420,7 @@ The following table lists the `make` targets available to accelerate platform de
 | `disable-lambda` | Used to facilitate local dev/testing: Disables notification of the `s3_to_prefect` Lambda function so files aren't automatically picked up by the deployed service.  Lets you run the pipeline locally for development and debugging. |
 | `enable-lambda` | Re-enables the `s3_to_prefect` Lambda notification to resume pipeline instantiaton on S3 file drop |
 | `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLFlow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
-| `register-model-nopromote` | Executes the `churn_model_training.py` file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.  Used to develop and optimize model performance prior to making it available for stakeholder use. | 
+| `register-model-nopromote` | Executes the `churn_model_training.py` file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.  Used to develop and optimize model performance prior to making it available for stakeholder use. |
 | `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  Assumes `customer_churn_1.csv` was uploaded into the S3 `data/input/` folder.  Runs command `python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv` and instantiates local Prefect Server to execute flow. |
 | `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.  **Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match what you configured in `stg.tfvars`.** |
 
