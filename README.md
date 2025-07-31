@@ -19,7 +19,7 @@
 11. [Library Dependencies & Version Numbers](#library-dependencies--version-numbers)
 12. [How to Install Platform](#how-to-install-platform)
 13. [Platform ECS Services](#platform-ecs-services)
-    - [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
+    - [MLflow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
     - [Optuna Hyperparameter Tuning Dashboard](#optuna-hyperparameter-tuning-dashboard)
     - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
     - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
@@ -62,7 +62,7 @@
 
 ## Platform Processes
 
-Two independent processes were enabled by this project, joined by the MLFlow Model Registry:
+Two independent processes were enabled by this project, joined by the MLflow Model Registry:
 
 ### Model Training and Registry Deployment
 
@@ -143,7 +143,7 @@ This project consists mainly of the following folders and files:
 | `data/` | <ul><li>These files were split from the original data set:<ul><li>`customer_churn_0.csv`: File used to train the model</li><li>`customer_churn_1.csv`</li><li>`customer_churn_2_majority_drifted.csv`: File that exhibits data drift exceeding threshold (email notification will be sent)</li></ul></li><li>`customer_churn_synthetic_*.csv`: Generated using <a href="https://gretel.ai">Gretel.ai ↗</a></li></ul> |
 | `terraform/` | <ul><li>Contains Infrastructure-as-Code (IaC) and scripts to configure or destroy 80+ AWS resources from single command<ul><li>`modules/`: Configures the following AWS Services:<ul><li>`alb/`: <a href="https://aws.amazon.com/elasticloadbalancing/application-load-balancer/">AWS Application Load Balancer ↗</a></li><li>`ecr/`: <a href="https://aws.amazon.com/ecr/">AWS Elastic Container Registry ↗</a></li><li>`ecs/`: <a href="https://aws.amazon.com/ecs/">AWS Elastic Container Service ↗</a></li><li>`rds-postgres/`: <a href="https://aws.amazon.com/rds/">AWS Relational Database Service ↗</a></li><li>`s3/`: <a href="https://aws.amazon.com/s3/">AWS Simple Storage Service ↗</a></li><li>`s3-to-prefect-lambda/`: <a href="https://aws.amazon.com/lambda/">AWS Lambda ↗</a></li><li>`sns/`: <a href="https://aws.amazon.com/sns/">AWS Simple Notification Service ↗</a></li></ul></li><li>`scripts/`<ul><li>`store_prefect_secrets.py`: Stores generated ALB endpoints and SNS topic ARN into Prefect Server for use by pipeline</li><li>`wait-for-services.sh`: Used to wait for <a href="#platform-ecs-services">Platform ECS Services</a> to become available via ALB before returning UI URLs to user</li></ul></li><li>`vars/`<ul><li>`stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see <a href="#how-to-set-up-platform">How to Set Up Platform</a>)</li></ul></li></ul></li></ul> |
 | `readme-assets/` | <ul><li>Screenshots for this readme</li></ul> |
-| `.env` | <ul><li>Contains the following environment variables:<ul><li>Optuna DB Connection URL</li><li>MLFlow, Optuna, Prefect, Evidently, and Grafana UI URLs</li><li>Prefect Server API URL</li></ul></li></ul> |
+| `.env` | <ul><li>Contains the following environment variables:<ul><li>Optuna DB Connection URL</li><li>MLflow, Optuna, Prefect, Evidently, and Grafana UI URLs</li><li>Prefect Server API URL</li></ul></li></ul> |
 | `Makefile` | <ul><li>Contains several targets to accelerate platform setup, development, and testing (see <a href="#makefile-targets">Makefile Targets</a> section)</li></ul> |
 | `upload_simulation_script.py` | <ul><li>Script that helps generate metrics over time for viewing in Grafana UI</li><li>Uploads the non-training data files into S3 File Drop Input folder 30 seconds apart</li></ul> |
 
@@ -157,7 +157,7 @@ The full project folder tree contents can be viewed [here](folder-structure.txt)
 | The IAM policy used is intentionally broad to reduce setup complexity. | Replace with least-privilege policies tailored to each service role.  |
 | Public subnets are required to simplify RDS access from ECS and local machines. | Migrate to private subnets with NAT Gateway and use bastion or VPN access for local clients.  |
 | The Prefect API ALB endpoint is publicly accessible to enable GitHub Actions deployment. | Restrict access to GitHub Actions IP ranges using ingress rules or CloudFront. |
-| The MLFlow ALB endpoint is publicly accessible to allow ECS Workers to reach the Model Registry.  | Limit access to internal ECS security groups only.  |
+| The MLflow ALB endpoint is publicly accessible to allow ECS Workers to reach the Model Registry.  | Limit access to internal ECS security groups only.  |
 
 ## Installation Prerequisites
 
@@ -239,9 +239,9 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow YAML, and start ECS services.
     1.  After Terraform completes instantiating each ECS Service, it will execute the `wait_for_services.sh` script to poll the ALB URLs until each service instantiates its ECS Task and the service is ready for use.
     1.  For the user's convenience, each tool's URL is displayed to the user once ready for use (see [Platform ECS Services](#platform-ecs-services)).
-1.  Click each of the 5 ECS Service URLs to confirm they are running: MLFlow, Optuna, Prefect Server, Evidently, Grafana
-1.  Run `make register-model` to train a `XGBoostChurnModel` churn model and upload it to the MLFlow Model Registry with `staging` alias.
-    1.  Confirm it was created and aliased by visiting the Model Registry within the MLFlow UI
+1.  Click each of the 5 ECS Service URLs to confirm they are running: MLflow, Optuna, Prefect Server, Evidently, Grafana
+1.  Run `make register-model` to train a `XGBoostChurnModel` churn model and upload it to the MLflow Model Registry with `staging` alias.
+    1.  Confirm it was created and aliased by visiting the Model Registry within the MLflow UI
     2.  Note two versions of the model are visible in the registry evaluated using training and holdout datasets (`X_train` and `X_test`, respectively)
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
     1. Commit your cloned repo (including `{REPO_DIR}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
@@ -293,17 +293,17 @@ GRAFANA_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws
 
 The following sections give a brief overview of the tool features made available in this project:
 
-### MLFlow Tracking Server & Model Registry
+### MLflow Tracking Server & Model Registry
 * List model experiment runs that track model metrics and parameters used
 * Captures details of each experiment run, including model type and training dataset used
 * Automatically creates images to aid evaluation (e.g. confusion matrix, SHAP summary plot)
 * Store models in Model Registry for future use (e.g. loaded by Model Evaluation Pipeline on file drop)
 
-![MLFlow Experiments](readme-assets/mlflow-experiments.png) <br>
-![MLFlow Model Details](readme-assets/mlflow-model-details.png)
-![MLFlow Artifacts](readme-assets/mlflow-artifacts.png)
-![MLFlow Confusion Matrix](readme-assets/mlflow-confusion-matrix.png)
-![MLFlow Registry](readme-assets/mlflow-model-registry.png)
+![MLflow Experiments](readme-assets/mlflow-experiments.png) <br>
+![MLflow Model Details](readme-assets/mlflow-model-details.png)
+![MLflow Artifacts](readme-assets/mlflow-artifacts.png)
+![MLflow Confusion Matrix](readme-assets/mlflow-confusion-matrix.png)
+![MLflow Registry](readme-assets/mlflow-model-registry.png)
 
 ### Optuna Hyperparameter Tuning Dashboard
 Gain insight on Optuna hyperparameter tuning trials to narrow parameter search spaces and more quickly find optimal parameters.
@@ -447,7 +447,7 @@ The following table lists the `make` targets available to accelerate platform de
 | `destroy` | Runs `terraform destroy -var-file=vars/stg.tfvars --auto-approve` |
 | `disable-lambda` | Used to facilitate local dev/testing: Disables notification of the `s3_to_prefect` Lambda function so files aren't automatically picked up by the deployed service.  Lets you run the pipeline locally for development and debugging. |
 | `enable-lambda` | Re-enables the `s3_to_prefect` Lambda notification to resume pipeline instantiaton on S3 file drop |
-| `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLFlow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
+| `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLflow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
 | `register-model-nopromote` | Executes the `churn_model_training.py` file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.  Used to develop and optimize model performance prior to making it available for stakeholder use. |
 | `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  Assumes `customer_churn_1.csv` was uploaded into the S3 `data/input/` folder.  Runs command `python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv` and instantiates local Prefect Server to execute flow. |
 | `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.  **Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match the `project_id` you configured in `stg.tfvars`.** |
@@ -492,7 +492,7 @@ See [Problem Statement](#problem-statement) section.
 
 ### Experiment tracking and model registry
 #### Target: Both experiment tracking and model registry are used
-See [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry) section for screenshots of experiments tracked and model stored in registry.
+See [MLflow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry) section for screenshots of experiments tracked and model stored in registry.
 
 ### Workflow orchestration
 #### Target: Fully deployed workflow
