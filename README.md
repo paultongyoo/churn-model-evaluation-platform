@@ -248,10 +248,11 @@ Once the Terraform `make apply` command completes successfully, you should see o
 ```
 🎉 All systems go! 🎉
 
-MLflow, Prefect, Evidently, and Grafana UI URLs
------------------------------------------------
+MLflow, Optuna, Prefect, Evidently, and Grafana UI URLs
+-------------------------------------------------------
 
 🧪 MLflow UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:5000
+🔍 Optuna UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8080
 ⚙️ Prefect UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200
 📈 Evidently UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8000
 📈 Grafana UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
@@ -288,6 +289,17 @@ The following sections give a brief overview of the tool features made available
 ![MLFlow Confusion Matrix](readme-assets/mlflow-confusion-matrix.png)
 ![MLFlow Registry](readme-assets/mlflow-model-registry.png)
 
+### Optuna Hyperparameter Tuning Dashboard
+* TBD
+* TBD
+  
+![Optuna Dashboard Top](readme-assets/optuna-dashboard-top.png)
+![Optuna Dashboard Top](readme-assets/optuna-dashboard-middle.png)
+![Optuna Dashboard Top](readme-assets/optuna-dashboard-bottom.png)
+![Optuna Dashboard Top](readme-assets/optuna-analytics-top.png)
+![Optuna Dashboard Top](readme-assets/optuna-analytics-middle.png)
+![Optuna Dashboard Top](readme-assets/optuna-analytics-middle-middle.png)
+![Optuna Dashboard Top](readme-assets/optuna-analytics-bottom.png)
 
 ### Prefect Orchestration Server and Worker Service
 
