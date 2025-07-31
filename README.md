@@ -67,14 +67,16 @@ flowchart TD
     A[Download Reference Data]
     B[Prepare Data]
     C[Tune Hyperparameters]
-    D[Train Model]
-    E[Evaluate Model on Training Set]
-    F[Evaluate Model on Holdout Set]
-    G[Is Model Performance Sufficient?]
-    H[Deploy Model to MLFlow Registry with 'staging' Alias]
-    A --> B --> C --> D --> E --> F --> G;
-    G --> |Yes| H;
-    G --> |No| B;
+    D[Narrow Parameter Search Space using Optuna UI]
+    E[Train Model]
+    F[Evaluate Model on Training Set]
+    G[Evaluate Model on Holdout Set]
+    H[Is Model Performance Sufficient?]
+    I[Deploy Model to MLFlow Registry with 'staging' Alias]
+    A --> B --> C --> E --> F --> G --> H;
+    C --> D --> C;
+    H --> |Yes| I;
+    H --> |No| B;
 ```
 
 ### Model Inference, Reporting, and Evaluation
