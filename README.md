@@ -207,8 +207,8 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 ## How to Install Platform
 
 1.  Install the [prerequisites](#installation-prerequisites)
-1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `mlops-churn-pipeline-tf-state-<some random number>`)
-1.  Clone `mlops-churn-pipeline` repository locally
+1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `churn-platform-tf-state-<some random number>`)
+1.  Clone `churn-model-evaluation-platform` repository locally
 1.  Edit root Terraform configuration to store state within S3
     1.  Edit file: `{REPO_DIR}/infrastructure/main.tf`
     1.  Change `terraform.backend.s3.bucket` to the name of the bucket you created
@@ -235,9 +235,10 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 1.  Run `make apply` to build Terraform infrastructure, set Prefect Secrets, update GitHub Actions workflow YAML, and start ECS services.
     1.  After Terraform completes instantiating each ECS Service, it will execute the `wait_for_services.sh` script to poll the ALB URLs until each service instantiates its ECS Task and the service is ready for use.
     1.  For the user's convenience, each tool's URL is displayed to the user once ready for use (see [Platform ECS Services](#platform-ecs-services)).
-1.  Click each of the 4 ECS Service URLs to confirm they are running: MLFlow, Prefect Server, Evidently, Grafana
-1.  Run `make register-model` to train `XGBoostChurnModel` churn model and upload it to the MLFlow Model Registry with `staging` alias.
-    1.  Confirm it was created by visiting the Model Registry within the MLFlow UI
+1.  Click each of the 5 ECS Service URLs to confirm they are running: MLFlow, Optuna, Prefect Server, Evidently, Grafana
+1.  Run `make register-model` to train a `XGBoostChurnModel` churn model and upload it to the MLFlow Model Registry with `staging` alias.
+    1.  Confirm it was created and aliased by visiting the Model Registry within the MLFlow UI
+    2.  Note two versions of the model are visible in the registry evaluated using training and holdout datasets (`X_train` and `X_test`, respectively)
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
     1. Commit your cloned repo (including `{REPO_DIR}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
     1. Log in your GitHub account, navigate to your committed repo project and create the following Repository Secrets (used by `deploy-prefect.yml`):
@@ -245,11 +246,12 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
         1.  `AWS_ACCESS_KEY_ID`
         1.  `AWS_SECRET_ACCESS_KEY`
         1.  `AWS_REGION`
-    1.  Nagivate to GitHub Project Actions tab, select the workflow `Build and Deploy Prefect Flow to ECR`, and verify it completes successfully.
+    1.  Nagivate to GitHub Project Actions tab, select the workflow `Build and Deploy Prefect Flow to ECR`, and click the green "Run workflow" button to deploy the Prefect flow
+    	1. Confirm it was deployed sucessfully by visiting the "Deployments" section of the Prefect UI
 2.  Confirm your email subscription to the pipeline SNS topic
-  3.  Navigate to your email inbox and look for an email subject titled `AWS Notification - Subscription Confirmation`.
+  3.  Navigate to the inbox of the email address you configured and look for an email subject titled `AWS Notification - Subscription Confirmation`.
   4.  Open the email and click the `Confirm Subscription` link within.
-  5.  You should subsequently see a green message relaying your subscription has been confirmed.
+  5.  Verify you see a green message relaying your subscription has been confirmed.
 
 ## Platform ECS Services
 
