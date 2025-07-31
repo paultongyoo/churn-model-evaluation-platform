@@ -291,8 +291,7 @@ The following sections give a brief overview of the tool features made available
 ![MLFlow Registry](readme-assets/mlflow-model-registry.png)
 
 ### Optuna Hyperparameter Tuning Dashboard
-* TBD
-* TBD
+Gain insight on Optuna hyperparameter tuning trials to narrow parameter search spaces and find optimal parameters faster.
   
 ![Optuna Dashboard Top](readme-assets/optuna-dashboard-top.png)
 ![Optuna Dashboard Top](readme-assets/optuna-dashboard-middle.png)
@@ -304,7 +303,7 @@ The following sections give a brief overview of the tool features made available
 
 ### Prefect Orchestration Server and Worker Service
 
-Translates Python scripts into robust, scalable, observable orchestrations.
+View completed, running, and failed model evaluation runs to monitor pipeline health and address any unexpected issues.
 
 ![Prefect Dashboard](readme-assets/prefect-dashboard.png)
 ![Prefect Runs](readme-assets/prefect-runs.png)
@@ -315,7 +314,7 @@ Translates Python scripts into robust, scalable, observable orchestrations.
 
 ### Evidently Non-Time-Series Dashboard and Reports UI
 
-Provides detailed data drift and model performance metrics for individual file drops.
+Assess dataset drift and model performance for each new churn data drop to decide whether model retraining is needed. 
 
 ![Evidently Data Drift Summary](readme-assets/evidently-data-drift-summary.png)
 ![Evidently Data Drift Detailed](readme-assets/evidently-data-drift-detailed.png)
