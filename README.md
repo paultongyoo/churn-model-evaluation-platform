@@ -450,7 +450,7 @@ The following table lists the `make` targets available to accelerate platform de
 | `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLFlow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
 | `register-model-nopromote` | Executes the `churn_model_training.py` file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.  Used to develop and optimize model performance prior to making it available for stakeholder use. |
 | `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  Assumes `customer_churn_1.csv` was uploaded into the S3 `data/input/` folder.  Runs command `python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv` and instantiates local Prefect Server to execute flow. |
-| `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.  **Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match what you configured in `stg.tfvars`.** |
+| `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.  **Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match the `project_id` you configured in `stg.tfvars`.** |
 
 ## CI-CD Implementation
 
