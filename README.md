@@ -19,6 +19,7 @@
 11. [How to Install Platform](#how-to-install-platform)
 12. [Platform ECS Services](#platform-ecs-services)
     - [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
+    - [Optuna Hyperparameter Tuning Dashboard](#optuna-hyperparameter-tuning-dashboard)
     - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
     - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
     - [Grafana Time-Series Dashboard UI](#grafana-time-series-dashboard-ui)
