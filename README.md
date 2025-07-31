@@ -48,7 +48,7 @@
 | 📊 **Model Evaluation** | <ul><li>MLflow UI enables deep comparison of experiment runs, visualizations (confusion matricies, precision-recall curves), and SHAP explanatory plots.</li></ul> |
 | 🚀 **Model Deployment** | <ul><li>Each model version is packaged in the [MLflow Model Registry ↗](https://mlflow.org/docs/latest/ml/model-registry/) with metadata, dependencies, and signatures for reproducibility.</li><li>Alias-based promotion supports decoupling development from deployment.</li><li>Deployment to [AWS ECS ↗](https://aws.amazon.com/ecs/) via [Prefect ↗](https://www.prefect.io/) provides scalable and observable on-demand inference.</li></ul> |
 | 📈 **Model Monitoring** | <ul><li>[Evidently.ai ↗](https://www.evidentlyai.com/) generates automated reports for data drift and prediction performance after each inference run.</li><li>Pre-built [Grafana ↗](https://grafana.com/grafana/) dashboard visualizes model metrics over time, helping distinguish anomalies from signals indicating the need for model development.</li></ul> |
-| 🔁 **Model Maintenance** | <ul><li>Email alerts triggered if data drift exceeds threshold or model prediction scores (F1, precision, recall, accuracy) fall below acceptable limits.</li></ul> |
+| 🔁 **Model Maintenance** | <ul><li>Email alerts triggered if data drift exceeds threshold or model prediction scores (F1, precision, recall, accuracy) fall below acceptable limits.</li><li>Enables manual model retraining and defines a framework extensible to automated retraining pipelines.</li></ul> |
 
 ## Customer Churn Data Source
 
