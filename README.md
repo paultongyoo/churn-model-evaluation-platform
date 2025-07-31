@@ -44,7 +44,7 @@
 ## Key Features
 | Area | Features |
 | ---- | -------- |
-| 🧠 **Model Development** | <ul><li>Jupyter notebook provides data scientist-friendly environment for continued exploratory data analysis and data preparation.</li><li>Training logic extracted to separate module to ensure reuse of exact same logic in model inference pipeline.</li><li>Efficient hyperparameter and data preparation experimentation enabled using Optuna bayesian trial optimization and MLflow experiment tracking.</li></ul> |
+| 🧠 **Model Development** | <ul><li>Jupyter notebook provides Data Scientist-friendly environment for continued exploratory data analysis and data preparation.</li><li>Training logic extracted to separate module to ensure reuse of exact same logic in model inference pipeline.</li><li>Efficient hyperparameter and data preparation experimentation enabled using Optuna bayesian trial optimization and MLflow experiment tracking.</li></ul> |
 | 📊 **Model Evaluation** | TBD |
 | 🚀 **Model Deployment** | TBD |
 | 📈 **Model Monitoring** | TBD |
