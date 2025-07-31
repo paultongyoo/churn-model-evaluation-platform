@@ -1,6 +1,6 @@
 # Churn Model Evaluation Platform
 
-(For those evaluating this project for the [DataTalks.club MLOps Zoomcamp certification](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for mappings between this document's sections and each criteria.)
+(For those evaluating this project for the [DataTalks.club MLOps Zoomcamp certification ↗](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for mappings between this document's sections and each criteria.)
 
 ## Table of Contents
 
@@ -140,8 +140,8 @@ This project consists mainly of the following folders and files:
 | `code/grafana/` | <ul><li>Contains Dockerfile that packages Grafana Enterprise image with:<ul><li>`grafana-postgres-datasource.yml`: Postgres Data Source configuration</li><li>`churn-model-evaluation.json`: Pre-created Data Drift and Prediction Score Evaluation Dashboard</li></ul></li></ul> |
 | `code/orchestration/` | <ul><li>Contains Dockerfile that packages Prefect Flow pipeline consisting of:<ul><li>`churn_prediction_pipeline.py`: Contains main Prefect flow and tasks</li><li>`modeling/`<ul><li>Contains model training and registry deployment logic:<ul><li>`churn_model_training.ipynb` for model EDA, hyperparameter tuning, and model training</li><li>`churn_model_training.py` for extracting training logic to reuse in Prefect pipeline</li></ul></li></ul></li><li>`tests/`<ul><li>`unit/`<ul><li>Contains unit tests using `unittest.MagicMock` to mock all dependencies</li></ul></li><li>`integration/`<ul><li>Contains integration tests utilizing `testcontainer[localstack]` to mock AWS component with LocalStack equivalent</li></ul></li></ul></li></ul></li></ul> |
 | `code/s3_to_prefect_lambda/` | <ul><li>Contains Dockerfile that packages `lambda_function.py` and its dependencies for notifying Prefect pipeline of new file drops</li><li>Invoked by S3 Bucket Notification configured by Terraform `s3-to-prefect-lambda` module</li></ul> |
-| `data/` | <ul><li>These files were split from the original data set:<ul><li>`customer_churn_0.csv`: File used to train the model</li><li>`customer_churn_1.csv`</li><li>`customer_churn_2_majority_drifted.csv`: File that exhibits data drift exceeding threshold (email notification will be sent)</li></ul></li><li>`customer_churn_synthetic_*.csv`: Generated using <a href="https://gretel.ai">Gretel.ai</a></li></ul> |
-| `terraform/` | <ul><li>Contains Infrastructure-as-Code (IaC) and scripts to configure or destroy 80+ AWS resources from single command<ul><li>`modules/`: Configures the following AWS Services:<ul><li>`alb/`: <a href="https://aws.amazon.com/elasticloadbalancing/application-load-balancer/">AWS Application Load Balancer</a></li><li>`ecr/`: <a href="https://aws.amazon.com/ecr/">AWS Elastic Container Registry</a></li><li>`ecs/`: <a href="https://aws.amazon.com/ecs/">AWS Elastic Container Service</a></li><li>`rds-postgres/`: <a href="https://aws.amazon.com/rds/">AWS Relational Database Service</a></li><li>`s3/`: <a href="https://aws.amazon.com/s3/">AWS Simple Storage Service</a></li><li>`s3-to-prefect-lambda/`: <a href="https://aws.amazon.com/lambda/">AWS Lambda</a></li><li>`sns/`: <a href="https://aws.amazon.com/sns/">AWS Simple Notification Service</a></li></ul></li><li>`scripts/`<ul><li>`store_prefect_secrets.py`: Stores generated ALB endpoints and SNS topic ARN into Prefect Server for use by pipeline</li><li>`wait-for-services.sh`: Used to wait for <a href="#platform-ecs-services">Platform ECS Services</a> to become available via ALB before returning UI URLs to user</li></ul></li><li>`vars/`<ul><li>`stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see <a href="#how-to-set-up-platform">How to Set Up Platform</a>)</li></ul></li></ul></li></ul> |
+| `data/` | <ul><li>These files were split from the original data set:<ul><li>`customer_churn_0.csv`: File used to train the model</li><li>`customer_churn_1.csv`</li><li>`customer_churn_2_majority_drifted.csv`: File that exhibits data drift exceeding threshold (email notification will be sent)</li></ul></li><li>`customer_churn_synthetic_*.csv`: Generated using <a href="https://gretel.ai">Gretel.ai ↗</a></li></ul> |
+| `terraform/` | <ul><li>Contains Infrastructure-as-Code (IaC) and scripts to configure or destroy 80+ AWS resources from single command<ul><li>`modules/`: Configures the following AWS Services:<ul><li>`alb/`: <a href="https://aws.amazon.com/elasticloadbalancing/application-load-balancer/">AWS Application Load Balancer ↗</a></li><li>`ecr/`: <a href="https://aws.amazon.com/ecr/">AWS Elastic Container Registry ↗</a></li><li>`ecs/`: <a href="https://aws.amazon.com/ecs/">AWS Elastic Container Service ↗</a></li><li>`rds-postgres/`: <a href="https://aws.amazon.com/rds/">AWS Relational Database Service ↗</a></li><li>`s3/`: <a href="https://aws.amazon.com/s3/">AWS Simple Storage Service ↗</a></li><li>`s3-to-prefect-lambda/`: <a href="https://aws.amazon.com/lambda/">AWS Lambda ↗</a></li><li>`sns/`: <a href="https://aws.amazon.com/sns/">AWS Simple Notification Service ↗</a></li></ul></li><li>`scripts/`<ul><li>`store_prefect_secrets.py`: Stores generated ALB endpoints and SNS topic ARN into Prefect Server for use by pipeline</li><li>`wait-for-services.sh`: Used to wait for <a href="#platform-ecs-services">Platform ECS Services</a> to become available via ALB before returning UI URLs to user</li></ul></li><li>`vars/`<ul><li>`stg.tfvars.template`: Base file for creating your own `stg.tfvars` (see <a href="#how-to-set-up-platform">How to Set Up Platform</a>)</li></ul></li></ul></li></ul> |
 | `readme-assets/` | <ul><li>Screenshots for this readme</li></ul> |
 | `.env` | <ul><li>Contains the URLs for:<ul><li>MLFlow, Prefect, Evidently, and Grafana</li><li>Prefect Server API</li></ul></li></ul> |
 | `Makefile` | <ul><li>Contains several targets to accelerate platform setup, development, and testing (see <a href="#makefile-targets">Makefile Targets</a> section)</li></ul> |
@@ -162,16 +162,16 @@ The full project folder tree contents can be viewed [here](folder-structure.txt)
 ## Installation Prerequisites
 
 * Python 3.10.x
-* [AWS Account](https://aws.amazon.com/)
+* [AWS Account ↗](https://aws.amazon.com/)
     * AWS Account required to deploy the pipeline to the cloud and run it as a user
     * AWS Account NOT required to run unit and integration tests
 * AWS User with the [Required IAM Permissions](#required-iam-permissions) policies
-* [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store AWS credentials locally
-* [Docker](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
-* [Pip](https://pip.pypa.io/en/stable/installation/) and [Pipenv](https://pipenv.pypa.io/en/latest/)
-* [Terraform](https://developer.hashicorp.com/terraform/install)
-* [Prefect](https://docs.prefect.io/v3/get-started/install)
-* [Pre-commit](https://pre-commit.com/#install)
+* [AWS CLI ↗](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store AWS credentials locally
+* [Docker ↗](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
+* [Pip ↗](https://pip.pypa.io/en/stable/installation/) and [Pipenv ↗](https://pipenv.pypa.io/en/latest/)
+* [Terraform ↗](https://developer.hashicorp.com/terraform/install)
+* [Prefect ↗](https://docs.prefect.io/v3/get-started/install)
+* [Pre-commit ↗](https://pre-commit.com/#install)
 * GitHub Account
   * At this time, committing repo to your GitHub account and running GitHub Actions workflow is the only way to deploy Prefect flow to Prefect Server (without manual effort to circumvent)
 
@@ -406,7 +406,7 @@ The `unittest.TestCase`, `unittest.mock.Patch`, and `unittest.mock.MagicMock` cl
 
 Example integration tests can be found within the `code/orchestration/tests/integration/` folder for the `validate_file_input` @task function of `churn_prediction_pipeline.py`.
 
-In order to integration test the function is correctly reading files from S3, the [`testcontainers.localstack` module](https://testcontainers-python.readthedocs.io/en/latest/modules/localstack/README.html) was used to dynamically create a LocalStack container that served as a mock S3 endpoint for the `s3_client` calls made by the `validate_file_input` function.
+In order to integration test the function is correctly reading files from S3, the [`testcontainers.localstack` module ↗](https://testcontainers-python.readthedocs.io/en/latest/modules/localstack/README.html) was used to dynamically create a LocalStack container that served as a mock S3 endpoint for the `s3_client` calls made by the `validate_file_input` function.
 
 <pre>
 ├── code
