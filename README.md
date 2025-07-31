@@ -42,9 +42,13 @@
 * This project addresses this challenge by providing Data Scientists, Machine Learning Engineers, and their stakeholders a platform to continuously train, deploy, and monitor churn models, enabling organizations to detect drift, maintain model quality, and adapt to changing customer dynamics.
 
 ## Key Features
-* TBD
-* TBD
-* TBD
+| Area | Features |
+| ---- | -------- |
+| 🧠 **Model Development** | TBD |
+| 📊 **Model Evaluation** | TBD |
+| 🚀 **Model Deployment** | TBD |
+| 📈 **Model Monitoring** | TBD |
+| 🔁 **Model Maintenance** | TBD |
 
 ## Customer Churn Data Source
 
