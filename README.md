@@ -252,7 +252,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 
 ## Platform ECS Services
 
-Once the Terraform `make apply` command completes successfully, you should see output similar to the following that provides you URLs to each of the 4 tools created:
+Once the Terraform `make apply` command completes successfully, you should see output similar to the following that provides you URLs to each of the created tools:
 ```
 🎉 All systems go! 🎉
 
@@ -268,7 +268,7 @@ MLflow, Optuna, Prefect, Evidently, and Grafana UI URLs
 
 Clicking on each URL should render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
 
-If any of the URLs return an error (e.g. 503 Service Unavailable), log into the AWS Elastic Container Service (ECS) console and confirm an ECS Task is in Running state for each of the 4 services (see screenshot below).
+If any of the URLs return an error (e.g. 503 Service Unavailable), log into the AWS Elastic Container Service (ECS) console and confirm an ECS Task is in Running state for each of the services (see screenshot below).
 
 
 ![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png)
