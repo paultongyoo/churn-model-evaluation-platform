@@ -8,7 +8,7 @@ import time
 import boto3
 
 # AWS S3 configuration
-BUCKET_NAME = "mlops-churn-pipeline"
+BUCKET_NAME = "mlops-churn-pipeline"  # Change this to your 'project_id' in stg.tfvars
 S3_PREFIX = "data/input/"
 LOCAL_FOLDER = "data"
 EXCLUDED_FILE = "customer_churn_0.csv"
