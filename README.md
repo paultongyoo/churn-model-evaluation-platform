@@ -75,8 +75,8 @@ flowchart TD
     C[Tune hyperparameters]
     D[Narrow parameter search space using Optuna UI]
     E[Train model]
-    F[Evaluate model on training set]
-    G[Evaluate model on holdout set]
+    F[Evaluate model on training set using MLflow UI]
+    G[Evaluate model on holdout set using MLflow UI]
     H[Is model performance sufficient?]
     I[Promote model in MLflow Registry]
     A --> B --> C --> E --> F --> G --> H;
