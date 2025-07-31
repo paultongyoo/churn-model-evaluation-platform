@@ -355,7 +355,7 @@ Provides a pre-created dashboard plotting model data drift and performance metri
 Once your files have completed processing (as visible via Prefect UI or seeing them appear in S3 `data/processed/` folder), you can evaluate their data in two ways:
 
 1.  Navigate to the Evidently UI to view detailed data drift metrics and prediction scores for each file
-2.  Navigate to the Grafana UI and view the precreated **"Customer Churn Model Evaluation"** dashboard to view how the drift metrics and prediction scores have behaved over time
+2.  Navigate to the Grafana UI and view the pre-built **"Customer Churn Model Evaluation"** dashboard to view how the drift metrics and prediction scores have behaved over time
 
 ## Data Drift & Prediction Score Email Alerts
 
