@@ -167,7 +167,7 @@ The full project folder tree contents can be viewed [here](folder-structure.txt)
     * AWS Account NOT required to run unit and integration tests
 * AWS User with the [Required IAM Permissions](#required-iam-permissions) policies
 * [AWS CLI ↗](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) installed with `aws configure` run to store AWS credentials locally
-* [Docker ↗](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine running
+* [Docker ↗](https://docs.docker.com/get-started/get-docker/) installed and Docker Engine is running
 * [Pip ↗](https://pip.pypa.io/en/stable/installation/) and [Pipenv ↗](https://pipenv.pypa.io/en/latest/)
 * [Terraform ↗](https://developer.hashicorp.com/terraform/install)
 * [Prefect ↗](https://docs.prefect.io/v3/get-started/install)
@@ -211,6 +211,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 ## How to Install Platform
 
 1.  Install the [prerequisites](#installation-prerequisites)
+2.  Ensure your Docker Engine is running
 1.  Create an S3 bucket to store the state of your Terraform infrastructure (e.g. `churn-platform-tf-state-<some random number>`)
 1.  Clone `churn-model-evaluation-platform` repository locally
 1.  Edit root Terraform configuration to store state within S3
