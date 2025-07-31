@@ -2,6 +2,11 @@
 
 (For those evaluating this project for the [DataTalks.club MLOps Zoomcamp certification](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for mappings between this document's sections and each criteria.)
 
+## Key Features
+* TBD
+* TBD
+* TBD
+
 ## Table of Contents
 
 1. [Problem Statement](#problem-statement)
