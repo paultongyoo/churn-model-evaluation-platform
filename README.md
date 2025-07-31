@@ -343,13 +343,13 @@ Provides a pre-created dashboard plotting model data drift and performance metri
 
 ## How to Upload Data
 
-1. Navigate to `{REPO_DIR}` (and run `cd {REPO/HOME}code/orchestration && pipenv shell` if you haven't already)
+1. Navigate to `{REPO_DIR}` (and run `cd code/orchestration && pipenv shell` if you haven't already)
 2. You can process the labeled Customer Churn data in one of two ways:
 
    1. Use `upload_simulation_script.py` script to upload non-training data files 30-seconds apart to [S3 File Drop `input` Folder](#s3-file-drop-folder-structure)
 
-      i. Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match what you configured in `stg.tfvars`
-      ii. Run `make simulate-file-drops` from `{REPO_DIR}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder
+      1. Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match what you configured in `stg.tfvars`
+      1. Run `make simulate-file-drops` from `{REPO_DIR}` to run the script `upload_simulation_script.py` which uploads each file in the `data` folder (except `customer_churn_0.csv`) to the S3 bucket folder
 
    2. Manually upload files from the `{REPO_DIR}/data` folder into the S3 bucket `{PROJECT_ID}/data/input` folder
 
