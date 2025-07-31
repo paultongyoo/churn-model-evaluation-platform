@@ -299,7 +299,7 @@ The following sections give a brief overview of the tool features made available
 ![MLFlow Registry](readme-assets/mlflow-model-registry.png)
 
 ### Optuna Hyperparameter Tuning Dashboard
-Gain insight on Optuna hyperparameter tuning trials to narrow parameter search spaces and find optimal parameters faster.
+Gain insight on Optuna hyperparameter tuning trials to narrow parameter search spaces and more quickly find optimal parameters.
   
 ![Optuna Dashboard Top](readme-assets/optuna-dashboard-top.png)
 ![Optuna Dashboard Top](readme-assets/optuna-dashboard-middle.png)
