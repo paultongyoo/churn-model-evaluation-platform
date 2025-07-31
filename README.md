@@ -151,7 +151,7 @@ The full project folder tree contents can be viewed [here](folder-structure.txt)
 | Security Limitation | Future Improvement |
 | ------------------- | ------------------ |
 | The IAM policy used is intentionally broad to reduce setup complexity. | Replace with least-privilege policies tailored to each service role.  |
-| All deployments currently assume public subnet usage to simplify RDS access from ECS and local machines. | Migrate to private subnets with NAT Gateway and use bastion or VPN access for local clients.  |
+| Public subnets are required to simplify RDS access from ECS and local machines. | Migrate to private subnets with NAT Gateway and use bastion or VPN access for local clients.  |
 | The Prefect API ALB endpoint is publicly accessible to enable GitHub Actions deployment. | Restrict access to GitHub Actions IP ranges using ingress rules or CloudFront. |
 | The MLFlow ALB endpoint is publicly accessible to allow ECS Workers to reach the Model Registry.  | Limit access to internal ECS security groups only.  |
 
