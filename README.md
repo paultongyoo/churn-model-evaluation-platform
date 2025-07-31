@@ -44,8 +44,8 @@
 ## Key Features
 | Area | Features |
 | ---- | -------- |
-| 🧠 **Model Development** | <ul><li>Jupyter notebook provides Data Scientist-friendly environment for continued exploratory data analysis and data preparation.</li><li>Training logic extracted to separate module to ensure reuse of exact same logic in model inference pipeline.</li><li>Efficient hyperparameter and data preparation experimentation enabled using Optuna bayesian trial optimization and MLflow experiment tracking.</li></ul> |
-| 📊 **Model Evaluation** | TBD |
+| 🧠 **Model Development** | <ul><li>[Jupyter Notebook](https://jupyter.org/) provides Data Scientist-friendly environment for continued exploratory data analysis and data preparation.</li><li>Training logic extracted to separate module to ensure reuse of exact same logic in model inference pipeline.</li><li>Efficient hyperparameter and data preparation experimentation enabled using [Optuna](https://optuna.org/) bayesian trial optimization and [MLflow](https://mlflow.org/) experiment tracking.</li></ul> |
+| 📊 **Model Evaluation** | <ul><li>During Model Development, MLflow integration enables deep diagnosis of model performance by comparing experiment runs and analyzing model performance plots such as confusion matricies and SHAP summaries.</li><li>[Evidently.ai](https://www.evidentlyai.com/) integration enables automated data drift and model performance reporting for each load of new churn data.</li><li>Pre-built time-series dashboard within [Grafana](https://grafana.com/grafana/) enables montoring drift and performance over time to assess model development needs.</li></ul> |
 | 🚀 **Model Deployment** | TBD |
 | 📈 **Model Monitoring** | TBD |
 | 🔁 **Model Maintenance** | TBD |
