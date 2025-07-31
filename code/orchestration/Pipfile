@@ -20,6 +20,7 @@ matplotlib = "*"
 shap = "*"
 psycopg2-binary = "*"
 testcontainers = "*"
+ipywidgets = "*"
 
 [dev-packages]
 pytest = "*"
