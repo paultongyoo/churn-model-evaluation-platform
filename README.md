@@ -39,7 +39,7 @@
 
 * Companies rely on churn prediction models to proactively retain valuable customers--an effort that is typically more cost-effective than acquiring new ones.
 * However, once deployed, these models risk losing accuracy over time as customer behavior and demographics shift.
-* This project addresses this challenge by providing Data Scientists, Machine Learning Engineers, and Machine Learning Operations Engineers a platform to continuously train, deploy, and monitor churn models, enabling teams to detect drift, maintain model quality, and adapt to changing customer dynamics.
+* This project addresses this challenge by providing Data Scientists, Machine Learning Engineers, and their stakeholders a platform to continuously train, deploy, and monitor churn models, enabling organizations to detect drift, maintain model quality, and adapt to changing customer dynamics.
 
 ## Key Features
 * TBD
