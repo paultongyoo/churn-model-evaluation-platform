@@ -104,6 +104,14 @@
 │   ├── mlflow-experiments.png
 │   ├── mlflow-model-details.png
 │   ├── mlflow-model-registry.png
+│   ├── mlops_churn_platform_infrastructure_diagram_paultongyoo.jpg
+│   ├── optuna-analytics-bottom.png
+│   ├── optuna-analytics-middle-middle.png
+│   ├── optuna-analytics-middle.png
+│   ├── optuna-analytics-top.png
+│   ├── optuna-dashboard-bottom.png
+│   ├── optuna-dashboard-middle.png
+│   ├── optuna-dashboard-top.png
 │   ├── pipeline_ecs_tasks.png
 │   ├── prefect-dashboard.png
 │   ├── prefect-deployments.png
@@ -111,9 +119,6 @@
 │   ├── prefect-run-detail.png
 │   ├── prefect-runs.png
 │   └── prefect-work-pools.png
-├── .gitignore
-├── .pre-commit-config.template.yaml
-├── .python-version
 ├── Makefile
 ├── README.md
 ├── folder-structure.txt
