@@ -48,7 +48,7 @@
 | 📊 **Model Evaluation** | <ul><li>MLflow integration enables deep diagnosis of model performance by comparing experiment runs and analyzing model performance visualizations such as confusion matricies, precision-recall curves, and SHAP summaries.</li></ul> |
 | 🚀 **Model Deployment** | TBD |
 | 📈 **Model Monitoring** | <ul><li>[Evidently.ai ↗](https://www.evidentlyai.com/) integration enables automated data drift and model performance reporting for each load of new churn data.</li><li>Pre-built [Grafana ↗](https://grafana.com/grafana/) dashboard enables montoring drift and performance over time to assess model development needs.</li></ul> |
-| 🔁 **Model Maintenance** | TBD |
+| 🔁 **Model Maintenance** | <ul><li>Automated email notifications are sent when data drift has been detected in the majority of model features and/or the model prediction scores do not meet acceptable threshold.</li></ul> |
 
 ## Customer Churn Data Source
 
