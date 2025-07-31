@@ -56,7 +56,7 @@ MODEL_ALIAS = "staging"
 MODEL_REFERENCE_DATA_FILE_NAME = "reference_data.csv"
 MODEL_REFERENCE_DATA_FOLDER = "reference_data"
 
-EXPERIMENT_NAME = "mlops-churn-pipeline"
+EXPERIMENT_NAME = "churn-model-evaluation"
 
 
 def prepare_data(data_df):
