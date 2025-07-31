@@ -2,41 +2,37 @@
 
 (For those evaluating this project for the [DataTalks.club MLOps Zoomcamp certification](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for mappings between this document's sections and each criteria.)
 
-## Key Features
-* TBD
-* TBD
-* TBD
-
 ## Table of Contents
 
 1. [Problem Statement](#problem-statement)
-2. [Customer Churn Data Source](#customer-churn-data-source)
-3. [Platform Processes](#platform-processes)
+2. [Key Features](#key-features)
+3. [Customer Churn Data Source](#customer-churn-data-source)
+4. [Platform Processes](#platform-processes)
    - [Model Training and Registry Deployment](#model-training-and-registry-deployment)
    - [Model Inference, Reporting, and Evaluation](#model-inference-reporting-and-evaluation)
-4. [Platform Infrastructure Diagram](#platform-infrastructure-diagram)
-5. [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)
-6. [Project Folders & Files](#project-folders--files)
-7. [Security Limitations & Future Improvements](#security-limitations--future-improvements)
-8. [Installation Prerequisites](#installation-prerequisites)
-9. [Docker Local Image Storage Space Requirements](#docker-local-image-storage-space-requirements)
-10. [Library Dependencies & Version Numbers](#library-dependencies--version-numbers)
-11. [How to Install Platform](#how-to-install-platform)
-12. [Platform ECS Services](#platform-ecs-services)
+5. [Platform Infrastructure Diagram](#platform-infrastructure-diagram)
+6. [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)
+7. [Project Folders & Files](#project-folders--files)
+8. [Security Limitations & Future Improvements](#security-limitations--future-improvements)
+9. [Installation Prerequisites](#installation-prerequisites)
+10. [Docker Local Image Storage Space Requirements](#docker-local-image-storage-space-requirements)
+11. [Library Dependencies & Version Numbers](#library-dependencies--version-numbers)
+12. [How to Install Platform](#how-to-install-platform)
+13. [Platform ECS Services](#platform-ecs-services)
     - [MLFlow Tracking Server & Model Registry](#mlflow-tracking-server--model-registry)
     - [Optuna Hyperparameter Tuning Dashboard](#optuna-hyperparameter-tuning-dashboard)
     - [Prefect Orchestration Server and Worker Service](#prefect-orchestration-server-and-worker-service)
     - [Evidently Non-Time-Series Dashboard and Reports UI](#evidently-non-time-series-dashboard-and-reports-ui)
     - [Grafana Time-Series Dashboard UI](#grafana-time-series-dashboard-ui)
-13. [How to Upload Data](#how-to-upload-data)
-14. [How to Evaluate Data Drift & Model](#how-to-evaluate-data-drift--model)
-15. [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-email-alerts)
-16. [Unit Test Examples](#unit-test-examples)
-17. [Integration Test Examples](#integration-test-examples)
-18. [Pre-Commit Hooks](#pre-commit-hooks)
-19. [Makefile Targets](#makefile-targets)
-20. [CI-CD Implementation](#ci-cd-implementation)
-21. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+14. [How to Upload Data](#how-to-upload-data)
+15. [How to Evaluate Data Drift & Model](#how-to-evaluate-data-drift--model)
+16. [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-email-alerts)
+17. [Unit Test Examples](#unit-test-examples)
+18. [Integration Test Examples](#integration-test-examples)
+19. [Pre-Commit Hooks](#pre-commit-hooks)
+20. [Makefile Targets](#makefile-targets)
+21. [CI-CD Implementation](#ci-cd-implementation)
+22. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
 
 
 ## Problem Statement
@@ -44,6 +40,11 @@
 * Companies rely on churn prediction models to proactively retain valuable customers--an effort that is typically more cost-effective than acquiring new ones.
 * However, once deployed, these models risk losing accuracy over time as customer behavior and demographics shift.
 * This project addresses this challenge by providing Data Scientists, Machine Learning Engineers, and Machine Learning Operations Engineers a platform to continuously train, deploy, and evaluate churn models, enabling teams to detect drift, maintain model quality, and adapt to changing customer dynamics.
+
+## Key Features
+* TBD
+* TBD
+* TBD
 
 ## Customer Churn Data Source
 
