@@ -276,6 +276,7 @@ If any of the URLs return an error (e.g. 503 Service Unavailable), log into the 
 These URLs were also written to the `{REPO_DIR}/.env` file for future retrieval and export to shell environment when needed.
 
 ```
+OPTUNA_DB_CONN_URL=postgresql+psycopg2://USERNAME:PASSWORD@mlops-churn-pipeline-postgres.abcdefghijk.us-east-2.rds.amazonaws.com:5432/optuna_db
 MLFLOW_TRACKING_URI=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:5000
 PREFECT_API_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200/api
 EVIDENTLY_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8000
