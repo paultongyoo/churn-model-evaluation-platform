@@ -19,10 +19,10 @@ import pandas as pd
 from dotenv import load_dotenv
 from mlflow import MlflowClient
 from mlflow.models.signature import infer_signature
-from sklearn.metrics import make_scorer
-from sklearn.metrics import recall_score
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.frozen import FrozenEstimator
+from sklearn.metrics import f1_score
 from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
@@ -30,6 +30,11 @@ CUSTOMER_CHURN_DATASET = "../../../data/customer_churn_0.csv"
 
 TARGET_COLUMN = "churn"
 TARGET_PREDICTION_COLUMN = "churn_prediction"
+
+# Tariff Plan & Age removed due to non-effect on SHAP and redundancy, respectively
+#
+# Per data set description, all non-Churn columns were aggregated across the 9 months
+# prior to Churn column being set on month 12 (i.e. features are safe from leakage)
 NUMERICAL_COLUMNS = [
     "call_failure",
     "complains",
@@ -40,6 +45,8 @@ NUMERICAL_COLUMNS = [
     "frequency_of_sms",
     "distinct_called_numbers",
     "age_group",
+    #'tariff_plan',
+    #'age',
     "status",
     "customer_value",
 ]
@@ -48,6 +55,8 @@ MODEL_NAME = "XGBoostChurnModel"
 MODEL_ALIAS = "staging"
 MODEL_REFERENCE_DATA_FILE_NAME = "reference_data.csv"
 MODEL_REFERENCE_DATA_FOLDER = "reference_data"
+
+EXPERIMENT_NAME = "mlops-churn-pipeline"
 
 
 def prepare_data(data_df):
@@ -187,41 +196,93 @@ def evaluate_model(model, data_X, data_y, dataset_name, promote_model=False):
             print("Skipping promotion of model to MLflow registry.\n")
 
 
-def tune_model_with_cv(data_X, data_y):
+def tune_model_with_cv(data_X, data_y, optuna_db_conn_url):
     """
     Tunes the hyperparameters of the XGBoost model using Optuna with cross-validation.
     This function defines the objective function for Optuna, which uses stratified cross-validation
-    and recall scoring to evaluate the model's performance.
+    and f1 scoring to evaluate the model's performance.
+
+    Original wide parameter search space:
+    params = {
+        "n_estimators": trial.suggest_int("n_estimators", 100, 500),
+        "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
+        "max_depth": trial.suggest_int("max_depth", 3, 12),
+        "min_child_weight": trial.suggest_int("min_child_weight", 1, 7),
+        "gamma": trial.suggest_float("gamma", 1e-8, 5.0, log=True),
+        "subsample": trial.suggest_float("subsample", 0.5, 1.0),
+        "colsample_bytree": trial.suggest_float("colsample_bytree", 0.5, 1.0),
+        "colsample_bylevel": trial.suggest_float("colsample_bylevel", 0.5, 1.0),
+        "colsample_bynode": trial.suggest_float("colsample_bynode", 0.5, 1.0),
+        "reg_alpha": trial.suggest_float("reg_alpha", 1e-8, 10.0, log=True),
+        "reg_lambda": trial.suggest_float("reg_lambda", 1e-8, 20.0, log=True),
+        "max_delta_step": trial.suggest_int("max_delta_step", 0, 12),
+        "scale_pos_weight": trial.suggest_float("scale_pos_weight", 0.5, 1.0),
+        "tree_method": "hist",
+        "eval_metric": "logloss"
+    }
+    The search space has been narrowed down to the most impactful parameters
+    based on previous tuning runs and feature importance analysis.
+
     """
 
     def objective(trial):
         params = {
-            "n_estimators": trial.suggest_int("n_estimators", 100, 500),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "max_depth": trial.suggest_int("max_depth", 3, 7),
-            "min_child_weight": trial.suggest_int("min_child_weight", 1, 7),
-            "gamma": trial.suggest_float("gamma", 0, 0.5),
-            "subsample": trial.suggest_float("subsample", 0.6, 1.0),
-            "colsample_bytree": trial.suggest_float("colsample_bytree", 0.6, 1.0),
-            "reg_alpha": trial.suggest_float("reg_alpha", 0.0, 10.0),
-            "reg_lambda": trial.suggest_float("reg_lambda", 1.0, 20.0),
-            "tree_method": "hist",
-            "eval_metric": "logloss",
+            "n_estimators": trial.suggest_int("n_estimators", 100, 1000),
+            "learning_rate": trial.suggest_float("learning_rate", 0.001, 0.3, log=True),
+            "max_depth": trial.suggest_int("max_depth", 3, 12),
+            "min_child_weight": trial.suggest_int("min_child_weight", 1, 10),
+            "gamma": trial.suggest_float("gamma", 1e-8, 5.0, log=True),
+            "subsample": trial.suggest_float("subsample", 0.5, 1.0),
+            "colsample_bytree": trial.suggest_float("colsample_bytree", 0.5, 1.0),
+            "colsample_bylevel": trial.suggest_float("colsample_bylevel", 0.5, 1.0),
+            "colsample_bynode": trial.suggest_float("colsample_bynode", 0.5, 1.0),
+            "reg_alpha": trial.suggest_float("reg_alpha", 1e-8, 10.0, log=True),
+            "reg_lambda": trial.suggest_float("reg_lambda", 1e-8, 20.0, log=True),
+            "max_delta_step": trial.suggest_int("max_delta_step", 0, 10),
+            "scale_pos_weight": trial.suggest_float("scale_pos_weight", 1.0, 20.0),
+            "random_state": 42,  # fixed for reproducibility
         }
 
-        model = XGBClassifier(**params)
-
-        # Use stratified CV and recall scoring
-        cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
-        scores = cross_val_score(
-            model, data_X, data_y, scoring=make_scorer(recall_score), cv=cv, n_jobs=-1
+        model = XGBClassifier(
+            **params,
+            eval_metric="logloss",
+            tree_method="hist",
+            early_stopping_rounds=20,
         )
+
+        scores = []
+        cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+        for train_idx, val_idx in cv.split(data_X, data_y):
+            cv_X_train, X_val = data_X.iloc[train_idx], data_X.iloc[val_idx]
+            cv_y_train, y_val = data_y.iloc[train_idx], data_y.iloc[val_idx]
+
+            model.fit(cv_X_train, cv_y_train, eval_set=[(X_val, y_val)], verbose=False)
+
+            calibrated_model = CalibratedClassifierCV(
+                FrozenEstimator(model), method="sigmoid"
+            )
+            calibrated_model.fit(cv_X_train, cv_y_train)
+
+            y_probs = calibrated_model.predict_proba(X_val)[:, 1]
+
+            threshold = trial.suggest_float("threshold", 0.1, 0.9)
+            y_preds = (y_probs >= threshold).astype(int)
+
+            scores.append(f1_score(y_val, y_preds))
 
         return np.mean(scores)
 
-    # Run the optimization
-    study = optuna.create_study(direction="maximize")
+    # Run the optimization and save trials to local Sqlite3 DB
+    # (Use optuna-dashboard to analyze)
+    study = optuna.create_study(
+        study_name=EXPERIMENT_NAME,
+        load_if_exists=True,
+        direction="maximize",
+        storage=optuna_db_conn_url,
+    )
     study.optimize(objective, n_trials=100)
+
+    print(f"\nBest F1 Score: {study.best_value}")
 
     print("\nBest hyperparameters found:")
     for key, value in study.best_params.items():
@@ -248,8 +309,10 @@ if __name__ == "__main__":
 
     df = pd.read_csv(CUSTOMER_CHURN_DATASET)
 
+    # Load environment variables from .env file
     env_path = Path().resolve().parents[2] / ".env"
     load_dotenv(dotenv_path=env_path, override=True)
+
     MLFLOW_TRACKING_URI = os.getenv(
         "MLFLOW_TRACKING_URI"
     )  # This should be set in your .env file
@@ -258,7 +321,7 @@ if __name__ == "__main__":
         raise ValueError("MLFLOW_TRACKING_URI is not set. Please check your .env file.")
 
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    mlflow.set_experiment("mlops-churn-pipeline")
+    mlflow.set_experiment(EXPERIMENT_NAME)
 
     X, y = prepare_data(df)
 
@@ -274,24 +337,30 @@ if __name__ == "__main__":
     # }
     # clf = train_model(X_train, y_train, base_params)
 
-    # Uncomment the line below to run hyperparameter tuning
-    # clf = tune_model_with_cv(X_train, y_train)
+    # Uncomment the line below and comment out best_params_to_date
+    # to run hyperparameter tuning
+    OPTUNA_DB_CONN_URL = os.getenv(
+        "OPTUNA_DB_CONN_URL"
+    )  # This should be set in your .env file
+    print(f"OPTUNA_DB_CONN_URL: {OPTUNA_DB_CONN_URL}")
+    clf = tune_model_with_cv(X_train, y_train, OPTUNA_DB_CONN_URL)
 
     # Train final model with best tuned hyperparameters to-date
     # These parameters are based on the best results from previous tuning runs
-    # X_test precision/recall/f1: 0.92 0.81 0.86
-    best_params_to_date = {
-        "n_estimators": 352,
-        "learning_rate": 0.07154324375438634,
-        "max_depth": 7,
-        "min_child_weight": 1,
-        "gamma": 0.23500630396472585,
-        "subsample": 0.9472361823473306,
-        "colsample_bytree": 0.6149847610884563,
-        "reg_alpha": 0.029080723124195962,
-        "reg_lambda": 1.9394489642211972,
-    }
-    clf = train_model(X_train, y_train, best_params_to_date)
+    # X_test precision/recall/f1: 0.921 0.833 0.875
+    # best_params_to_date = {
+    # "n_estimators": 374,
+    # "learning_rate": 0.06277193144197914,
+    # "max_depth": 3,
+    # "min_child_weight": 1,
+    # "gamma": 0.0007237920056163315,
+    # "subsample": 0.8280956289121524,
+    # "colsample_bytree": 0.7587172587106015,
+    # "reg_alpha": 0.00013524609914364934,
+    # "reg_lambda": 0.002246828534497257,
+    # "max_delta_step": 4,
+    # }
+    # clf = train_model(X_train, y_train, best_params_to_date)
 
     # First evaluate tuned model on training data to check for bias
     evaluate_model(clf, X_train, y_train, "X_train")

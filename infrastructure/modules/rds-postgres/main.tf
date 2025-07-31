@@ -89,3 +89,26 @@ resource "null_resource" "create_additional_dbs" {
     interpreter = ["/bin/bash", "-c"]
   }
 }
+
+resource "null_resource" "write_optuna_db_conn_url_to_env_file" {
+  provisioner "local-exec" {
+    command = <<EOT
+      set -e
+
+      ENV_FILE="../.env"
+      OPTUNA_DB_CONN_URL="postgresql+psycopg2://${var.db_username}:${var.db_password}@${aws_db_instance.postgres.endpoint}/optuna_db"
+
+      if /usr/bin/grep -q "OPTUNA_DB_CONN_URL=" "$ENV_FILE"; then
+        /usr/bin/sed -i "s|OPTUNA_DB_CONN_URL=.*|OPTUNA_DB_CONN_URL=$OPTUNA_DB_CONN_URL|" "$ENV_FILE"
+      else
+        echo "OPTUNA_DB_CONN_URL=$OPTUNA_DB_CONN_URL" >> "$ENV_FILE"
+      fi
+
+      echo "📝 Updated $ENV_FILE -> OPTUNA_DB_CONN_URL=$OPTUNA_DB_CONN_URL"
+
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = [null_resource.create_additional_dbs]
+}
