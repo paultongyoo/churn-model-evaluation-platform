@@ -69,15 +69,15 @@ The following process is implemented with two files inside the `code/orchestrati
 
 ```mermaid
 flowchart TD
-    A[Download Reference Data]
-    B[Prepare Data]
-    C[Tune Hyperparameters]
-    D[Narrow Parameter Search Space using Optuna UI]
-    E[Train Model]
-    F[Evaluate Model on Training Set]
-    G[Evaluate Model on Holdout Set]
-    H[Is Model Performance Sufficient?]
-    I[Promote Model in MLflow Registry]
+    A[Download training data]
+    B[Prepare data]
+    C[Tune hyperparameters]
+    D[Narrow parameter search space using Optuna UI]
+    E[Train model]
+    F[Evaluate model on training set]
+    G[Evaluate model on holdout set]
+    H[Is model performance sufficient?]
+    I[Promote model in MLflow Registry]
     A --> B --> C --> E --> F --> G --> H;
     C --> D --> C;
     H --> |Yes| I;
@@ -91,20 +91,20 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Drop New Customer<br/>Churn Data into S3]
+    A[Drop new customer<br/>churn data into S3]
     B[Load latest promoted model in MLflow Registry]
-    C[Validate File Input]
-    D[Prepare Data, reusing Training Logic]
-    E[Generate Predictions]
-    F[Append Predictions to File Input]
-    G[Generate Evidently Data Drift and Prediction Performance Report]
-    H[Save Report to Database]
-    I[Did Drift Exceed Threshold?]
-    J[Send Drift Email Alert]
-    K[Did Prediction Performance Drop Below Threshold?]
-    L[Send Prediction Score Email Alert]
-    M[Evaluate Detailed Drift and Performance Report in Evidently UI]
-    N[Evaluate Drift and Performance Over Time in Grafana UI]
+    C[Validate file input]
+    D[Prepare data, reusing training logic]
+    E[Generate predictions]
+    F[Append predictions to file input]
+    G[Generate Evidently data drift and prediction performance Report]
+    H[Save report to database]
+    I[Did drift exceed threshold?]
+    J[Send drift email alert]
+    K[Did prediction performance drop below threshold?]
+    L[Send prediction score email alert]
+    M[Evaluate detailed drift and performance report in Evidently UI]
+    N[Evaluate drift and performance over time in Grafana UI]
     A-->B-->C-->D-->E-->F-->G-->H-->I-->K-->M-->N;
     I--> |Yes| J;
     K--> |Yes| L;
