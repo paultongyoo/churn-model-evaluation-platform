@@ -103,6 +103,7 @@ flowchart TD
 ```
 
 ## Platform Infrastructure Diagram
+(click to enlarge)
 
 ![MLOps Churn Platform Infrastructure Diagram](readme-assets/mlops_churn_platform_infrastructure_diagram_paultongyoo.jpg)
 
