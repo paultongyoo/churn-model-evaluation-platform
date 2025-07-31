@@ -77,7 +77,7 @@ flowchart TD
     F[Evaluate Model on Training Set]
     G[Evaluate Model on Holdout Set]
     H[Is Model Performance Sufficient?]
-    I[Deploy Model to MLFlow Registry with 'staging' Alias]
+    I[Promote Model in MLflow Registry]
     A --> B --> C --> E --> F --> G --> H;
     C --> D --> C;
     H --> |Yes| I;
@@ -92,7 +92,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[Drop New Customer<br/>Churn Data into S3]
-    B[Load Model with 'staging' Alias from MLFlow Registry]
+    B[Load latest promoted model in MLflow Registry]
     C[Validate File Input]
     D[Prepare Data, reusing Training Logic]
     E[Generate Predictions]
