@@ -193,8 +193,8 @@ A user with the following AWS Managed Permissions policies was used when creatin
 ## Docker Local Image Storage Space Requirements
 
  About 1.8GB of disk space is required to store the following Docker images locally before deploying to AWS Elastic Container Repositories (ECR):
-* **Custom Grafana Image**
-    * Packages database configuration and dashboard files
+* **Custom Grafana Bundle**
+    * Packages database configuration and dashboard files with Grafana Enterprise
     * Uses Grafana `grafana/grafana-enterprise:12.0.2-security-01` image
 * **S3-to-Prefect Lambda Function**
     * Invokes orchestration flow when new files are dropped into S3
