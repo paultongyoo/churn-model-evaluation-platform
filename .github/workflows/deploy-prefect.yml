@@ -72,6 +72,7 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install prefect
+        pip install "prefect[docker]"
 
     # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
     # to ECS Prefect Server.  Not recommended for production environments!
