@@ -476,7 +476,7 @@ The following table lists the `make` targets available to accelerate platform de
 
 ## CI-CD Implementation
 
-* [GitHub Actions ↗](https://github.com/features/actions) was used to execute the following Continuous integration and Continuous Delivery (CI/CD) process.
+* [GitHub Actions ↗](https://github.com/features/actions) was used to execute the following Continuous Integration and Continuous Delivery (CI/CD) process.
 * See `.github/workflows/deploy-prefect.yml` for details.
 
 ```mermaid
