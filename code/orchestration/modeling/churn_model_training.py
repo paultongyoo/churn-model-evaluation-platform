@@ -280,7 +280,7 @@ def tune_model_with_cv(data_X, data_y, optuna_db_conn_url):
         direction="maximize",
         storage=optuna_db_conn_url,
     )
-    study.optimize(objective, n_trials=100)
+    study.optimize(objective, n_trials=50)
 
     print(f"\nBest F1 Score: {study.best_value}")
 
