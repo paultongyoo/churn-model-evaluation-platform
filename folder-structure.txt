@@ -82,6 +82,7 @@
 │   │       ├── outputs.tf
 │   │       └── variables.tf
 │   ├── scripts
+│   │   ├── set-project-id.sh
 │   │   ├── store_prefect_secrets.py
 │   │   └── wait-for-services.sh
 │   ├── vars
