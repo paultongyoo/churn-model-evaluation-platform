@@ -431,9 +431,10 @@ In order to integration test the function is correctly reading files from S3, th
 
 The following steps are required to activate pre-commit hooks for this repository:
 
-1.  Navigate to `{REPO_DIR}` and run `pre-commit install`
-2.  Ensure your Docker Engine is running (needed for LocalStack-based integration tests)
-3.  Run `make quality` to generate the required `.pre-commit-config.yaml` file from `.pre-commit-config.template.yaml`
+1.  Navigate to `{REPO_DIR}/code/orchestration/` and run `pipenv shell` if you haven't already
+2.  Navigate to `{REPO_DIR}` and run `pre-commit install`
+3.  Ensure your Docker Engine is running (needed for LocalStack-based integration tests)
+4.  Run `make quality` to generate the required `.pre-commit-config.yaml` file and execute the hooks
 
 Generating `.pre-commit-config.yaml` was needed to inject the absolute path to the `code/orchestration/modeling` module folder for `pylint` (future improvement: use relative path instead).  For this reason, `.pre-commit-config.yaml` is included in `.gitignore` to not commit cleartext absolute path in case you commit your repo publicly. 
 
