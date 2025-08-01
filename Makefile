@@ -65,13 +65,13 @@ enable-lambda:
 	cd infrastructure && \
 	terraform apply -var="lambda_filter_prefix=data/input/" -var-file=vars/stg.tfvars -auto-approve
 
-register-model:
-	@echo "Registering model in MLflow..."
+deploy-model:
+	@echo "Deploying model to MLflow with promotion alias..."
 	cd code/orchestration/modeling && \
 	python churn_model_training.py
 
-register-model-nopromote:
-	@echo "Generating model without promotion for pipeline use in MLflow..."
+log-model-nopromote:
+	@echo "Logging model to MLflow without promotion alias..."
 	cd code/orchestration/modeling && \
 	python churn_model_training.py --nopromote --tuneparams
 

@@ -247,7 +247,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
     1.  After Terraform completes instantiating each ECS Service, it will execute the `wait_for_services.sh` script to poll the ALB URLs until each service instantiates its ECS Task and the service is ready for use.
     1.  For the user's convenience, each tool's URL is displayed to the user once ready for use (see [Platform ECS Services](#platform-ecs-services)).
 1.  Click each of the 5 ECS Service URLs to confirm they are running: MLflow, Optuna, Prefect Server, Evidently, Grafana
-1.  Run `make register-model` to train a `XGBoostChurnModel` churn model and upload it to the MLflow Model Registry with `staging` alias.
+1.  Run `make deploy-model` to train a `XGBoostChurnModel` churn model and upload it to the MLflow Model Registry with `staging` alias.
     1.  Confirm it was created and aliased by visiting the Model Registry within the MLflow UI
     2.  Note two versions of the model are visible in the registry evaluated using training and holdout datasets (`X_train` and `X_test`, respectively)
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
@@ -315,7 +315,7 @@ The following sections give a brief overview of the tool features made available
 
 ### Optuna Hyperparameter Tuning Dashboard
 Gain insight on Optuna hyperparameter tuning trials to narrow parameter search spaces and more quickly find optimal parameters.
-  
+
 ![Optuna Dashboard Top](readme-assets/optuna-dashboard-top.png)
 ![Optuna Dashboard Top](readme-assets/optuna-dashboard-middle.png)
 ![Optuna Dashboard Top](readme-assets/optuna-dashboard-bottom.png)
@@ -337,7 +337,7 @@ View completed, running, and failed model evaluation runs to monitor pipeline he
 
 ### Evidently Non-Time-Series Dashboard and Reports UI
 
-Assess dataset drift and model performance for each new churn data drop to decide whether model retraining is needed. 
+Assess dataset drift and model performance for each new churn data drop to decide whether model retraining is needed.
 
 ![Evidently Data Drift Summary](readme-assets/evidently-data-drift-summary.png)
 ![Evidently Data Drift Detailed](readme-assets/evidently-data-drift-detailed.png)
@@ -436,7 +436,7 @@ The following steps are required to activate pre-commit hooks for this repositor
 3.  Ensure your Docker Engine is running (needed for LocalStack-based integration tests)
 4.  Run `make quality` to generate the required `.pre-commit-config.yaml` file and execute the hooks
 
-Generating `.pre-commit-config.yaml` was needed to inject the absolute path to the `code/orchestration/modeling` module folder for `pylint` (future improvement: use relative path instead).  For this reason, `.pre-commit-config.yaml` is included in `.gitignore` to not commit cleartext absolute path in case you commit your repo publicly. 
+Generating `.pre-commit-config.yaml` was needed to inject the absolute path to the `code/orchestration/modeling` module folder for `pylint` (future improvement: use relative path instead).  For this reason, `.pre-commit-config.yaml` is included in `.gitignore` to not commit cleartext absolute path in case you commit your repo publicly.
 
 ### Hooks List
 
@@ -468,8 +468,8 @@ The following table lists the `make` targets available to accelerate platform de
 | `destroy` | Runs `terraform destroy -var-file=vars/stg.tfvars --auto-approve` |
 | `disable-lambda` | Used to facilitate local dev/testing: Disables notification of the `s3_to_prefect` Lambda function so files aren't automatically picked up by the deployed service.  Lets you drop file(s) manually in S3 and run the pipeline locally when you're ready (see `process-test-data` target below). |
 | `enable-lambda` | Re-enables the `s3_to_prefect` Lambda notification to resume creating new Prefect flow runs on S3 file drop |
-| `register-model` | <ul><li>Executes the `churn_model_training.py` file to train and deploy two models to the MLflow Registry (evaluated on training and holdout data, respectively).</li><li>The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes.</li><li>Note: Hyperparameter tuning is NOT performed with this target to accelerate model deployment.  See `register-model-nopromote` target if hyperparameter tuning is desired.</li></ul> |
-| `register-model-nopromote` | <ul><li>Executes the churn_model_training.py file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.</li><li>Used to develop and optimize model performance prior to making it available for stakeholder use.</li><li>**Hyperparameter Tuning Notes:**<ul><li>Optuna Bayesian hyperparameter tuning is performed with this target, with the number of trials currently set to 50.</li><li>Modify churn_model_training.py to adjust the number of trials if desired.  Optuna recommends executing at least 20-30 trials to accumulate enough prior runs to optimize parameters.</li><li>Allot approximately 10 minutes for the trials to complete (actual time varies based on local machine performance and network connectivity).</li><li>Suggested optimization approach:<ul><li>Use the Optuna UI to correlate parameter ranges with higher F1 scores</li><li>Use insights to narrow the parameter search space used in `churn_model_training.py`</li><li>Once you've chosen the optimal parameters, modify the `best_params_to_date` variable in `churn_model_training.py` so that they are used in subsequent executions of the `register-model` target</li></ul></li></li></ul></li></ul>  |
+| `deploy-model` | <ul><li>Executes the `churn_model_training.py` file to train and deploy two models to the MLflow Registry (evaluated on training and holdout data, respectively).</li><li>The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes.</li><li>Note: Hyperparameter tuning is NOT performed with this target to accelerate model deployment.  See `log-model-nopromote` target if hyperparameter tuning is desired.</li></ul> |
+| `log-model-nopromote` | <ul><li>Executes the churn_model_training.py file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.</li><li>Used to develop and optimize model performance prior to making it available for stakeholder use.</li><li>**Hyperparameter Tuning Notes:**<ul><li>Optuna Bayesian hyperparameter tuning is performed with this target, with the number of trials currently set to 50.</li><li>Modify churn_model_training.py to adjust the number of trials if desired.  Optuna recommends executing at least 20-30 trials to accumulate enough prior runs to optimize parameters.</li><li>Allot approximately 10 minutes for the trials to complete (actual time varies based on local machine performance and network connectivity).</li><li>Suggested optimization approach:<ul><li>Use the Optuna UI to correlate parameter ranges with higher F1 scores</li><li>Use insights to narrow the parameter search space used in `churn_model_training.py`</li><li>Once you've chosen the optimal parameters, modify the `best_params_to_date` variable in `churn_model_training.py` so that they are used in subsequent executions of the `deploy-model` target</li></ul></li></li></ul></li></ul>  |
 | `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  **Upload `customer_churn_1.csv` into the S3 `data/input/` folder before use.**  Runs command `python churn_prediction_pipeline.py your-project-id data/input/customer_churn_1.csv` and instantiates ephemeral local Prefect Server to execute flow. |
 | `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder. |
 
