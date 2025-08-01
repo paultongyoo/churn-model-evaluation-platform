@@ -530,7 +530,7 @@ See [Data Drift & Prediction Score Email Alerts](#data-drift--prediction-score-e
 
 ### Reproducibility
 #### Target: Instructions are clear, it's easy to run the code, and it works. The versions for all the dependencies are specified.
-* See [How to Set Up Platform](#how-to-set-up-platform) section for instructions on how to set up the platform.
+* See [How to Install Platform](#how-to-install-platform) section for instructions on how to set up the platform.
 * See [Library Dependencies & Version Numbers](#library-dependencies--version-numbers) section for instructions on how to determine libraries used and their verision numbers.
 
 ### Best practices
