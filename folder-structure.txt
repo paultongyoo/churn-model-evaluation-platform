@@ -1,4 +1,7 @@
 .
+├── .github
+│   ├── workflows
+|   |   └── deploy-prefect.yml
 ├── code
 │   ├── grafana
 │   │   ├── dashboards
@@ -120,6 +123,7 @@
 │   ├── prefect-run-detail.png
 │   ├── prefect-runs.png
 │   └── prefect-work-pools.png
+├── .pre-commit-config.template.yaml
 ├── Makefile
 ├── README.md
 ├── folder-structure.txt
