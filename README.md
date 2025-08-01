@@ -30,9 +30,11 @@
 17. [Unit Test Examples](#unit-test-examples)
 18. [Integration Test Examples](#integration-test-examples)
 19. [Pre-Commit Hooks](#pre-commit-hooks)
-20. [Makefile Targets](#makefile-targets)
-21. [CI-CD Implementation](#ci-cd-implementation)
-22. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+    - [How to Activate Pre-Commit Hooks](#how-to-activate-pre-commit-hooks)
+    - [Hooks List](#hooks-list)
+21. [Makefile Targets](#makefile-targets)
+22. [CI-CD Implementation](#ci-cd-implementation)
+23. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
 
 
 ## Problem Statement
