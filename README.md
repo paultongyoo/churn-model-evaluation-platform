@@ -541,7 +541,7 @@ See [Unit Test Examples](#unit-test-examples) section for summary of unit tests 
 See [Integration Test Examples](#integration-test-examples) section for summary of integration tests that were implemented.
 
 #### Target: Linter and/or code formatter are used (1 point)
-See [Pre-Commit Hooks](#pre-commit-hooks) section to see which linter and code formatters were used.
+See [Hooks List](#hooks-list) section to see which linter and code formatters were used.
 
 #### Target: There's a Makefile (1 point)
 See [Makefile Targets](#makefile-targets) section for list of `Makefile` targets that were implemented.
