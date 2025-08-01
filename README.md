@@ -253,7 +253,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
     1.  Confirm it was created and aliased by visiting the Model Registry within the MLflow UI
     2.  Note the following:
     	1.  Two versions of the model are visible in the registry evaluated using training and holdout datasets (`X_train` and `X_test`, respectively)
-     	2.  The data used to train the `staging` model was attached as an artifact `reference_data.csv` to its experiment run
+     	2.  The data used to train the `staging` model was logged as the artifact `reference_data.csv` in its experiment run
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
     1. Commit your cloned repo (including `{REPO_DIR}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
     1. Log in to your GitHub account, navigate to your committed repo project and create the following [Repository Secrets ↗](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets) (used by `deploy-prefect.yml`):
