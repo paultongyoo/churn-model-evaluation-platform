@@ -298,14 +298,21 @@ if __name__ == "__main__":
 
     # Look for parameter to decide whether to deploy model to registry
     should_promote_model = True
+    should_use_hyperparameter_tuning = False
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--nopromote", action="store_true", help="If set, skip promotion step"
+    )
+    parser.add_argument(
+        "--tuneparams", action="store_true", help="If set, use hyerparameter tuning"
     )
     args = parser.parse_args()
     if args.nopromote is True:
         print("'nopromote' arg passed - Will skip promoting model in MLflow registry.")
         should_promote_model = False
+    if args.tuneparams is True:
+        print("'tuneparams' arg passed - Will use hyperparameter tuning.")
+        should_use_hyperparameter_tuning = True
 
     df = pd.read_csv(CUSTOMER_CHURN_DATASET)
 
@@ -329,38 +336,37 @@ if __name__ == "__main__":
         X, y, test_size=0.2, random_state=42
     )
 
-    # base_params = {
-    #     "n_estimators": 100,
-    #     "max_depth": 3,
-    #     "learning_rate": 0.1,
-    #     "random_state": 42,
-    # }
-    # clf = train_model(X_train, y_train, base_params)
+    if should_use_hyperparameter_tuning is False:
+        print(
+            "Skipping hyperparameter tuning. Using base parameters for model training."
+        )
 
-    # Uncomment the line below and comment out best_params_to_date
-    # to run hyperparameter tuning
-    OPTUNA_DB_CONN_URL = os.getenv(
-        "OPTUNA_DB_CONN_URL"
-    )  # This should be set in your .env file
-    print(f"OPTUNA_DB_CONN_URL: {OPTUNA_DB_CONN_URL}")
-    clf = tune_model_with_cv(X_train, y_train, OPTUNA_DB_CONN_URL)
+        # Train final model with best tuned hyperparameters to-date
+        # These parameters are based on the best results from previous tuning runs
+        # Update these as needed based on your tuning results
+        print("Using best parameters to date for model training...")
+        best_params_to_date = {
+            "n_estimators": 374,
+            "learning_rate": 0.06277193144197914,
+            "max_depth": 3,
+            "min_child_weight": 1,
+            "gamma": 0.0007237920056163315,
+            "subsample": 0.8280956289121524,
+            "colsample_bytree": 0.7587172587106015,
+            "reg_alpha": 0.00013524609914364934,
+            "reg_lambda": 0.002246828534497257,
+            "max_delta_step": 4,
+        }
+        clf = train_model(X_train, y_train, best_params_to_date)
+    else:
+        print("Running hyperparameter tuning with Optuna...")
+        OPTUNA_DB_CONN_URL = os.getenv(
+            "OPTUNA_DB_CONN_URL"
+        )  # This should be set in your .env file
+        print(f"OPTUNA_DB_CONN_URL: {OPTUNA_DB_CONN_URL}")
+        clf = tune_model_with_cv(X_train, y_train, OPTUNA_DB_CONN_URL)
 
-    # Train final model with best tuned hyperparameters to-date
-    # These parameters are based on the best results from previous tuning runs
-    # X_test precision/recall/f1: 0.921 0.833 0.875
-    # best_params_to_date = {
-    # "n_estimators": 374,
-    # "learning_rate": 0.06277193144197914,
-    # "max_depth": 3,
-    # "min_child_weight": 1,
-    # "gamma": 0.0007237920056163315,
-    # "subsample": 0.8280956289121524,
-    # "colsample_bytree": 0.7587172587106015,
-    # "reg_alpha": 0.00013524609914364934,
-    # "reg_lambda": 0.002246828534497257,
-    # "max_delta_step": 4,
-    # }
-    # clf = train_model(X_train, y_train, best_params_to_date)
+    print("Model training complete. Evaluating model...")
 
     # First evaluate tuned model on training data to check for bias
     evaluate_model(clf, X_train, y_train, "X_train")

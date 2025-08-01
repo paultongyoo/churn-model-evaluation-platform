@@ -71,9 +71,9 @@ register-model:
 	python churn_model_training.py
 
 register-model-nopromote:
-	@echo "Generating models without promoting them for pipeline use in MLflow..."
+	@echo "Generating model without promotion for pipeline use in MLflow..."
 	cd code/orchestration/modeling && \
-	python churn_model_training.py --nopromote
+	python churn_model_training.py --nopromote --tuneparams
 
 optuna-dashboard:
 	@if [ -f code/orchestration/modeling/db.sqlite3 ]; then \
