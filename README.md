@@ -199,6 +199,9 @@ A user with the following AWS Managed Permissions policies was used when creatin
 * **S3-to-Prefect Lambda Function**
     * Invokes orchestration flow when new files are dropped into S3
     * Uses AWS `public.ecr.aws/lambda/python:3.12` image
+* **Testcontainers + LocalStack**
+	* Used by example integration test to mock AWS S3 service using LocalStack
+ 	* Uses LocalStack `localstack/localstack:4.7.0` image
 
 After deployment, remove these local Docker images to conserve space.
 
