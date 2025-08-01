@@ -470,7 +470,7 @@ The following table lists the `make` targets available to accelerate platform de
 | `enable-lambda` | Re-enables the `s3_to_prefect` Lambda notification to resume creating new Prefect flow runs on S3 file drop |
 | `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLflow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
 | `register-model-nopromote` | Executes the `churn_model_training.py` file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.  Used to develop and optimize model performance prior to making it available for stakeholder use. |
-| `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  **Upload `customer_churn_1.csv` into the S3 `data/input/` folder before use.**  Runs command `python churn_prediction_pipeline.py your-project-id data/input/customer_churn_1.csv` and instantiates local Prefect Server to execute flow. |
+| `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  **Upload `customer_churn_1.csv` into the S3 `data/input/` folder before use.**  Runs command `python churn_prediction_pipeline.py your-project-id data/input/customer_churn_1.csv` and instantiates ephemeral local Prefect Server to execute flow. |
 | `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder. |
 
 ## CI-CD Implementation
