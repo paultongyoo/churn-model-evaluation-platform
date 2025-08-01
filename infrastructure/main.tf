@@ -96,7 +96,8 @@ resource "null_resource" "initialize_services_and_store_secrets" {
   provisioner "local-exec" {
     command = <<EOT
 bash -c " \
-  ./scripts/wait-for-services.sh --env-file ../.env --workflow-file ../.github/workflows/deploy-prefect.yml --dns-name ${module.alb.alb_dns_name} && \
+  bash ./scripts/set-project-id.sh --project-id ${var.project_id} --env-file ../.env && \
+  bash ./scripts/wait-for-services.sh --env-file ../.env --workflow-file ../.github/workflows/deploy-prefect.yml --dns-name ${module.alb.alb_dns_name} && \
   echo '📦 Installing Prefect and storing secrets...' && \
   pip install --quiet prefect && \
   export PREFECT_API_URL=http://${module.alb.alb_dns_name}:4200/api && \
