@@ -276,7 +276,7 @@ MLflow, Optuna, Prefect, Evidently, and Grafana UI URLs
 
 Clicking on each URL should render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
 
-If any of the URLs return an error (e.g. 503 Service Unavailable), log into the AWS Elastic Container Service (ECS) console and confirm an ECS Task is in Running state for each of the services (see screenshot below).
+If any of the URLs return an error (e.g. 503 Service Unavailable), investigate the root cause by logging into the AWS Elastic Container Service (ECS) console and inspect the logs of the ECS Task that is failing.
 
 
 ![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png)
