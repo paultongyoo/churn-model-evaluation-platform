@@ -45,11 +45,11 @@
 ├── data
 │   ├── customer_churn_0.csv
 │   ├── customer_churn_1.csv
-│   ├── customer_churn_2_majority_drifted.csv
+│   ├── customer_churn_2.csv
 │   ├── customer_churn_synthetic_1.csv
 │   ├── customer_churn_synthetic_2.csv
 │   ├── customer_churn_synthetic_3.csv
-│   ├── customer_churn_synthetic_4_scores_below_threshold.csv
+│   ├── customer_churn_synthetic_4.csv
 │   ├── customer_churn_synthetic_5.csv
 │   └── customer_churn_synthetic_6.csv
 ├── infrastructure
