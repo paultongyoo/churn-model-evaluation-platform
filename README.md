@@ -1,6 +1,6 @@
 # Churn Model Evaluation Platform
 
-(For those evaluating this project for the [DataTalks.club MLOps Zoomcamp certification ↗](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for mappings between this document's sections and each criteria.)
+(For those evaluating this project for [DataTalks.club MLOps Zoomcamp Certification ↗](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for mappings between this document's sections and each criteria.)
 
 ## Table of Contents
 
