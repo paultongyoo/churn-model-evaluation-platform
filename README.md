@@ -158,7 +158,7 @@ The full project folder tree contents can be viewed [here](folder-structure.txt)
 | Public subnets are required to simplify RDS access from ECS and local machines. | Migrate to private subnets with NAT Gateway and use bastion or VPN access for local clients.  |
 | The Prefect API ALB endpoint is publicly accessible to enable GitHub Actions deployment. | Restrict access to GitHub Actions IP ranges using ingress rules or CloudFront. |
 | The MLflow ALB endpoint is publicly accessible to allow ECS Workers to reach the Model Registry.  | Limit access to internal ECS security groups only.  |
-| The Prefect API ALB endpoint is visible in cleartext as an environment variable in the `.github/workflows/deploy-prefect.yml` file.  This may pose a security risk if your GitHub repo is publicly visible. | Consider migrating this variable to a GitHub Repository secret and automatically upserting this value as a new Terraform post-action. |
+| The Prefect API ALB endpoint is visible in cleartext as an environment variable in the `.github/workflows/deploy-prefect.yml` file.  This may pose a security risk if your GitHub repo is publicly visible. | Consider migrating this variable to a GitHub Repository secret and automatically upserting this value as a new Terraform action post-`apply`. |
 
 ## Installation Prerequisites
 
