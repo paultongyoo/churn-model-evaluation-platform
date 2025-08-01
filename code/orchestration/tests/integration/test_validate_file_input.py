@@ -32,7 +32,7 @@ class IntegrationTestValidateFileInput(unittest.TestCase):
         and validates the input example DataFrame for a valid file.
         """
         # Start LocalStack container
-        with LocalStackContainer(image="localstack/localstack:latest").with_services(
+        with LocalStackContainer(image="localstack/localstack:4.7.0").with_services(
             "s3"
         ) as localstack:
             s3_endpoint_url = localstack.get_url()
@@ -75,7 +75,7 @@ class IntegrationTestValidateFileInput(unittest.TestCase):
         for an invalid file extension.
         """
         # Start LocalStack container
-        with LocalStackContainer(image="localstack/localstack:latest").with_services(
+        with LocalStackContainer(image="localstack/localstack:4.7.0").with_services(
             "s3"
         ) as localstack:
             s3_endpoint_url = localstack.get_url()
@@ -120,7 +120,7 @@ class IntegrationTestValidateFileInput(unittest.TestCase):
         for an invalid file extension.
         """
         # Start LocalStack container
-        with LocalStackContainer(image="localstack/localstack:latest").with_services(
+        with LocalStackContainer(image="localstack/localstack:4.7.0").with_services(
             "s3"
         ) as localstack:
             s3_endpoint_url = localstack.get_url()
