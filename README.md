@@ -252,11 +252,11 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
         1.  `AWS_SECRET_ACCESS_KEY`
         1.  `AWS_REGION`
     1.  Navigate to GitHub Project Actions tab, select the workflow `Build and Deploy Prefect Flow to ECR`, and click the green "Run workflow" button to deploy the Prefect flow
-    	1. Confirm it was deployed sucessfully by visiting the "Deployments" section of the Prefect UI
-2.  Confirm your email subscription to the pipeline SNS topic
-  3.  Navigate to the inbox of the email address you configured and look for an email subject titled `AWS Notification - Subscription Confirmation`.
-  4.  Open the email and click the `Confirm Subscription` link within.
-  5.  Verify you see a green message relaying your subscription has been confirmed.
+    	  1. Confirm it was deployed sucessfully by visiting the "Deployments" section of the Prefect UI
+1.  Confirm your email subscription to the pipeline SNS topic
+    1.  Navigate to the inbox of the email address you configured and look for an email subject titled `AWS Notification - Subscription Confirmation`.
+    1.  Open the email and click the `Confirm Subscription` link within.
+    1.  Verify you see a green message relaying your subscription has been confirmed.
 
 ## Platform ECS Services
 
