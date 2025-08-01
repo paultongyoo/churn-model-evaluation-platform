@@ -104,7 +104,7 @@ flowchart TD
     D[Prepare data, reusing training logic]
     E[Generate predictions]
     F[Append predictions to file input]
-    G[Generate Evidently data drift and prediction performance Report]
+    G[Generate Evidently data drift and prediction performance report]
     H[Save report to database]
     I[Did drift exceed threshold?]
     J[Send drift email alert]
