@@ -94,7 +94,7 @@ flowchart TD
 ### Model Inference, Reporting, and Evaluation
 
 * The following process is orchestrated by the Prefect Flow `code/orchestration/churn_prediction_pipeline.py`.
-* It is invoked for each file dropped into the S3 File Drop Folder `input` folder (see [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)).
+* A new flow run is created for each file dropped into the S3 File Drop Folder `input` folder (see [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)).
 
 ```mermaid
 flowchart TD
