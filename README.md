@@ -200,7 +200,7 @@ The Docker images required for the following components occupy approximately 5.4
     * Invokes orchestration flow when new files are dropped into S3
     * Uses AWS `public.ecr.aws/lambda/python:3.12` image
 * **Testcontainers + LocalStack**
-	* Used by example integration test to mock AWS S3 service using LocalStack
+	* Used by integration tests to mock AWS S3 service using LocalStack
  	* Uses LocalStack `localstack/localstack:4.7.0` image
 
 After deployment, remove these local Docker images to conserve space.
