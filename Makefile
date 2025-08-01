@@ -87,10 +87,9 @@ optuna-dashboard:
 process-test-data:
 	@echo "Processing test data..."
 	bash -c '\
-		source .env && \
+		source ../../.env && \
 		cd code/orchestration && \
-		python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv \
-	'
+		python churn_prediction_pipeline.py "$$PROJECT_ID" data/input/customer_churn_1.csv \
 
 simulate-file-drops:
 	@echo "Simulating file drops in S3 bucket..."
