@@ -250,7 +250,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
     2.  Note two versions of the model are visible in the registry evaluated using training and holdout datasets (`X_train` and `X_test`, respectively)
 1.  Deploy the `churn_prediction_pipeline` Prefect Flow to your Prefect Server using GitHub Actions
     1. Commit your cloned repo (including `{REPO_DIR}/.github/workflows/deploy-prefect.yml` updated with generated `PREFECT_API_URL`)
-    1. Log in your GitHub account, navigate to your committed repo project and create the following Repository Secrets (used by `deploy-prefect.yml`):
+    1. Log in to your GitHub account, navigate to your committed repo project and create the following Repository Secrets (used by `deploy-prefect.yml`):
         1.  `AWS_ACCOUNT_ID`
         1.  `AWS_ACCESS_KEY_ID`
         1.  `AWS_SECRET_ACCESS_KEY`
