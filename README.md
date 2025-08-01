@@ -123,7 +123,7 @@ flowchart TD
 ## S3 File Drop Folder Structure
 
 <pre>
-s3://mlops-churn-pipeline
+s3://your_project_id
 └── data
     ├── input        # Customer churn files uploaded here
     ├── processing   # Files moved here during processing
@@ -267,11 +267,11 @@ Once the Terraform `make apply` command completes successfully, you should see o
 MLflow, Optuna, Prefect, Evidently, and Grafana UI URLs
 -------------------------------------------------------
 
-🧪 MLflow UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:5000
-🔍 Optuna UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8080
-⚙️ Prefect UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200
-📈 Evidently UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8000
-📈 Grafana UI: http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
+🧪 MLflow UI: http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:5000
+🔍 Optuna UI: http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:8080
+⚙️ Prefect UI: http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:4200
+📈 Evidently UI: http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:8000
+📈 Grafana UI: http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:3000
 ```
 
 Clicking on each URL should render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
@@ -284,12 +284,12 @@ If any of the URLs return an error (e.g. 503 Service Unavailable), log into the 
 These URLs were also written to the `{REPO_DIR}/.env` file for future retrieval and export to shell environment when needed.
 
 ```
-OPTUNA_DB_CONN_URL=postgresql+psycopg2://USERNAME:PASSWORD@mlops-churn-pipeline-postgres.abcdefghijk.us-east-2.rds.amazonaws.com:5432/optuna_db
-MLFLOW_TRACKING_URI=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:5000
-PREFECT_API_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200/api
-EVIDENTLY_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:8000
-PREFECT_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:4200
-GRAFANA_UI_URL=http://mlops-churn-pipeline-alb-123456789.us-east-2.elb.amazonaws.com:3000
+OPTUNA_DB_CONN_URL=postgresql+psycopg2://USERNAME:PASSWORD@your-project-id-postgres.abcdefghijk.us-east-2.rds.amazonaws.com:5432/optuna_db
+MLFLOW_TRACKING_URI=http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:5000
+PREFECT_API_URL=http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:4200/api
+EVIDENTLY_UI_URL=http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:8000
+PREFECT_UI_URL=http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:4200
+GRAFANA_UI_URL=http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:3000
 ```
 
 The following sections give a brief overview of the tool features made available in this project:
@@ -450,7 +450,7 @@ The following table lists the `make` targets available to accelerate platform de
 | `enable-lambda` | Re-enables the `s3_to_prefect` Lambda notification to resume pipeline instantiaton on S3 file drop |
 | `register-model` | Executes the `churn_model_training.py` file to train and deploy two models to the MLflow Registry (evaluated on training and holdout data, respectively).  The second model is assigned the `staging` alias to allow the Prefect pipeline to fetch the latest `staging` model without code changes. |
 | `register-model-nopromote` | Executes the `churn_model_training.py` file with instruction to not apply promotion logic (e.g. does not apply 'staging' alias) that makes the model available to the model evaluation pipeline.  Used to develop and optimize model performance prior to making it available for stakeholder use. |
-| `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  Assumes `customer_churn_1.csv` was uploaded into the S3 `data/input/` folder.  Runs command `python churn_prediction_pipeline.py mlops-churn-pipeline data/input/customer_churn_1.csv` and instantiates local Prefect Server to execute flow. |
+| `process-test-data` | Use to manually invoke flow after running `disable-lambda` target.  Assumes `customer_churn_1.csv` was uploaded into the S3 `data/input/` folder.  Runs command `python churn_prediction_pipeline.py your-project-id data/input/customer_churn_1.csv` and instantiates local Prefect Server to execute flow. |
 | `simulate-file-drops` | Runs `upload_simulation_script.py` to automatically upload each non-training data file in the `data/` folder to the S3 File Drop input folder.  **Edit `upload_simulation_script.py` to change the `BUCKET_NAME` value to match the `project_id` you configured in `stg.tfvars`.** |
 
 ## CI-CD Implementation
