@@ -6,9 +6,12 @@ import os
 import time
 
 import boto3
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 # AWS S3 configuration
-BUCKET_NAME = "your_project_id"  # Change this to your 'project_id' in stg.tfvars
+BUCKET_NAME = os.getenv("PROJECT_ID")
 S3_PREFIX = "data/input/"
 LOCAL_FOLDER = "data"
 EXCLUDED_FILE = "customer_churn_0.csv"
