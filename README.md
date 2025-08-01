@@ -278,6 +278,7 @@ Clicking on each URL should render each tool's UI successfully in your browser (
 
 If any of the URLs return an error (e.g. 503 Service Unavailable), investigate the root cause by logging into the AWS Elastic Container Service (ECS) console and inspect the logs of the ECS Task that is failing.
 
+If all the services started auccessfully, your ECS Task list should look similar to this screenshot:
 
 ![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png)
 
