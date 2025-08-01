@@ -345,7 +345,7 @@ Assess dataset drift and model performance for each new churn data drop to decid
 
 ### Grafana Time-Series Dashboard UI
 
-Provides a pre-created dashboard plotting model data drift and performance metrics over time.
+Provides a pre-created dashboard plotting model data drift and performance metrics over time to distinguish anomalies from signals suggesting model development is needed.
 
 ![Grafana Latest Prediction Scores](readme-assets/grafana-latest-prediction-scores.png)
 ![Grafana Drift Summary Metrics](readme-assets/grafana-drift-summary-metrics.png)
