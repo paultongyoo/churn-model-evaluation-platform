@@ -8,7 +8,7 @@
 2. [Key Features](#key-features)
 3. [Customer Churn Data Source](#customer-churn-data-source)
 4. [Platform Processes](#platform-processes)
-   - [Model Training and Registry Deployment](#model-training-and-registry-deployment)
+   - [Model Development and Deployment](#model-development-and-deployment)
    - [Model Inference, Reporting, and Evaluation](#model-inference-reporting-and-evaluation)
 5. [Platform Infrastructure Diagram](#platform-infrastructure-diagram)
 6. [S3 File Drop Folder Structure](#s3-file-drop-folder-structure)
@@ -67,7 +67,7 @@
 
 Two independent processes were enabled by this project, joined by the MLflow Model Registry:
 
-### Model Training and Registry Deployment
+### Model Development and Deployment
 
 The following process is implemented with two files inside the `code/orchestration/modeling/` folder:
 * **Jupyter Notebook:** `churn_model_training.ipynb`
