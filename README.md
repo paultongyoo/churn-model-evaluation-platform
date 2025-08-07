@@ -240,7 +240,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 | `grafana_admin_password` | Password for Grafana account | `Grafana4Lyfe!123` |
 | `subnet_ids`  | AWS Subnet IDs: **Must be *public* subnet IDs from *different Availability Zones* to allow Postgres RDS instance to be accessed by ECS services (and optionally your IP address)** | `["subnet-123abc456def78901", "subnet-234bcd567efg89012"]` |
 | `my_ip` | IP address that will be granted access to Grafana UI, Optuna UI and Postgres DB | `203.0.113.42` |
-| `my_email_address` | Email address that will be notified if input files exhibit data drift or prediction scores that exceed thresholds | `your.name@example.com` |
+| `my_email_address` | Email address that will be notified if majority of inferenced data columns exhibit data drift or prediction scores fall below threshold | `your.name@example.com` |
 
 1.  `cd {REPO_DIR}/infrastructure` then `terraform init`.  If successful, this command will populate the Terraform State S3 bucket you created in Step 2 with the necessary files to capture the state of your infrastructure across Terraform command invocations.
 2.  `cd {REPO_DIR}/code/orchestration` then `pipenv shell`
