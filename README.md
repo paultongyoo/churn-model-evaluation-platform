@@ -307,10 +307,10 @@ GRAFANA_UI_URL=http://your-project-id-alb-123456789.us-east-2.elb.amazonaws.com:
 The following sections give a brief overview of the tool features made available in this project:
 
 ### MLflow Tracking Server & Model Registry
-* List model experiment runs that track model metrics and parameters used
+* Lists model experiment runs that track model metrics and parameters used
 * Captures details of each experiment run, including model type and training dataset used
 * Automatically creates images to aid evaluation (e.g. confusion matrix, SHAP summary plot)
-* Store models in Model Registry for future use (e.g. loaded by Model Evaluation Pipeline on file drop)
+* Stores models in Model Registry for future use (e.g. loaded by Model Evaluation Pipeline on file drop)
 
 ![MLflow Experiments](readme-assets/mlflow-experiments.png) <br>
 ![MLflow Model Details](readme-assets/mlflow-model-details.png)
