@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+prefect = "*"
+pandas = "*"
+boto3 = "*"
+mlflow = "*"
+numpy = "*"
+xgboost = "*"
+scikit-learn = "*"
+optuna = "*"
+modeling = {path = "./modeling"}
+seaborn = "*"
+sqlalchemy = "*"
+evidently = "*"
+matplotlib = "*"
+shap = "*"
+psycopg2-binary = "*"
+testcontainers = "*"
+ipywidgets = "*"
+
+[dev-packages]
+pytest = "*"
+
+[requires]
+python_version = "3.10"

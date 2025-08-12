@@ -1,0 +1,13 @@
+project_id=<S3 Friendly Project ID>
+vpc_id=<YOUR AWS VPC ID>
+aws_region=<YOUR AWS REGION>
+db_username=<Postgres DB Username>
+db_password=<Postgres DB Password>
+grafana_admin_user=<Grafana Admin Username>
+grafana_admin_password=<Grafana Admin Password>
+subnet_ids = [  # Must contain at least two PUBLIC subnets from DIFFERENT AZs
+  "subnet-1234",
+  "subnet-5678",
+]
+my_ip=<Your IP Address>
+my_email_address=<Your Email Address>

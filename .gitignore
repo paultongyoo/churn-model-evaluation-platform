@@ -1,0 +1,17 @@
+.terraform/
+*.tfvars
+*_image_tag.txt
+.env
+.env.bak
+mlflow.db
+mlruns/
+shap_summary_plot_*.png
+reference_data.parquet
+__pycache__/
+*.bak
+.pytest_cache/
+.terraform.lock.hcl
+*.egg-info
+.pre-commit-config.yaml
+build/
+db.sqlite3

@@ -1,0 +1,134 @@
+.
+├── .github
+│   ├── workflows
+|   |   └── deploy-prefect.yml
+├── code
+│   ├── grafana
+│   │   ├── dashboards
+│   │   │   └── churn-model-evaluation.json
+│   │   ├── provisioning
+│   │   │   ├── dashboards
+│   │   │   │   └── default.yml
+│   │   │   └── datasources
+│   │   │       └── grafana-postgres-datasource.yml
+│   │   ├── Dockerfile
+│   │   └── custom.ini
+│   ├── orchestration
+│   │   ├── modeling
+│   │   │   ├── __init__.py
+│   │   │   ├── churn_model_training.ipynb
+│   │   │   ├── churn_model_training.py
+│   │   │   └── setup.py
+│   │   ├── tests
+│   │   │   ├── integration
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── test_validate_file_input.py
+│   │   │   ├── unit
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── test_fetch_model.py
+│   │   │   │   ├── test_generate_predictions.py
+│   │   │   │   ├── test_move_to_folder.py
+│   │   │   │   ├── test_prepare_dataset.py
+│   │   │   │   └── test_validate_file_input.py
+│   │   │   └── __init__.py
+│   │   ├── Dockerfile
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   │   ├── __init__.py
+│   │   ├── churn_prediction_pipeline.py
+│   │   ├── prefect.yaml
+│   │   └── update_prefect_yaml.py
+│   ├── s3_to_prefect_lambda
+│   │   ├── Dockerfile
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   │   ├── __init__.py
+│   │   └── lambda_function.py
+│   └── __init__.py
+├── data
+│   ├── customer_churn_0.csv
+│   ├── customer_churn_1.csv
+│   ├── customer_churn_2.csv
+│   ├── customer_churn_synthetic_1.csv
+│   ├── customer_churn_synthetic_2.csv
+│   ├── customer_churn_synthetic_3.csv
+│   ├── customer_churn_synthetic_4.csv
+│   ├── customer_churn_synthetic_5.csv
+│   └── customer_churn_synthetic_6.csv
+├── infrastructure
+│   ├── modules
+│   │   ├── alb
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── ecr
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── ecs
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── rds-postgres
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── s3
+│   │   │   ├── main.tf
+│   │   │   ├── outputs.tf
+│   │   │   └── variables.tf
+│   │   ├── s3-to-prefect-lambda
+│   │   │   ├── main.tf
+│   │   │   └── variables.tf
+│   │   └── sns
+│   │       ├── main.tf
+│   │       ├── outputs.tf
+│   │       └── variables.tf
+│   ├── scripts
+│   │   ├── set-project-id.sh
+│   │   ├── store_prefect_secrets.py
+│   │   └── wait-for-services.sh
+│   ├── vars
+│   │   └── stg.tfvars.template
+│   ├── main.tf
+│   └── variables.tf
+├── readme-assets
+│   ├── email-alert-data-drift.png
+│   ├── email-alert-scores-below-threshold.png
+│   ├── evidently-confusion-matrix-by-label.png
+│   ├── evidently-confusion-matrix.png
+│   ├── evidently-data-drift-detailed.png
+│   ├── evidently-data-drift-summary.png
+│   ├── evidently-model-performance.png
+│   ├── grafana-drift-summary-metrics.png
+│   ├── grafana-latest-prediction-scores.png
+│   ├── grafana-metric-drift-p-values.png
+│   ├── mlflow-artifacts.png
+│   ├── mlflow-confusion-matrix.png
+│   ├── mlflow-experiments.png
+│   ├── mlflow-model-details.png
+│   ├── mlflow-model-registry.png
+│   ├── mlops_churn_platform_infrastructure_diagram_paultongyoo.jpg
+│   ├── optuna-analytics-bottom.png
+│   ├── optuna-analytics-middle-middle.png
+│   ├── optuna-analytics-middle.png
+│   ├── optuna-analytics-top.png
+│   ├── optuna-dashboard-bottom.png
+│   ├── optuna-dashboard-middle.png
+│   ├── optuna-dashboard-top.png
+│   ├── pipeline_ecs_tasks.png
+│   ├── prefect-dashboard.png
+│   ├── prefect-deployments.png
+│   ├── prefect-flows.png
+│   ├── prefect-run-detail.png
+│   ├── prefect-runs.png
+│   └── prefect-work-pools.png
+├── .gitignore
+├── .pre-commit-config.template.yaml
+├── .python-version
+├── Makefile
+├── README.md
+├── folder-structure.txt
+├── pyproject.toml
+├── pytest.ini
+└── upload_simulation_script.py

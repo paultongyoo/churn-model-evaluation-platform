@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: Postgres RDS
+    type: postgres
+    access: proxy
+    isDefault: true
+    url: ${GF_RDS_ENDPOINT}
+    database: ${GF_RDS_DBNAME}
+    user: ${GF_RDS_USER}
+    secureJsonData:
+      password: ${GF_RDS_PASSWORD}
+    jsonData:
+      sslmode: require
+      postgresVersion: 1200
+      timescaledb: false

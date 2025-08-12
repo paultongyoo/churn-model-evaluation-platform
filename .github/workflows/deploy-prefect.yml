@@ -1,0 +1,81 @@
+name: Build and Deploy Prefect Flow to ECR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'code/orchestration/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # These are set by Terraform local-execs
+    #
+    # NOTE: PREFECT_API_URL exposed here for NON-PRODUCTION project!
+    #       This file should be updated to pull it from GitHub Secrets before any production deployment.
+    #       TODO: Set secret via GitHub REST API using env token
+    env:
+      ECR_REPO_NAME: mlops-churn-pipeline-prefect
+      WORK_POOL_NAME: mlops-churn-pipeline-pool
+      PREFECT_API_URL: http://mlops-churn-pipeline-alb-464908122.us-east-2.elb.amazonaws.com:4200/api
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'  # optional, enables caching
+
+    - name: Install pipenv
+      run: pip install pipenv
+
+    - name: Install dependencies with pipenv
+      working-directory: ./code/orchestration
+      run: pipenv install --dev
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Run Unit and Integration Tests
+      working-directory: ./code/orchestration
+      run: PYTHONPATH=code pipenv run pytest -v --maxfail=1 --disable-warnings --import-mode=importlib
+
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Set IMAGE_NAME and IMAGE TAG
+      run: |
+        IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+        IMAGE_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/$ECR_REPO_NAME
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+    - name: Inject IMAGE_NAME & IMAGE_TAG into prefect.yaml
+      working-directory: ./code/orchestration
+      run: pip install pyyaml && python update_prefect_yaml.py "$IMAGE_NAME" "$IMAGE_TAG"
+
+    - name: Show updated prefect.yaml
+      working-directory: ./code/orchestration
+      run: cat prefect.yaml
+
+    - name: Install Prefect
+      run: |
+        pip install --upgrade pip
+        pip install prefect
+        pip install "prefect[docker]"
+
+    # Required opening ALB Prefect Port to all IPs to allow GitHub Actions to deploy
+    # to ECS Prefect Server.  Not recommended for production environments!
+    - name: Deploy Pipeline to Prefect Server
+      working-directory: ./code/orchestration
+      run: prefect --no-prompt deploy --all --pool $WORK_POOL_NAME

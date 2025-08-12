@@ -1,0 +1,120 @@
+default_language_version:
+    python: python3
+
+repos:
+  # Define a list of pre-commit hook repositories to use
+  - repo: https://github.com/nbQA-dev/nbQA
+    # The version (tag or commit hash) of nbQA to use
+    rev: 1.9.1
+    hooks:
+      # Hook to run pylint on Jupyter notebooks via nbQA
+      - id: nbqa-pylint
+        # Additional Python dependencies needed for pylint to properly lint notebooks
+        additional_dependencies:
+          - pylint            # Main linter for Python code
+          - shap              # Needed if notebooks import SHAP
+          - mlflow            # Needed if notebooks import MLflow
+          - xgboost           # Needed for models using XGBoost
+          - matplotlib        # Needed to parse plots in notebooks
+          - seaborn           # Needed for seaborn-based notebooks
+          - pandas            # Needed for data manipulation code
+          - numpy             # Needed for numerical operations
+          - python-dotenv     # Needed if `.env` config loading is present
+          - scikit-learn      # Needed for sklearn-based notebooks
+          - optuna            # Needed for Optuna-based notebooks
+
+          # Hack to include the modeling package in pylint checks
+          - MODELING_PKG_ABS_PATH  # TODO: Get relatve path to work
+
+        # Disable specific pylint warning/error codes:
+        args: ["--disable=C0103,C0114,C0116,C0303,C0413,E0401,R0913,R0914,R0917,W0511,W0104"]
+        # Explanation of common disabled codes:
+        # - C0103: variable name doesn't conform to snake_case
+        # - C0114: missing module docstring
+        # - C0116: missing function docstring
+        # - C0303: trailing whitespace
+        # - C0413: imports not at top of file
+        # - E0401: Unable to import module (e.g., missing dependency)
+        # - R0913: too many arguments in function/method
+        # - R0914: too many local variables in function/method
+        # - R0917: too many positional arguments
+        # - W0104: statement seems to have no effect (e.g., pass)
+        # - W0511: TODO/FIXME comments
+
+      # Hook to run flake8 on Jupyter notebooks via nbQA
+      - id: nbqa-flake8
+        # Extend ignore list to silence specific flake8 errors/warnings:
+        args: ["--extend-ignore=E203,E501,E402,W291,W293"]
+        # - E203: whitespace before ':' (incompatible with black)
+        # - E501: line too long
+        # - E402: module level import not at top of file
+        # - W291: trailing whitespace
+        # - W293: blank line contains whitespace
+
+      # Hook to run black formatter on notebooks via nbQA
+      - id: nbqa-black
+        args: ["--line-length=88"]  # Match black's default line length
+
+      # Hook to sort imports in notebooks via nbQA using isort
+      - id: nbqa-isort
+        args: ["--profile=black", "--force-single-line-imports"]
+        # --profile=black: make isort compatible with black formatting
+        # --force-single-line-imports: each import on its own line (e.g., for clearer diffs)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: ["--profile=black", "--force-single-line-imports"]
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: python
+        types: [python]
+        args: [
+          "-rn", # Only display messages
+          "-sn", # Don't display the score
+          "--recursive=y",
+          "--disable=missing-class-docstring,pointless-string-statement,import-error"
+        ]
+        additional_dependencies:
+        - pylint
+        - prefect
+        - boto3
+        - mlflow
+        - pandas
+        - xgboost
+        - optuna
+      - id: pytest-check
+        name: pytest-check
+        entry: pytest -v --import-mode=importlib
+        language: python
+        pass_filenames: false
+        always_run: true
+        args: [
+          "code/orchestration/tests/"
+        ]
+        additional_dependencies:
+        - pytest
+        - boto3
+        - prefect
+        - mlflow
+        - optuna
+        - xgboost
+        - scikit-learn
+        - pandas
+        - evidently
+        - testcontainers
