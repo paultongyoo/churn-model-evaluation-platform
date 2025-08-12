@@ -1,4 +1,4 @@
-# Churn Model Evaluation Platform
+# 🌀 Churn Model Evaluation Platform
 
 ## Table of Contents
 
