@@ -1,7 +1,5 @@
 # Churn Model Evaluation Platform
 
-(For those evaluating this project for [DataTalks.club MLOps Zoomcamp Certification ↗](https://datatalks.club/blog/mlops-zoomcamp.html), see the [**"DataTalks.club MLOps Zoomcamp Evaluation Criteria" section**](#datatalksclub-mlops-zoomcamp-evaluation-criteria) for mappings between this document's sections and each criteria.)
-
 ## Table of Contents
 
 1. [Problem Statement](#problem-statement)
@@ -502,6 +500,9 @@ flowchart TD
 ```
 
 ## DataTalks.club MLOps Zoomcamp Evaluation Criteria
+
+This project earned the highest-tier score ([top 8 of 92 participants ↗](https://courses.datatalks.club/mlops-zoomcamp-2025/projects)) in peer-reviewed project assessment.
+
 Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
 
 ### Problem description
