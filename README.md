@@ -231,7 +231,7 @@ See the `Pipfile` and `Pipfile.lock` files within the following folders for the 
 
 | **Key Name** | **Purpose** | **Example Value** |
 | ------------ | ----------- | ----------------- |
-| `project_id` | Used as prefix for many AWS resources, including the S3 bucket while files will be dropped and generated.  **Must be a valid S3 name (e.g. unique, no underscores).  Must be 20 characters or less to prevent exceeding resource naming character limits.**   | `mlops-churn-pipeline` |
+| `project_id` | Used as prefix for many AWS resources, including the S3 bucket where files will be dropped and generated.  **Must be a valid S3 name (e.g. unique, no underscores).  Must be 20 characters or less to prevent exceeding resource naming character limits.**   | `mlops-churn-pipeline` |
 | `vpc_id` | Your AWS VPC ID | `vpc-0a1b2c3d4e5f6g7h8` |
 | `aws_region` | Your AWS Region | `us-east-2` |
 | `db_username` | Username for Postgres database used to store MLflow, Prefect, and Evidently Metrics.  Must conform to Postgres rules (e.g. lowercase, numbers, underscores only) | `my_super_secure_db_name` |
@@ -287,9 +287,9 @@ MLflow, Optuna, Prefect, Evidently, and Grafana UI URLs
 
 Clicking on each URL should render each tool's UI successfully in your browser (the Terraform command includes invoking a script that polls the services' URLs until they return successful responses).
 
-If any of the URLs return an error (e.g. 503 Service Unavailable), investigate the root cause by logging into the AWS Elastic Container Service (ECS) console and inspect the logs of the ECS Task that is failing.
+If any of the URLs return an error (e.g. 503 Service Unavailable), investigate the root cause by logging into the AWS Elastic Container Service (ECS) console and inspecting the logs of the ECS Task that is failing.
 
-If all the services started auccessfully, your ECS Task list should look similar to this screenshot:
+If all the services started successfully, your ECS Task list should look similar to this screenshot:
 
 ![Platform ECS Tasks Screenshot](readme-assets/pipeline_ecs_tasks.png)
 
