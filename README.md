@@ -33,7 +33,11 @@
     - [Hooks List](#hooks-list)
 21. [Makefile Targets](#makefile-targets)
 22. [CI-CD Implementation](#ci-cd-implementation)
+<<<<<<< HEAD
 23. [DataTalksClub MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+=======
+23. [DataTalks.club MLOps Zoomcamp Evaluation Criteria](#datatalksclub-mlops-zoomcamp-evaluation-criteria)
+>>>>>>> ae92957 (chore: clean repository history for public)
 
 
 ## Problem Statement
@@ -499,9 +503,15 @@ flowchart TD
     C-->D-->E-->F-->G-->H-->I-->J-->K-->L-->M-->N-->O;
 ```
 
+<<<<<<< HEAD
 ## DataTalksClub MLOps Zoomcamp Evaluation Criteria
 
 This project earned the highest-tier score ([top 10 of 183 participants ↗](https://courses.datatalks.club/mlops-zoomcamp-2025/projects)) in peer-reviewed project assessment.
+=======
+## DataTalks.club MLOps Zoomcamp Evaluation Criteria
+
+This project earned the highest-tier score ([top 8 of 92 participants ↗](https://courses.datatalks.club/mlops-zoomcamp-2025/projects)) in peer-reviewed project assessment.
+>>>>>>> ae92957 (chore: clean repository history for public)
 
 Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
 
