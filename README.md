@@ -501,7 +501,7 @@ flowchart TD
 
 ## DataTalks.club MLOps Zoomcamp Evaluation Criteria
 
-This project earned the highest-tier score ([top 8 of 92 participants ↗](https://courses.datatalks.club/mlops-zoomcamp-2025/projects)) in peer-reviewed project assessment.
+This project earned the highest-tier score ([top 10 of 183 participants ↗](https://courses.datatalks.club/mlops-zoomcamp-2025/projects)) in peer-reviewed project assessment.
 
 Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
 
