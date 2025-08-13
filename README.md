@@ -510,8 +510,12 @@ This project earned the highest-tier score ([top 10 of 183 participants ↗](htt
 =======
 ## DataTalks.club MLOps Zoomcamp Evaluation Criteria
 
+<<<<<<< HEAD
 This project earned the highest-tier score ([top 8 of 92 participants ↗](https://courses.datatalks.club/mlops-zoomcamp-2025/projects)) in peer-reviewed project assessment.
 >>>>>>> ae92957 (chore: clean repository history for public)
+=======
+This project earned the highest-tier score ([top 10 of 183 participants ↗](https://courses.datatalks.club/mlops-zoomcamp-2025/projects)) in peer-reviewed project assessment.
+>>>>>>> 840a681 (Update README.md)
 
 Source: https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/07-project
 
